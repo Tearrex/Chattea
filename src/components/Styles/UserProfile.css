@@ -143,7 +143,6 @@
 }
 .userAndPfp:hover .profilePicture {
     cursor: pointer;
-    border-radius: 0;
 }
 .nameField {
     display: flex; gap: 10px;
