@@ -6,9 +6,14 @@ import { Timestamp, addDoc, getDoc, getDocs, collection, orderBy, query, limit, 
 import { _dbRef } from "../firebase";
 import { useContext } from "react";
 import { UserContext } from "../UserContext";
+import { useNavigate } from "react-router";
 function Home()
 {
+    const navigate = useNavigate();
     const {_user, _setUser} = useContext(UserContext);
+    useEffect(() => {
+        if(_user === undefined) navigate("/");
+    }, [_user]);
     async function postMessage(_content, imgFunc=null)
     {
         //console.log("the creature speaks " + content);
