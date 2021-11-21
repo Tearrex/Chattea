@@ -3,8 +3,8 @@ import Scroller from "../Scroller";
 import Submitter from "../Submitter";
 import WelcomeBanner from "../WelcomeBanner";
 import { Timestamp, addDoc, getDoc, getDocs, collection, orderBy, query, limit, serverTimestamp, doc, where, setDoc } from 'firebase/firestore'
-import { _dbRef } from "../firebase";
-import { useContext } from "react";
+import { useAuth, _dbRef } from "../firebase";
+import { useContext, useEffect } from "react";
 import { UserContext } from "../UserContext";
 import { useNavigate } from "react-router";
 function Home()
