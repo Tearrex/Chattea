@@ -135,7 +135,7 @@ function Submitter(props)
                             caption:_caption
                         });
                         setDoc(doc(_dbRef, "users/"+ _user.user_id + "/smiles/" + newPost.id), {smiles:[]});
-                        remove_image();
+                        remove_image(); compProgress.current.style.maxWidth = "0%";
                         setUploading(false);
                         console.log("Post upload succesful!");
                     });
@@ -190,9 +190,6 @@ function Submitter(props)
             <div ref={subWarning} className="subWarning">
                 <div ref={compProgress}className="compProgress"></div>
                 <div className="compText">⚠️ Upload exceeds 2MB, your image will be compressed! <span>({imageSize}/2.0MB)</span></div>
-            </div>
-            <div className="subProgress" style={{display:(uploading === false)?"none":"flex"}}>
-                <div ref={_progress}/>
             </div>
             <div className="subProgress" style={{display:(uploading === false)?"none":"flex"}}>
                 <div ref={_progress}/>

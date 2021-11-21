@@ -3,9 +3,10 @@ import { sendEmailVerification } from "@firebase/auth";
 import { signup } from "./firebase";
 import MediaPost from "./MediaPost";
 import Signup from "./Signup";
+import { useNavigate } from "react-router";
 function Splash() {
     const [loading, setLoading] = useState(true);
-
+    const navigate = useNavigate();
     const inputHeight = 60;
     const [formHeight, setFormHeight] = useState(inputHeight);
     const offsetHeight = 5;
@@ -91,7 +92,7 @@ function Splash() {
     }, [cpassInput, passInput]);
     async function handleSignup() {
         setLoading(true);
-        try { await signup(emailInput, passInput, nameInput); }
+        try { await signup(emailInput, passInput, nameInput); navigate("/main"); window.location.reload();}
         catch (e) { alert(e); }
         //window.location.reload(false);
         setLoading(false);
