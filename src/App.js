@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth, _dbRef } from "./components/firebase";
-import { addDoc, getDoc, getDocs, collection, query, where } from 'firebase/firestore'
+import { doc, addDoc, getDoc, getDocs, collection, query, where } from 'firebase/firestore'
 import Splash from './components/Splash';
 import {BrowserRouter as Router, Route, Link, Routes, useNavigate} from "react-router-dom";
 import { MembersContext, UserContext } from './components/UserContext';
@@ -33,21 +33,23 @@ function App() {
     if(currentUser !== null && currentUser !== undefined && user_id === "")
     {
       // get the current user's ID for future reference
-      const usersRef = collection(_dbRef, "users");
-      const q = query(usersRef, where("email", "==", currentUser.email));
-      const _doc = getDocs(q).then((snapshot) => {
-        var _user = snapshot.docs[0];
-        setUserID(_user.id);
-        _setUser({
-          user_id: _user.id,
-          username: _user.data()["username"],
-          pfp: _user.data()["pfp"],
-          join_date: _user.data()["joined"],
-          banner: _user.data()["banner"],
-          about: _user.data()["about"],
-          buddies: _user.data()["buddies"],
-          role: _user.data()["role"]
-        });
+      const docRef = doc(_dbRef, "users", currentUser.uid);
+      getDoc(docRef).then((s) => {
+        if(s.exists())
+        {
+          var _user = s.data();
+          setUserID(currentUser.uid);
+          _setUser({
+            user_id: currentUser.uid,
+            username: _user["username"],
+            pfp: _user["pfp"],
+            join_date: _user["joined"],
+            banner: _user["banner"],
+            about: _user["about"],
+            buddies: _user["buddies"],
+            role: _user["role"]
+          });
+        }
       });
     }
   }, [currentUser]);

@@ -35,7 +35,7 @@ body {
 }
 
 .welcomer {
-    z-index: 9999;
+    z-index: 10;
     position: fixed;
     justify-content: right;
     padding: 10px 0;
@@ -52,14 +52,13 @@ body {
     margin: 0; position: absolute; right: 0;
     z-index: 10000;
     /*width: 100%; position: absolute;*/
-    color: #fff;
+    color: #fff; flex-flow: row-reverse;
     font-size: 1.5rem;
     font-weight: lighter;
     display: flex;
     transition: transform 1s ease-out;
     -webkit-transition: transform 1s ease-out;
     align-items: center;
-    gap: 10px;
 }
 
 .chattea {
@@ -158,7 +157,7 @@ background-size: cover;*/
 
 .overlay {
     position: fixed;
-    z-index: 50;
+    z-index: 3;
     top: 0;
     left: 0;
     bottom: 0;
@@ -174,7 +173,7 @@ background-size: cover;*/
 }
 
 .popup {
-    z-index: 60;
+    z-index: 4;
     transition: transform 1s ease;
     position: fixed;
     top: 50%;
@@ -185,34 +184,28 @@ background-size: cover;*/
     /*transform: translate(-50%, -50%);display: block;*/
     width: clamp(200px, 90%, 350px);
     background-color: rgb(246, 246, 246);
+    box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.7);
 }
-
 .userOptions {
-    width: 60px;
-    height: 60px;
+    width: 60px; align-items: center;
 }
-
+.userOptions p {
+    margin: 0; width: 100%; color:#3e3e3e;
+}
 .userOptions .mpContent {
     margin-top: 0;
+    display: none; width: 100%;
 }
 
 .userOptions:hover .mpContent {
-    display: block;
+    display: flex;
 }
 
 .welcome .pfp {
-    width: 100%;
-    height: 100%;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-}
-
-.welcome span:last-child {
-    /*color:#FF5733;*/
-    color: #FF5733;
-    font-weight: bold;
+    align-items: stretch;
 }
 
 .login {
@@ -428,31 +421,107 @@ height: 100%;*/
 }
 
 .mpContent {
-    margin: 0;
+    margin: 0; z-index: 2;
     margin-top: 50px;
     transform: translateY(-5px);
     display: none;
     position: absolute;
     background-color: #f9f9f9;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    z-index: 2;
+    flex-flow: column;
 }
-
+.mpContent .verifyEmail {
+    display: flex; flex-flow: row;
+    align-items: center; gap: 5px;
+    justify-content: center;
+}
+.mpContent .verifyEmail span {
+    font-size: 1.5rem;
+}
+.mpContent .logout {
+    background-color: #D35400; color:#e7e7e7;
+}
 .mpContent button {
     outline: none;
     border: none;
     background-color: #d1d1d1;
-    cursor: pointer;
-    padding: 10px 15px;
+    padding: 15px 10px;
     width: 100%;
     font-size: 1.2rem;
-    transition: background-color 0.5s ease-out;
+    transition: background-color 0.5s ease-out, box-shadow 0.2s ease-in;
 }
-
-.mpContent button:hover {
-    background-color: #fff;
+.verifyWindow {
+    width: clamp(300px, 90%, 400px); z-index: 5;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%); padding: 20px;
+    background-color: rgb(31, 31, 31);
+    justify-content: center; align-items: center;
+    flex-flow: column; border-radius: 20px;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7);
+    transition: transform 0.5s ease-in;
 }
-
+.verifyWindow .inner {
+    padding: 20px;
+}
+.verifyWindow h1 {
+    color: #F39C12;
+    margin:0;
+}
+.verifyWindow p {
+    color: rgb(182, 182, 182);
+    font-size: 1.2rem;
+}
+#loader {
+    display: block; width: 50px; height: 50px;
+    border: 10px solid #bebebe;
+    border-top: 10px solid #F39C12;
+    border-radius: 50%;
+    animation: spinny 1s linear infinite;
+}
+@keyframes spinny {
+    0% {
+        transform: rotate(0deg);
+    }
+    40% {
+        transform: rotate(90deg);
+    }
+    60% {
+        transform: rotate(180deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+.verifyWindow form {
+    display: flex; width: 100%;
+    flex-flow: column; align-items: stretch;
+    justify-content: center; gap: 10px;
+    input {
+        border: none; outline: none; padding: 10px 15px;
+        font-size: 1.2rem;
+    }
+    input[type="email"] {
+        text-align: center;
+        background:none;
+        color:rgb(241, 241, 241);
+        &:focus {
+            background-color: #fff;
+            color: #414141;
+        }
+    }
+    input[type="submit"] {
+        font-size: 1.2rem; color: #fff;
+        background-color: #D35400;
+        transition: background-color 0.3s ease-out;
+        &:hover {
+            background-color: #F39C12;
+        }
+        &:active {
+            transform: scale(0.9);
+        }
+    }
+}
 .managePost {
     display: flex; flex: 50%;
 }

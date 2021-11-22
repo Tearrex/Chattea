@@ -41,7 +41,7 @@ function SmileButton(props)
     useEffect(() => {
         if(_user !== undefined && props.author !== _user["user_id"])
         {
-            console.log(props.canSmile);
+            //console.log(props.canSmile);
             const _doc = getDoc(_smilesRef).then((s) => {
                 var _data = s.data();
                 //console.log("smile data", _data["smiles"]);
@@ -51,7 +51,7 @@ function SmileButton(props)
     }, [_user]);
     function smile()
     {
-        console.log(check.current.checked);
+        //console.log(check.current.checked);
         postSmile(check.current.checked !== true);
     }
 
