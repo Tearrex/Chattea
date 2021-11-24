@@ -35,9 +35,7 @@ body {
 }
 
 .welcomer {
-    z-index: 10;
-    position: fixed;
-    justify-content: right;
+    justify-content: right; flex-shrink: 0;
     padding: 10px 0;
     display: flex;
     width: 100%;
@@ -60,7 +58,11 @@ body {
     -webkit-transition: transform 1s ease-out;
     align-items: center;
 }
-
+.teaBar {
+    position: fixed; width: 100%;
+    z-index: 10; top: 0;
+    display: flex; flex-flow: column;
+}
 .chattea {
     white-space: nowrap;
     display: flex;
@@ -194,13 +196,77 @@ background-size: cover;*/
 }
 .userOptions .mpContent {
     margin-top: 0;
-    display: none; width: 100%;
+    display: none;
+    button {
+        padding: 15px 25px;
+    }
 }
 
 .userOptions:hover .mpContent {
     display: flex;
 }
-
+.notifNest {
+    width: 100%; display: flex; flex-flow: column;
+    .notification:nth-child(even) {
+        background-color: #cacaca;
+    }
+}
+.notifMain {
+    display: flex; justify-content: center; align-items: center;
+    position: relative; font-weight: normal; gap: 5px; cursor: pointer;
+    background-color: #414141; padding: 5px; border-radius: 5px;
+    p {
+        margin: 0;
+    }
+    span {
+        background-color: #8f8f8f;
+        padding: 5px 10px; border-radius: 5px;
+        transition: background-color 0.5s ease-in;
+    }
+    .mpContent {
+        color: #000; position: absolute; right: 0;
+    }
+    &:hover {
+        .mpContent {
+            display: block;
+        }
+    }
+}
+.notification {
+    display: flex; padding: 10px;
+    background-color: #bebebe;
+    align-items: stretch; flex-basis: content;
+    transition: max-height 0.5s ease-in;
+    flex-grow: 0;
+    .nBody {
+        cursor: default;
+        flex: 100%; background-color: #313131;
+        color: #fff; font-size: 1.2rem; margin:0;
+        display: flex; flex-flow: row; flex-grow: 0;
+        word-break:break-word;
+        p {
+            width: 100%; gap: 10px;
+            display: flex; justify-content: center; align-items: center;
+            span {
+                font-size: 2rem;
+            }
+        }
+        &:hover {
+            box-shadow: inset 0 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+    }
+    .nType {
+        background: none;
+    }
+    button {
+        flex-shrink: 0;
+        font-size: 1.5rem; outline: none; border: none;
+        padding: 10px;
+    }
+    .nDelete {
+        background-color: #4d4d4d;
+    }
+}
 .welcome .pfp {
     width: 60px;
     height: 60px;
@@ -422,33 +488,33 @@ height: 100%;*/
 
 .mpContent {
     margin: 0; z-index: 2;
-    margin-top: 50px;
-    transform: translateY(-5px);
+    // left:0;
+    // transform: translateY(-5px);
     display: none;
     position: absolute;
     background-color: #f9f9f9;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     flex-flow: column;
-}
-.mpContent .verifyEmail {
-    display: flex; flex-flow: row;
-    align-items: center; gap: 5px;
-    justify-content: center;
-}
-.mpContent .verifyEmail span {
-    font-size: 1.5rem;
-}
-.mpContent .logout {
-    background-color: #D35400; color:#e7e7e7;
-}
-.mpContent button {
-    outline: none;
-    border: none;
-    background-color: #d1d1d1;
-    padding: 15px 10px;
-    width: 100%;
-    font-size: 1.2rem;
-    transition: background-color 0.5s ease-out, box-shadow 0.2s ease-in;
+    .verifyEmail {
+        display: flex; flex-flow: row;
+        align-items: center; gap: 5px;
+        justify-content: center;
+        span {
+            font-size: 1.5rem;
+        }
+    }
+    .logout {
+        background-color: #D35400; color:#e7e7e7;
+    }
+    button {
+        outline: none;
+        border: none;
+        background-color: #d1d1d1;
+        padding: 15px 10px;
+        width: 100%;
+        font-size: 1.2rem;
+        transition: background-color 0.5s ease-out, box-shadow 0.2s ease-in;
+    }
 }
 .verifyWindow {
     width: clamp(300px, 90%, 400px); z-index: 5;
@@ -460,17 +526,17 @@ height: 100%;*/
     flex-flow: column; border-radius: 20px;
     box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7);
     transition: transform 0.5s ease-in;
-}
-.verifyWindow .inner {
-    padding: 20px;
-}
-.verifyWindow h1 {
-    color: #F39C12;
-    margin:0;
-}
-.verifyWindow p {
-    color: rgb(182, 182, 182);
-    font-size: 1.2rem;
+    .inner {
+        padding: 20px;
+    }
+    h1 {
+        color: #F39C12;
+        margin:0;
+    }
+    p {
+        color: rgb(182, 182, 182);
+        font-size: 1.2rem;
+    }
 }
 #loader {
     display: block; width: 50px; height: 50px;
@@ -524,9 +590,9 @@ height: 100%;*/
 }
 .managePost {
     display: flex; flex: 50%;
-}
-.managePost .smileButton {
-    background-color: $paleSmile; justify-content: center;
+    .smileButton {
+        background-color: $paleSmile; justify-content: center;
+    }
 }
 
 .fileProgressBar {
@@ -634,6 +700,22 @@ height: 100%;*/
     background-size: 40px 40px;
     background-color: $teaColor;
     border-radius: 20px 0 0 20px;
+}
+.postPage {
+    display: flex; justify-content: center;
+    .mediaCard {
+        width: clamp(400px, 100%, 600px); 
+    }
+    .postNotFound {
+        button {
+            outline: none; border: none; padding: 15px 20px;
+            font-size: 1.4rem; color: #fff; background-color: #7bbde9;
+            transition: background-color 0.3s ease-in;
+            &:hover {
+                background-color: #3498DB;
+            }
+        }
+    }
 }
 
 .mediaCard {
@@ -802,18 +884,18 @@ height: 100%;*/
 }
 .comment {
     color: #9e9e9e; padding: 5px 10px;
-}
-.comment a {
-    text-decoration: none;
-}
-.comment .content {
-    color: $lightText;
-    font-weight: normal;
-    word-break: break-word;
-}
-.comment span:first-child {
-    color: $teaColor; font-weight: bold;
-    font-size: 1.2rem;
+    a {
+        color: $teaColor; font-weight: bold;
+        font-size: 1.1rem; text-decoration: none;
+    }
+    .cDelete {
+        font-weight: normal; margin: 0; cursor: pointer;
+    }
+    .content {
+        color: $lightText;
+        font-weight: normal;
+        word-break: break-word;
+    }
 }
 
 .smileButton {

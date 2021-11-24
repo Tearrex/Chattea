@@ -187,7 +187,7 @@ function Signup(props) {
                 }
                 <form onSubmit={(e) => handle_email(e)}>
                     <input ref={emailInput} type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                    <input type="submit" value={linkSent === false ? "Send" : "Dismiss"} />
+                    <input type="submit" value={linkSent === false ? "Send Link" : "Dismiss"} />
                 </form>
             </div>
         </div>

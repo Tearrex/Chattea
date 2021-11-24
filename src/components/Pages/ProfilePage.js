@@ -42,7 +42,7 @@ function ProfilePage(props) {
                 //setFocus(__user.user_id);
                 setBio(__user.about);
                 setOrigBio(__user.about);
-                setJoinDate(__user.join_date);
+                setJoinDate(__user.joined);
                 if (__user.banner !== "") {
                     setBanner(__user.banner); setOrigBanner(__user.banner);
                 }
@@ -57,7 +57,7 @@ function ProfilePage(props) {
                 //setFocus(__user.user_id);
                 setBio(__user.about);
                 setOrigBio(__user.about);
-                setJoinDate(__user.join_date);
+                setJoinDate(__user.joined);
                 if (__user.banner !== "") {
                     setBanner(__user.banner); setOrigBanner(__user.banner);
                 }
@@ -84,7 +84,7 @@ function ProfilePage(props) {
         }
         if(isUserSelf === true)
         {
-            bannerChanger.current.style.opacity = "1";
+            bannerChanger.current.style.opacity = null;
             pfpChanger.current.style.display = "block";
         }
         else
@@ -101,7 +101,7 @@ function ProfilePage(props) {
             //setFocus(__user.user_id);
             setBio(__user.about);
             setOrigBio(__user.about);
-            setJoinDate(__user.join_date);
+            setJoinDate(__user.joined);
             if (__user.banner !== "") {
                 setBanner(__user.banner); setOrigBanner(__user.banner);
             }
@@ -116,7 +116,7 @@ function ProfilePage(props) {
             //setFocus(__user.user_id);
             setBio(__user.about);
             setOrigBio(__user.about);
-            setJoinDate(__user.join_date);
+            setJoinDate(__user.joined);
             if (__user.banner !== "") {
                 setBanner(__user.banner); setOrigBanner(__user.banner);
             }

@@ -1,11 +1,13 @@
 import { useContext, useState, useEffect } from "react";
 import { MembersContext, UserContext } from "./UserContext";
 import { Link } from "react-router-dom";
+import { deleteDoc, doc } from "@firebase/firestore";
+import { _dbRef } from "./firebase";
 function Comment(props)
 {
     const {_user, _setUser} = useContext(UserContext);
     const {_users, _setUsers} = useContext(MembersContext);
-    const {date, content, user_id} = props.comment;
+    const {date, content, user_id, id} = props.comment;
 
     const [pfp, setPfp] = useState("/default_user.png");
     const [username, setUsername] = useState("LOADING");
@@ -21,8 +23,16 @@ function Comment(props)
             setUsername(_users[user_id].username);
         }
     }, [_users, _user]);
+    async function delete_comment()
+    {
+        console.log(props.postID + " comment id: " + id);
+        const commentRef = doc(_dbRef, "posts/"+props.postID+"/comments/"+id);
+        await deleteDoc(commentRef);
+    }
     return (
         <div className="comment">
+            {(_user !== undefined && _user.role === "admin") ?
+            <span className="cDelete" onClick={delete_comment}>🗑️</span> : null}
             <Link to={"/profile/" + user_id}><span>{username}</span></Link> said <span className="content">{content}</span>
         </div>
     )

@@ -81,9 +81,23 @@ function MediaPost(props)
         const abort = new AbortController();
         if(image_url !== undefined && image_url !== "")
         {
-            if (imageNest.current.getElementsByTagName("img").length > 0)
+            var _oldImage = imageNest.current.getElementsByTagName("img");
+            if (_oldImage.length > 0)
             {
-                console.log("image already exists!"); return;
+                console.log("Replace image is",props.replaceImg);
+                if(props.replaceImg !== true)
+                {
+                    console.log("image already exists!"); return;
+                }
+                else
+                {
+                    // doesnt need a for loop, but im planning on
+                    // allowing multiple images later on...
+                    for(let i = 0; i < _oldImage.length; i++)
+                    {
+                        imageNest.current.removeChild(_oldImage[i]);
+                    }
+                }
             }
             console.log("loading post image...");
             var img = new Image();
@@ -157,8 +171,10 @@ function MediaPost(props)
     async function handle_comment(e)
     {
         e.preventDefault();
-        var result = await post_comment(comment, postID, _user["user_id"]);
-        if(result === true) textInput.current.value = "";
+        var _comment = comment;
+        setComment("");
+        var result = await post_comment(_comment, postID, _user["user_id"], user_id);
+        //if(result === true) textInput.current.value = "";
     }
     function change_comment(e)
     {
@@ -183,6 +199,13 @@ function MediaPost(props)
         commentBox.current.style.display = "flex";
         textInput.current.focus();
         commentBox.current.style.display = null;
+    }
+    function send_commenters_to_cache(commenters)
+    {
+        console.log("received commenters",commenters);
+        requestAnimationFrame(() => {
+            props.toCache(commenters);
+        })
     }
     return (
         <div className="mediaCard" onClick={() => console.log("POST: " + props.postID + " AUTHOR: " + props.authorID)}>
@@ -244,7 +267,7 @@ function MediaPost(props)
                                 onChange={(e) => change_comment(e)} placeholder="Type your comment..." />
                             <input ref={commentSub} className="stealthBtn" type="submit" value=""/>
                         </form>
-                        <Comments postID={postID} authorID={postID}/>
+                        <Comments postID={postID} authorID={postID} toCache={(e) => send_commenters_to_cache(e)}/>
                     </div>
                     <span className="timestamp">Posted {postDate}</span>
                 </div>

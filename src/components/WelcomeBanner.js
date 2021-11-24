@@ -6,6 +6,7 @@ import { UserContext } from './UserContext';
 import { Link } from 'react-router-dom';
 import EmailVerifier from './EmailVerifier';
 import { updateEmail, sendEmailVerification, getAuth } from '@firebase/auth';
+import NotificationChild from './NotificationChild';
 function WelcomeBanner (props)
 {
     const navigate = useNavigate();
@@ -33,9 +34,8 @@ function WelcomeBanner (props)
                     style={{transform:_user === undefined ? "translateX(200%)" : "translateX(0%)",
                         marginRight:"10px"}}>
                 {/**<span>Hello,</span> */}
-                <Link to={"/profile/" + user_id}>
-                    <img className="pfp" style={{objectFit:"cover"}} src={pfp} onLoad={make_entry}/>
-                </Link>
+                <img className="pfp" style={{objectFit:"cover", cursor:"pointer"}} src={pfp}
+                    onLoad={make_entry} onClick={(e) => navigate("/profile/" + user_id)}/>
                 <div className="userOptions">
                     <p>▼</p>
                     <div className="mpContent">
@@ -45,7 +45,10 @@ function WelcomeBanner (props)
                         <button className="logout stealthBtn" onClick={() => {logout(); _setUser(undefined); navigate("/");}}>log out</button>
                     </div>
                 </div>
-                
+                <div className="notifMain" onClick={props.notifEvent}>
+                        <p>🔔</p>
+                        <span style={{backgroundColor:(props.notifCount === 0) ? "#8f8f8f": "#E74C3C"}}>{props.notifCount}</span>
+                    </div>
                 {/**<span style={{marginRight:"10px"}}>{name}</span> */}
             </div>
 

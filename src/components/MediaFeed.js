@@ -35,13 +35,7 @@ function MediaFeed (props)
                             //console.log("getting billed by Google!");
                             var _json = snapshot.data();
                             _toCache[cache[i]] = {
-                                //user_id: _user.id,
-                                username: _json["username"],
-                                pfp: _json["pfp"],
-                                join_date: _json["joined"],
-                                about: _json["about"],
-                                banner: _json["banner"],
-                                buddies: _json["buddies"]
+                                user_id: snapshot.id,..._json
                             }
                             console.log("added to cache", _toCache);
                         }
@@ -86,7 +80,7 @@ function MediaFeed (props)
             if(snap.docs.length === 0) console.log("no posts left");
             snap.forEach((s) => {
                 var data = s.data();
-                //console.log(s.id);
+                //console.log(s);
                 if(_new === null) _new = s;
                 else _old = s;
                 _posts = {..._posts, [s.id]:data};
@@ -105,14 +99,6 @@ function MediaFeed (props)
             //console.log("created nest",nest);
         });//.finally(_setPosts(_posts));
     }
-    useEffect(() => {
-        if(newDoc !== null)
-        {
-            //console.log(typeof(newDoc));
-            console.log("Latest Post:",newDoc);
-        }
-        //else console.log("new doc is null", newDoc);
-    }, [newDoc]);
 
     const col = collection(_dbRef, 'posts');
     if(props.focus === undefined)
@@ -129,13 +115,10 @@ function MediaFeed (props)
     useEffect(() => {
         if(livePosts !== undefined && livePosts.docs.length > 0)
         {
-            console.log("COXXXXXXXXXXXXXXXXXXXXXX");
-            //console.log(livePosts.docs);
             requestAnimationFrame(() => {
                 var _latest = null;
                 var _newBatch = {};
                 livePosts.docs.forEach((s) => {
-                    console.log("live: LIVE I SAID", s.data());
                     if(_latest === null) _latest = s;
                     var _postData = s.data();
                     _newBatch[s.id] = _postData;
@@ -147,7 +130,7 @@ function MediaFeed (props)
         }
     }, [livePosts]);
     useEffect(() => {
-        if(_user !== undefined && _user["user_id"] !== undefined) next_batch();
+        if(_user !== undefined && _user.user_id !== undefined) next_batch();
     }, [props.focus, _user]);
     useEffect(() => {
         if(Object.keys(posts).length > 0)
@@ -180,6 +163,20 @@ function MediaFeed (props)
         delete temp[postID];
         _setPosts(temp);
     }
+    function send_commenters_to_cache(commenters)
+    {
+        requestAnimationFrame(() => {
+            var _cache = [];
+            for(let i = 0; i < commenters.length; i++)
+            {
+                if(commenters[i] !== _user.user_id && !cache.includes(commenters[i]) && _users[commenters[i]] === undefined)
+                {
+                    _cache.push(commenters[i]);
+                }
+            }
+            if(_cache.length > 0) setCache([...cache, ..._cache]);
+        });
+    }
     function cache_user(post)
     {
         /*if((post[1].user_id !== _user["user_id"] && _user["user_id"] !== undefined) && !cache.includes(post[1].user_id))
@@ -187,7 +184,7 @@ function MediaFeed (props)
             //console.log(postContent["user_id"] + " != " + _user["user_id"]);
             setCache([...cache, post[1].user_id]);
         }*/
-        return (<MediaPost onDelete={(e) => delete_post(post[0])}key={post[0]} msg={post[1]} postID={post[0]} authorID={post[1].user_id}/>)
+        return (<MediaPost toCache={(e) => send_commenters_to_cache(e)} onDelete={(e) => delete_post(post[0])}key={post[0]} msg={post[1]} postID={post[0]} authorID={post[1].user_id}/>)
     }
     return (
         /*(Object.entries(posts).length === 0) ? (<p>Loading...</p>) : (

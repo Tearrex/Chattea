@@ -10,6 +10,7 @@ import ProfilePage from './components/Pages/ProfilePage';
 import "./components/Styles/Home.scss";
 import "./components/Styles/Splash.css";
 import "./components/Styles/UserProfile.css";
+import BriefPost from './components/Pages/BriefPost';
 function App() {
 
   const currentUser = useAuth();
@@ -41,13 +42,7 @@ function App() {
           setUserID(currentUser.uid);
           _setUser({
             user_id: currentUser.uid,
-            username: _user["username"],
-            pfp: _user["pfp"],
-            join_date: _user["joined"],
-            banner: _user["banner"],
-            about: _user["about"],
-            buddies: _user["buddies"],
-            role: _user["role"]
+            ..._user
           });
         }
       });
@@ -72,6 +67,7 @@ function App() {
               {/* make a whole page component for the main feed */}
               <Route path="/main" element={<Home/>}/>
               <Route exact path="/profile/:user_id" element={<ProfilePage/>}/>
+              <Route exact path="/post/:post_id" element={<BriefPost />}/>
             </Routes>
           </div>
         </MembersContext.Provider>

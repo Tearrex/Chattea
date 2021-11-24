@@ -1,11 +1,12 @@
-import { useContext, useRef } from "react";
 import Comment from "./Comment";
-import { MembersContext, UserContext } from "./UserContext";
-import { getDoc, getDocs, doc, where, startAfter, startAt, endAt, endBefore, query, collection, orderBy, limit } from '@firebase/firestore';
+import { query, collection, orderBy, limit, setDoc, doc, getDoc } from '@firebase/firestore';
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { _dbRef } from "./firebase";
 import { addDoc, serverTimestamp } from "@firebase/firestore";
-async function post_comment(text, postID, user_id)
+import { ref } from "@firebase/storage";
+import { useContext, useEffect, useState } from "react";
+import { MembersContext, UserContext } from "./UserContext";
+async function post_comment(text, postID, user_id, author_id)
 {
     if(text.trim() === "") return;
     try
@@ -17,6 +18,21 @@ async function post_comment(text, postID, user_id)
             user_id: user_id
         });
         console.log("Added comment " + docRef.id);
+        if(user_id !== author_id)
+        {
+            // add notification for authot
+            //doc(_dbRef, "users/"+ _user.user_id + "/smiles/" + newPost.id)
+            const _doc = doc(_dbRef, "users/"+author_id+"/notifications/"+postID);
+            try {
+                await setDoc(_doc, {
+                    type: "comment",
+                    date: serverTimestamp()
+                });
+                console.log("user has been notified!");
+            } catch (error) {
+                console.log("failed to notify user");
+            }
+        }
         return true;
     }
     catch (e){console.log(e); return false;}
@@ -24,33 +40,33 @@ async function post_comment(text, postID, user_id)
 export {post_comment};
 function Comments(props)
 {
-    const {_user, _setUser} = useContext(UserContext);
-    const {_users, _setUsers} = useContext(MembersContext);
-
     const _col = collection(_dbRef, 'posts/'+props.postID+"/comments");
     const _query = query(_col, orderBy('date','desc'), limit(5));
     const [_comments] = useCollectionData(_query, {idField: 'id'});
-    const textInput = useRef();
-    async function post_comment(e)
-    {
-        e.preventDefault();
-        if(String(textInput.current.value).trim() === "") return;
-        try
+    const {_user, _setUser} = useContext(UserContext);
+    const {_users, _setUsers} = useContext(MembersContext);
+    
+    useEffect(() => {
+        if(_comments !== undefined && _comments.length > 0)
         {
-            // now post!
-            const docRef = await addDoc(collection(_dbRef, "posts/"+props.postID+"/comments"), {
-                content: textInput.current.value,
-                date: serverTimestamp(),
-                user_id: _user.user_id
+            var _cache = [];
+            _comments.forEach((c) => {
+                if(c.user_id !== _user.user_id && _users[c.user_id] === undefined && !_cache.includes(c.user_id))
+                {
+                    _cache.push(c.user_id);
+                }
             });
-            console.log("Added comment " + docRef.id);
-            textInput.current.value = "";
+            if(_cache.length > 0)
+            {
+                requestAnimationFrame(() => {
+                    props.toCache(_cache);
+                });
+            }
         }
-        catch (e){console.log(e);}
-    }
+    }, [_comments]);
     function display_comment(comment)
     {
-        return (<Comment key={comment.id} comment={comment}/>);
+        return (<Comment key={comment.id} comment={comment} postID={props.postID}/>);
     }
     return (
         <div className="commentSection">
