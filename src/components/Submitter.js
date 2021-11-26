@@ -96,6 +96,7 @@ function Submitter(props)
     {
         e.preventDefault();
         if(!currentUser || canSave === false) return;
+        if(uploading || compressing) return;
         if (_text.trim() === "" && file === null) return;
         //_setText("");
         const newPost = doc(collection(_dbRef, "posts"));

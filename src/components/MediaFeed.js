@@ -20,14 +20,14 @@ function MediaFeed (props)
     useEffect(() => {
         if(cache.length > 0)
         {
-            //console.log("CACHE CALLED");
-            //console.log(cache);
             var _toCache = {};
             for(let i = 0; i < cache.length; i++)
             {
                 if(_users[cache[i]] === undefined && cache[i] !== _user.user_id && _user.user_id !== undefined)
                 {
-                    //console.log("user missing from cache");
+                    if (_toCache[cache[i]] !== undefined) continue;
+                    //console.log("userss missing from cache");
+                    
                     const userRef = doc(_dbRef, "users", cache[i]);
                     getDoc(userRef).then((snapshot) => {
                         if(snapshot.exists())
@@ -37,16 +37,18 @@ function MediaFeed (props)
                             _toCache[cache[i]] = {
                                 user_id: snapshot.id,..._json
                             }
-                            console.log("added to cache", _toCache);
+                            console.log("ADDED to cache", _toCache);
                         }
                         else console.log("COULDNT FIND " + cache[i]);
+                        // set users here on last iteration
                         if(i === cache.length - 1)
                         {
-                            //console.log("final cache result", _toCache);
                             _setUsers( {..._users, ..._toCache});
+                            //console.log("members context set!", _toCache);
                         }
                     }).catch((error) => {alert(error)});
                 }
+                
             }
         }
     }, [cache]);
@@ -84,7 +86,7 @@ function MediaFeed (props)
                 if(_new === null) _new = s;
                 else _old = s;
                 _posts = {..._posts, [s.id]:data};
-                if(data.user_id !== _user.user_id && !cache.includes(data.user_id))
+                if(data.user_id !== _user.user_id && !cache.includes(data.user_id) && !_toCache.includes(data.user_id))
                 {
                     _toCache.push(data.user_id);
                 }

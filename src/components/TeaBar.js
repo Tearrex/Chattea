@@ -4,13 +4,15 @@ import WelcomeBanner from "./WelcomeBanner";
 import Signup from "./Signup";
 import { Link } from "react-router-dom";
 import { useContext, useEffect, useState, useRef } from "react";
-import { UserContext } from "./UserContext";
+import { MembersContext, UserContext } from "./UserContext";
 import NotificationChild from "./NotificationChild";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import { collection, limit, orderBy, query } from "@firebase/firestore";
+import { collection, getDoc, limit, orderBy, query, doc } from "@firebase/firestore";
+import { toComputedKey } from "@babel/types";
 function TeaBar ()
 {
     const {_user, _setUser} = useContext(UserContext);
+    const {_users, _setUsers} = useContext(MembersContext);
     const currentUser = useAuth();
 
     const _col = collection(_dbRef, 'users/'+(_user !== undefined ? _user["user_id"] : "n")+"/notifications");
@@ -18,10 +20,67 @@ function TeaBar ()
     const [notifs] = useCollectionData(_query, {idField: 'id'});
     const [notifCount, setNotifCount] = useState(0);
     const notifNest = useRef();
+
+    const [cache, setCache] = useState([]);
+    const [hasCached, setHasCached] = useState(false);
+    function check_cache()
+    {
+        if(cache.length > 0)
+        {
+            var _toCache = {};
+            for (let i = 0; i < cache.length; i++)
+            {
+                if(_users[cache[i]] === undefined && cache[i] !== _user.user_id)
+                {
+                    if (_toCache[cache[i]] !== undefined) continue;
+                    const userRef = doc(_dbRef, "users", cache[i]);
+                    getDoc(userRef).then((snapshot) => {
+                        if(snapshot.exists())
+                        {
+                            //console.log("getting billed by Google!");
+                            var _json = snapshot.data();
+                            _toCache[cache[i]] = {
+                                user_id: snapshot.id,..._json
+                            }
+                            console.log("ADDED to cache (notification)", _toCache);
+                        }
+                        else console.log("COULDNT FIND " + cache[i]);
+                        // set users here on last iteration
+                        if(i === cache.length - 1)
+                        {
+                            _setUsers( {..._users, ..._toCache});
+                            //console.log("members context set!", _toCache);
+                        }
+                    }).catch((error) => {alert(error)});
+                }
+            }
+        }
+    }
+    useEffect(() => {
+        if(hasCached) check_cache();
+    }, [hasCached]);
+    useEffect(() => {
+        if(cache.length > 0 && hasCached)
+        {
+            check_cache();
+        }
+    }, [cache]);
     useEffect(() => {
         if(notifs !== undefined)
         {
             setNotifCount(notifs.length);
+            var _toCache = [];
+            notifs.forEach((s) => {
+                console.log("notif",s);
+                if(s.type === "buddy" && _users[s.id] === undefined && !cache.includes(s.id) && !_toCache.includes(s.id))
+                {
+                    _toCache.push(s.id);
+                }
+            });
+            if(_toCache.length > 0)
+            {
+                setCache(cache.concat(_toCache));
+            }
         }
     }, [notifs]);
     function toggle_notif_nest()
@@ -33,6 +92,7 @@ function TeaBar ()
         else
         {
             notifNest.current.style.display = "flex";
+            if(!hasCached) setHasCached(true);
         }
     }
     return (

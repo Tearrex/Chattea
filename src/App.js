@@ -9,7 +9,7 @@ import TeaBar from './components/TeaBar';
 import ProfilePage from './components/Pages/ProfilePage';
 import "./components/Styles/Home.scss";
 import "./components/Styles/Splash.css";
-import "./components/Styles/UserProfile.css";
+import "./components/Styles/UserProfile.scss";
 import BriefPost from './components/Pages/BriefPost';
 function App() {
 

@@ -5,6 +5,7 @@ import { updateDoc, doc } from "firebase/firestore";
 import { useAuth, _storageRef, _dbRef } from "../firebase";
 import { uploadBytesResumable, ref, getDownloadURL } from "firebase/storage";
 import { useParams } from "react-router";
+import BuddyButton from "../BuddyButton";
 function ProfilePage(props) {
     const { _user, _setUser } = useContext(UserContext);
     const { _users, _setUsers } = useContext(MembersContext);
@@ -23,6 +24,10 @@ function ProfilePage(props) {
     const [origBanner, setOrigBanner] = useState("");
     const [bannerSaved, setBannerSaved] = useState(false);
     // name
+    /*
+    Instead of using states for original values, utilize
+    the user's context and update on top of that instead
+    */
     const [inputName, setName] = useState("");
     const [bioText, setBio] = useState("");
     const [origBio, setOrigBio] = useState("");
@@ -67,6 +72,7 @@ function ProfilePage(props) {
     const profileCard = useRef();
     const bannerChanger = useRef();
     const pfpChanger = useRef();
+    const [buddies, setBuddies] = useState(0);
     useEffect(() => {
         console.log("PASSED ID HEREE ->>>", user_id);
         if(_user !== undefined) profile_cleanup();
@@ -80,6 +86,7 @@ function ProfilePage(props) {
         //console.log("user is self?", isUserSelf);
         for(let i = 0; i < inputs.length; i++)
         {
+            if(inputs[i].className === "addBuddy") continue;
             inputs[i].disabled = !isUserSelf;
         }
         if(isUserSelf === true)
@@ -97,6 +104,7 @@ function ProfilePage(props) {
             //console.log("User's profile", __user);
             setName(__user.username);
             setUserPfp(__user.pfp);
+            setBuddies(__user.buddies.length);
             setOrigPfp(__user.pfp);
             //setFocus(__user.user_id);
             setBio(__user.about);
@@ -112,6 +120,7 @@ function ProfilePage(props) {
             console.log("Author's profile", __user);
             setName(__user.username);
             setUserPfp(__user.pfp);
+            setBuddies(__user.buddies.length);
             setOrigPfp(__user.pfp);
             //setFocus(__user.user_id);
             setBio(__user.about);
@@ -287,11 +296,11 @@ function ProfilePage(props) {
             saveOptions.current.style.display = "flex";
         }
         else {
-            if(uploading === false)saveOptions.current.style.display = "none";
+            if(uploading === false) saveOptions.current.style.display = "none";
         }
     }, [canSave]);
     useEffect(() => {
-        if(uploading === false)saveOptions.current.style.display = "none";
+        if(uploading === false) saveOptions.current.style.display = "none";
     }, [uploading]);
     const inputRef = useRef();
     const bannerRef = useRef();
@@ -331,6 +340,14 @@ function ProfilePage(props) {
                     </div>
                     <div className="userInfo">
                         <p>Joined <span>{joinDate}</span></p>
+                        <div className="buddyInfo">
+                            <div className="buddies">
+                                <span>👥</span>
+                                <p>{buddies}</p>
+                            </div>
+                            {(_user !== undefined && _user.user_id !== user_id) ?
+                            <BuddyButton buddy={user_id}/> : null}
+                        </div>
                     </div>
                 </div>
                 <MediaFeed focus={user_id} />

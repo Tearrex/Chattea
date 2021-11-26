@@ -29,6 +29,25 @@
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
 }
+.userBadge {
+    display: flex; flex-flow: row; align-items: center; gap: 5px;
+    flex-shrink: 0; flex-basis: fit-content;
+    div {
+        height: 50px; width: 50px; border-radius: 50%; flex-shrink: 0;
+        background-color: #E74C3C; background-position: center;
+        background-repeat: no-repeat; background-size: cover;
+    }
+    span {
+        color: #E74C3C;
+        /*&::after {
+            color: #fff; font-size: 1.3rem;
+            content: " made you their buddy";
+        }*/
+    }
+    p {
+        margin: 0;
+    }
+}
 .userProfile {
     justify-self: center; width: 100%;
     display: flex; flex-direction: column;
@@ -41,7 +60,7 @@
 #mainProfile, .mainProfile {
     justify-self: center; width: clamp(400px, 100%, 700px);
     display: flex; flex-direction: column;
-    /*flex-wrap: wrap;*/
+    overflow: hidden;
     width: clamp(300px, 400px, 90%);
     background-color: #1e1e1e;
 }
@@ -174,14 +193,44 @@
     color: rgb(98,98,98);
 }
 .userInfo {
-    background-color: #c6c6c6;
+    background-color: #c6c6c6; gap: 10px;
+    display: flex; flex-flow: row; justify-content: center;
+    padding: 10px; align-items: center;
+    .buddyInfo {
+        display: flex; flex: 50%; align-items: center; flex-flow: row;
+        justify-content: center; gap: 20px;
+        .buddies {
+            display: flex; flex-flow: row; align-items: center;
+            span {
+                font-size: 1.5rem;
+            }
+        }
+    }
+    p {
+        font-size: 1.2rem; color: #fff;
+        &:first-child {
+            flex: 50%;
+        }
+    }
+    span {
+        color:#5d5d5d;
+        font-weight: bold;
+    }
 }
-.userInfo p {
-    font-size: 1.2rem; color: #fff;
-}
-.userInfo span {
-    color:#5d5d5d;
-    font-weight: bold;
+.buddyBtn {
+    flex-shrink: 0;
+    & + input:checked {
+        display: none;
+    }
+    input {
+        display: none;
+    }
+    span {
+        color: #fff; background-color: #E67E22; padding: 10px 15px;
+    }
+    input:checked + span {
+        background-color: #414141;
+    }
 }
 .actions {
     display: flex; z-index: 2;
