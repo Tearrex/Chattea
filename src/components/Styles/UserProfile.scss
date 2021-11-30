@@ -1,9 +1,28 @@
-.cozy {
-    z-index: 999; width: 100%;
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
+.flyingSaucer {
+    z-index: 5;
     transition: transform 1s ease;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    border-radius: 20px;
+    overflow: hidden;
+    transform: translate(-50%, -50%);
+    width: clamp(200px, 90%, 350px);
+    background-color: rgb(246, 246, 246);
+    box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.7);
+    .popup {
+        padding: 10px;
+    }
+    .cozy {
+        z-index: 10; width: 100%;
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        transition: transform 1s ease;
+    }
+}
+.cozy {
+    
 }
 .cozy div {
     display: flex; gap: 10px;
