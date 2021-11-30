@@ -27,19 +27,17 @@ function App() {
       }
     )
   }, [])*/
-  const [user_id, setUserID] = useState("");
   const [_username, setUsername] = useState("");
   const[_pfp, setPfp] = useState("default_user.png");
   useEffect(() => {
-    if(currentUser !== null && currentUser !== undefined && user_id === "")
+    if(currentUser !== null && currentUser !== undefined)
     {
-      // get the current user's ID for future reference
+      // get the current user's data for future reference
       const docRef = doc(_dbRef, "users", currentUser.uid);
       getDoc(docRef).then((s) => {
         if(s.exists())
         {
           var _user = s.data();
-          setUserID(currentUser.uid);
           _setUser({
             user_id: currentUser.uid,
             ..._user

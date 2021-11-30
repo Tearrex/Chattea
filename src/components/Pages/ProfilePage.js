@@ -200,7 +200,7 @@ function ProfilePage(props) {
         //closePopup();
     }
     function submit_changes() {
-        if (canSave === false || uploading === true) return;
+        if (!canSave || uploading) return;
         if (userPfp !== origPfp) {
             // upload new pfp
             console.log("uploading profile picture");

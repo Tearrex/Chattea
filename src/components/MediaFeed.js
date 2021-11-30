@@ -95,11 +95,10 @@ function MediaFeed (props)
                 setCache(cache.concat(_toCache))
             });
             if(newDoc === null) setNewDoc(_new);
-            else console.log("cant replace new doc", newDoc);
+            //else console.log("cant replace new doc", newDoc);
             setOldDoc(_old);
             _setPosts(_posts);
-            //console.log("created nest",nest);
-        });//.finally(_setPosts(_posts));
+        });
     }
 
     const col = collection(_dbRef, 'posts');
