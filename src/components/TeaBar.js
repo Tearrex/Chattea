@@ -113,7 +113,7 @@ function TeaBar ()
             <div ref={notifNest} className="notifNest" style={{display:"none"}}>
 
                 {(notifs === undefined || notifs.length === 0) ?
-                    <NotificationChild msg="You have no notifications" info={{}}placeholder={true}/> :
+                    <NotificationChild msg="You have no notifications" info={{}}placeholder={true} onClick={toggle_notif_nest}/> :
 
                     notifs.map((n) => {
                         return <NotificationChild key={n.id} info={n} user={_user.user_id} onClick={toggle_notif_nest}/>

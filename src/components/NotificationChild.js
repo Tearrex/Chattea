@@ -31,8 +31,8 @@ function NotificationChild (props)
     //console.log(props.info);
     function notif_interact()
     {
+        if (props.onClick !== undefined) props.onClick();
         if (props.placeholder === true) return;
-        props.onClick();
         if(type === "comment") navigate("post/"+id);
         else navigate("profile/"+id);
         delete_notif();
