@@ -196,7 +196,7 @@ function Signup(props) {
     return (
         <div style={{ overflow: "hidden" }}>
             {!currentUser ? <button className="signinBtn" onClick={show}>Already a member?</button> : null}
-            <div ref={overlayBG} className="overlay" onClick={closePopup} style={{ display: "none", opacity: "0" }} onTransitionEnd={(e) => dismiss_overlay(e)} />
+            <div ref={overlayBG} className="overlay" onClick={closePopup} style={{ display: "none", opacity: "0", zIndex:"5" }} onTransitionEnd={(e) => dismiss_overlay(e)} />
             <div ref={saucerRef} className="flyingSaucer" style={{ transform: "translate(50vw, -50%)" }}>
                 <div ref={popupRef} className="popup">
                     <form ref={formRef} className="loginForm" onSubmit={handleLogin} style={{ transform: "translateX(0)" }}>

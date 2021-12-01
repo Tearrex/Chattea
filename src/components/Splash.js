@@ -137,20 +137,27 @@ function Splash() {
         }
     }
     return (
-        <div className="splashNet">
-            <div className="splash" style={{ backgroundImage: "url('network.png')" }}></div>
-            <div className="splashRegister">
-
-                <p className="splashSub">Start <span>brewing</span> your memories</p>
-                <form onSubmit={(e) => advance_form(e)}>
-                    <div ref={expandForm} style={{ maxHeight: formHeight + "px" }}>
-                        <input ref={nameField} type='text' placeholder='Your Name' value={nameInput} onChange={(e) => name_input(e)} />
-                        <input ref={emailField} type='email' placeholder='Email Address' value={emailInput} onChange={(e) => setEmail(e.target.value)} />
-                        <input ref={passField} type='password' placeholder='Create Password' value={passInput} onChange={(e) => setPass(e.target.value)} />
-                        <input ref={cpassField} type='password' placeholder='Repeat Password' value={cpassInput} onChange={(e) => setCpass(e.target.value)} />
-                    </div>
-                    <input type='submit' value={submitText} style={{ opacity: loading === true ? "0.5" : "1" }} />
-                </form>
+        <div className="splashBody">
+            <div className="splashNet">
+                <div className="splash" style={{ backgroundImage: "url('network.png')" }}></div>
+                <div className="splashRegister">
+                    <p className="splashSub">Start <span>brewing</span> your memories</p>
+                    <form onSubmit={(e) => advance_form(e)}>
+                        <div ref={expandForm} style={{ maxHeight: formHeight + "px" }}>
+                            <input ref={nameField} type='text' placeholder='Your Name' value={nameInput} onChange={(e) => name_input(e)} />
+                            <input ref={emailField} type='email' placeholder='Email Address' value={emailInput} onChange={(e) => setEmail(e.target.value)} />
+                            <input ref={passField} type='password' placeholder='Create Password' value={passInput} onChange={(e) => setPass(e.target.value)} />
+                            <input ref={cpassField} type='password' placeholder='Repeat Password' value={cpassInput} onChange={(e) => setCpass(e.target.value)} />
+                        </div>
+                        <input type='submit' value={submitText} style={{ opacity: loading === true ? "0.5" : "1" }} />
+                    </form>
+                </div>
+            </div>
+            <div className="other">
+                <button className="githuBtn" onClick={() => window.open("https://github.com/Tearrex/Chattea","_blank")}>
+                    <div/>
+                    <p>See the <span>code</span></p>
+                </button>
             </div>
         </div>
     );

@@ -59,6 +59,7 @@ function App() {
       <UserContext.Provider value={{_user, _setUser}}>
         <MembersContext.Provider value={{_users, _setUsers}}>
           <div id="main">
+            <div className={currentUser ? "passive light" : "passive dark"} />
             <TeaBar />
             <Routes>
               <Route path="/" element={<Splash />}/>

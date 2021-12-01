@@ -96,29 +96,31 @@ function TeaBar ()
         }
     }
     return (
-        <div className="teaBar">
-            <div className="welcomer" style={{position:null}}>
-                <div className="chattea" 
-                        style={{transform:currentUser? "translateX(0)" : "translateX(-50%)",
-                            left:currentUser?"0":"50%"}}>
-                    <p className="teaPrefix" style={{maxWidth:currentUser ? "0" : "100%"}}>Get</p>
-                    <div style={{gap:"10px"}}>
-                        <Link to={currentUser?"/main":"/"}><div style={{backgroundImage:"url('/tea.png')"}}></div></Link>
-                        <p>Chat<span>tea</span></p>
+        <div>
+            <div className="teaBar">
+                <div className="welcomer" style={{position:null}}>
+                    <div className="chattea" 
+                            style={{transform:currentUser? "translateX(0)" : "translateX(-50%)",
+                                left:currentUser?"0":"50%"}}>
+                        <p className="teaPrefix" style={{maxWidth:currentUser ? "0" : "100%"}}>Get</p>
+                        <div style={{gap:"10px"}}>
+                            <Link to={currentUser?"/main":"/"}><div style={{backgroundImage:"url('/tea.png')"}}></div></Link>
+                            <p>Chat<span>tea</span></p>
+                        </div>
+                        <p style={{opacity:currentUser ? "0" : "1"}}>with people!</p>
                     </div>
-                    <p style={{opacity:currentUser ? "0" : "1"}}>with people!</p>
+                    <WelcomeBanner notifEvent={toggle_notif_nest} notifCount={notifCount} pfp={_user !== undefined ? _user["pfp"] : ""}/>
                 </div>
-                <WelcomeBanner notifEvent={toggle_notif_nest} notifCount={notifCount} pfp={_user !== undefined ? _user["pfp"] : ""}/>
-            </div>
-            <div ref={notifNest} className="notifNest" style={{display:"none"}}>
+                <div ref={notifNest} className="notifNest" style={{display:"none"}}>
 
-                {(notifs === undefined || notifs.length === 0) ?
-                    <NotificationChild msg="You have no notifications" info={{}}placeholder={true} onClick={toggle_notif_nest}/> :
+                    {(notifs === undefined || notifs.length === 0) ?
+                        <NotificationChild msg="You have no notifications" info={{}}placeholder={true} onClick={toggle_notif_nest}/> :
 
-                    notifs.map((n) => {
-                        return <NotificationChild key={n.id} info={n} user={_user.user_id} onClick={toggle_notif_nest}/>
-                    })
-                }
+                        notifs.map((n) => {
+                            return <NotificationChild key={n.id} info={n} user={_user.user_id} onClick={toggle_notif_nest}/>
+                        })
+                    }
+                </div>
             </div>
             <Signup/>
         </div>

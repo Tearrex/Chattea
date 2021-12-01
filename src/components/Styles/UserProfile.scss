@@ -1,5 +1,5 @@
 .flyingSaucer {
-    z-index: 5;
+    z-index: 6;
     transition: transform 1s ease;
     position: fixed;
     top: 50%;
@@ -99,10 +99,8 @@
     opacity: 0.5;
 }
 .userAndPfp {
-    text-align: right; /*margin: 10px 10px 10px 0;*/
-    display: flex; align-items: center; padding-top: 10px; padding-right: 10px;
-    padding: 10px; flex-grow: 1;
-    justify-content: right; gap: 10px; background-color: #1e1e1e;
+    display: flex; align-items: center; text-align: right;
+    justify-content: right; gap: 10px; flex-shrink: 0;
 }
 .userAndPfp p {
     white-space: nowrap;
@@ -216,7 +214,7 @@
     display: flex; flex-flow: row; justify-content: center;
     padding: 10px; align-items: center;
     .buddyInfo {
-        display: flex; flex: 50%; align-items: center; flex-flow: row;
+        display: flex; align-items: center; flex-flow: row; flex-shrink: 0;
         justify-content: center; gap: 20px;
         .buddies {
             display: flex; flex-flow: row; align-items: center;
@@ -228,7 +226,7 @@
     p {
         font-size: 1.2rem; color: #fff;
         &:first-child {
-            flex: 50%;
+            flex: 100%;
         }
     }
     span {

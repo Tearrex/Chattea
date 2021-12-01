@@ -4,20 +4,22 @@
     flex-flow: column; gap: 10px;
     overflow: inherit;
 }
+.splashBody {
+    display: flex; flex-flow: column; justify-content: center;
+}
 .splashNet {
-    height: 300px; margin-top: 10px;
+    margin-top: 10px;
     display: flex; flex-direction: row;
     max-width:100%; flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    background-color: rgb(28,28,28);
+    /* background-color: rgb(28,28,28); */
 }
 .splash {
-    width: 300px;
+    width: 300px; height: 300px;
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
-    height: 100%;
     animation: breathe 10s infinite;
 }
 @keyframes breathe {

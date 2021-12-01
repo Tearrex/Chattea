@@ -1,4 +1,5 @@
 $teaColor: #E74C3C;
+$usercolor: #FF5733;
 $assetPath:"/assets/";
 
 $lightText:#f0f0f0;
@@ -12,7 +13,28 @@ $richSmile:#F5B041;
     flex-flow: column;
     gap: 10px;
 }
-
+.other {
+    display: flex; flex-flow: column; margin-top: 20px;
+}
+.githuBtn {
+    // i dont know why it took me so long to
+    // vertically center the button.....
+    margin-left: auto; margin-right: auto; background-color: #2b3137;
+    display: flex; flex-flow: row; justify-content: center; align-items: center;
+    border: none; outline: none; padding: 5px 10px; gap: 10px; color: #fff;
+    font-size: 1.2rem; font-weight: 300; border-radius: 10px;
+    transition: background-color 0.4s ease-out;
+    div {
+        width: 50px; height: 50px; background-image: url(#{$assetPath}/github.png);
+        background-position: center; background-size: cover; background-repeat: no-repeat;
+    }
+    &:hover {
+        background-color: #24292d;
+        span {
+            color: #0f0;
+        }
+    }
+}
 .homeWrapper {
     display: flex;
     width: 100%;
@@ -31,7 +53,17 @@ body {
     font-family: 'Trebuchet MS';
     margin: 0;
     overflow-x: hidden;
-    background-color: #000;
+    // background-color: #000;
+    .passive {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -5;
+        transition: background-image 1s ease;
+    }
+    .dark {
+        background-image: radial-gradient(#6b6b6b 35%, #3a3a3a 70%)
+    }
+    .light {
+        background-image: radial-gradient(#cacaca 35%, #919191 70%)
+    }
 }
 
 .welcomer {
@@ -60,7 +92,7 @@ body {
 }
 .teaBar {
     position: fixed; width: 100%;
-    z-index: 10; top: 0;
+    z-index: 5; top: 0;
     display: flex; flex-flow: column;
 }
 .chattea {
@@ -302,10 +334,14 @@ background-size: cover;*/
     border: none;
     font-size: 1.2rem;
     padding: 10px;
-    background: none;
+    background-color: rgba(0, 0, 0, 0);
     border-radius: 10px;
-    border: 2px solid #F39C12;
-    color: rgb(214, 214, 214);
+    border: 4px solid #F39C12;
+    color: #e2e2e2;
+    &:hover {
+        background-color: #F39C12;
+        color: #fff;
+    }
 }
 
 .loginTitle button, p {
@@ -362,7 +398,10 @@ background-size: cover;*/
 
 .loginForm {
     transition: transform 1s ease;
-    display: grid;
+    display: grid; gap: 10px;
+    input {
+        margin: 0;
+    }
 }
 
 .signupBtn {
@@ -504,7 +543,7 @@ height: 100%;*/
     }
 }
 .verifyWindow {
-    width: clamp(300px, 90%, 400px); z-index: 5;
+    width: clamp(300px, 90%, 400px); z-index: 16;
     position: fixed;
     top: 50%; left: 50%;
     transform: translate(-50%,-50%); padding: 20px;
@@ -602,15 +641,11 @@ height: 100%;*/
 
 #richImage {
     width: 100%;
-    object-fit: contain;
-    background-color: #1f1f1f;
+    background-color: #0f0f0f;
 }
 @media only screen and (min-width:400px) {
     .imgOverlay input {
         font-size: 1.4rem;
-    }
-    .userBadge {
-
     }
 }
 @media only screen and (max-height:400px) {
@@ -625,15 +660,10 @@ height: 100%;*/
         max-height: 450px;
     }
 }
-@media only screen and (min-height:500px) {
-    #richImage {
-        object-fit: contain;
-        max-height: 450px;
-    }
-}
 @media only screen and (min-height:700px) {
     #richImage {
-        object-fit: cover;
+        object-fit: contain;
+        max-height: 650px;
         // max-height: 700px;
     }
 }
@@ -641,18 +671,18 @@ height: 100%;*/
     width: 100%;
     max-height: 400px;
     object-fit: contain;
-    background-color: #a4a4a4;
+    background-color: #0f0f0f;
 }
 
 .imgOverlay {
-    width: 100%; z-index: 1;
-    position: absolute;
-    height: 100%;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    background-image: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0) 40%);
+    width: 100%; height: 100%; z-index: 1;
+    position: absolute; overflow: hidden;
+    transition: opacity 0.4s ease-out; opacity: 1;
+    display: flex; justify-content: center; align-items: flex-end;
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.6) 5%,rgba(0, 0, 0, 0) 20%);
+    &:hover {
+        opacity: 0;
+    }
 }
 .imgOverlay button {
     position: absolute;
@@ -711,12 +741,11 @@ height: 100%;*/
 .mediaCard {
     display: flex;
     justify-self: center;
-    align-items: center;
     flex-flow: column;
     flex-wrap: wrap;
     width: 100%;
     /*padding: 15px; border-radius: 20px*/
-    background-color: #e5e5e5;
+    background-color: #1e1e1e;
     min-width: 250px;
     transition: background-color 0.6s ease-out, box-shadow 0.4s ease-out
         /*, border-radius 0.5s ease*/
@@ -757,6 +786,7 @@ height: 100%;*/
 
 .timestamp {
     color: rgb(98,98,98);
+    background-color: #e5e5e5;
     margin: 0; padding: 10px 0;
     z-index: 1;
     display: block;
@@ -766,12 +796,6 @@ height: 100%;*/
     width: 100%; object-fit: cover; overflow: hidden;
     display: flex; position: relative;
 }
-.mediaPostImg img {
-    transition: transform 1s ease;
-}
-.mediaPostImg:hover img {
-    transform: scale(1.1);
-}
 .mediaPost:hover {
     /*border-radius: 10px;*/
     background-color: #fff;
@@ -779,13 +803,12 @@ height: 100%;*/
 
 .mediaContent {
     display: flex; flex: 100%;
-    background-color: #414141;
     flex-direction: column;
-    width: 100%; justify-content: center;
+    justify-content: center;
 }
 .mediaContent p {
     margin: 0; color:#f0f0f0;
-    padding: 0 10px; word-break: break-word;
+    word-break: break-word;
 }
 .mediaSecondary {
     width: 100%;
@@ -823,12 +846,9 @@ height: 100%;*/
     background-color: $paleSmile; cursor: default;
 }
 .postUserInfo {
-    text-align: center;
-    background-color: #fff;
-    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5); z-index: 1;
-    display: flex;
-    width: 100%;
-    align-items: stretch;
+    text-align: center; background-color: #1e1e1e;
+    // box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5); z-index: 1;
+    display: flex; align-items: stretch; padding: 10px;
 }
 
 .postUserInfo .username {
@@ -851,14 +871,13 @@ height: 100%;*/
     font-size: 1.2rem;
 }
 .commenter input[type="text"] {
-    flex: 100%; border-radius: 20px 0 0 20px;
+    flex: 100%;
 }
 .commenter input[type="submit"] {
     flex-shrink: 0; background-color: #F1C40F; color: #fff;
     background-image: url(#{$assetPath}/generated.svg);
     background-position: center; background-size: 50%;
     background-repeat: no-repeat; width: 60px;
-    border-radius: 0 20px 20px 0;
 }
 .commentSection {
     display: flex; flex-flow: column;
@@ -874,9 +893,9 @@ height: 100%;*/
 }
 .comment {
     color: #9e9e9e; padding: 5px 10px;
-    a {
+    .cUser {
         color: $teaColor; font-weight: bold;
-        font-size: 1.1rem; text-decoration: none;
+        font-size: 1.1rem; cursor: pointer;
     }
     .cDelete {
         font-weight: normal; margin: 0; cursor: pointer;
