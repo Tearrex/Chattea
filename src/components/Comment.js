@@ -3,8 +3,10 @@ import { MembersContext, UserContext } from "./UserContext";
 import { Link } from "react-router-dom";
 import { deleteDoc, doc } from "@firebase/firestore";
 import { _dbRef } from "./firebase";
+import { useNavigate } from "react-router";
 function Comment(props)
 {
+    const navigate = useNavigate();
     const {_user, _setUser} = useContext(UserContext);
     const {_users, _setUsers} = useContext(MembersContext);
     const {date, content, user_id, id} = props.comment;
@@ -29,11 +31,15 @@ function Comment(props)
         const commentRef = doc(_dbRef, "posts/"+props.postID+"/comments/"+id);
         await deleteDoc(commentRef);
     }
+    function visit_user()
+    {
+        navigate("/profile/" + user_id);
+    }
     return (
         <div className="comment">
             {(_user !== undefined && _user.role === "admin") ?
             <span className="cDelete" onClick={delete_comment}>🗑️</span> : null}
-            <Link to={"/profile/" + user_id}><span>{username}</span></Link> said <span className="content">{content}</span>
+            <span className="cUser" onClick={visit_user}>{username}</span> said <span className="content">{content}</span>
         </div>
     )
 }

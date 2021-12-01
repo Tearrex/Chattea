@@ -196,7 +196,7 @@ function Submitter(props)
                 <div ref={_progress}/>
             </div>
             <div id="fileNest" ref={fileNest} style={{maxHeight:"0", position:"relative"}}>
-                    <div className="imgOverlay">
+                    <div className="imgOverlay" style={{opacity:"1"}}>
                         <button onClick={remove_image}>🗑️</button>
                         <input type="text" value={caption} onChange={(e) => change_caption(e)}placeholder="Add a caption..." />
                     </div>

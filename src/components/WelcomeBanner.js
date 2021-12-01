@@ -1,11 +1,7 @@
 import { useContext, useRef, useState, useEffect } from 'react';
 import { logout, useAuth } from './firebase'
-import UserProfile from './UserProfile';
 import { useNavigate } from 'react-router';
 import { MembersContext, UserContext } from './UserContext';
-import { Link } from 'react-router-dom';
-import { updateEmail, sendEmailVerification, getAuth } from '@firebase/auth';
-import NotificationChild from './NotificationChild';
 function WelcomeBanner (props)
 {
     const navigate = useNavigate();
