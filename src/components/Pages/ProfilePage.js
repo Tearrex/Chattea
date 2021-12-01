@@ -34,41 +34,6 @@ function ProfilePage(props) {
     const [joinDate, setJoinDate] = useState("");
     const nameCharLimit = 20;
     const bioCharLimit = 150;
-
-    useEffect(() => {
-        if(_user !== undefined || _users[user_id] !== undefined)
-        {
-            if (_user !== undefined && user_id === _user.user_id) {
-                var __user = _user;
-                //console.log("User's profile", __user);
-                setName(__user.username);
-                setUserPfp(__user.pfp);
-                setOrigPfp(__user.pfp);
-                //setFocus(__user.user_id);
-                setBio(__user.about);
-                setOrigBio(__user.about);
-                setJoinDate(__user.joined);
-                if (__user.banner !== "") {
-                    setBanner(__user.banner); setOrigBanner(__user.banner);
-                }
-            }
-            else if (user_id !== undefined && _users[user_id] !== undefined)
-            {
-                var __user = _users[user_id];
-                console.log("Author's profile", __user);
-                setName(__user.username);
-                setUserPfp(__user.pfp);
-                setOrigPfp(__user.pfp);
-                //setFocus(__user.user_id);
-                setBio(__user.about);
-                setOrigBio(__user.about);
-                setJoinDate(__user.joined);
-                if (__user.banner !== "") {
-                    setBanner(__user.banner); setOrigBanner(__user.banner);
-                }
-            }
-        }
-    }, [_user, _users]);
     const profileCard = useRef();
     const bannerChanger = useRef();
     const pfpChanger = useRef();
@@ -76,7 +41,7 @@ function ProfilePage(props) {
     useEffect(() => {
         console.log("PASSED ID HEREE ->>>", user_id);
         if(_user !== undefined) profile_cleanup();
-    }, [user_id, _user]);
+    }, [user_id, _user, _users]);
     function profile_cleanup()
     {
         console.log("cleanup called!");

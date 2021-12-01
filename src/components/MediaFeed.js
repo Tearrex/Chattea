@@ -16,6 +16,11 @@ function MediaFeed (props)
             console.log("CACHED USERS", _users);
         }
     }, [_users]);
+
+    /*
+    Iterates over every requested user, checks if their info is cached
+    and fetches it from the database into a JSON object if not.
+    */
     const [cache, setCache] = useState([]);
     useEffect(() => {
         if(cache.length > 0)
@@ -26,25 +31,19 @@ function MediaFeed (props)
                 if(_users[cache[i]] === undefined && cache[i] !== _user.user_id && _user.user_id !== undefined)
                 {
                     if (_toCache[cache[i]] !== undefined) continue;
-                    //console.log("userss missing from cache");
-                    
                     const userRef = doc(_dbRef, "users", cache[i]);
                     getDoc(userRef).then((snapshot) => {
                         if(snapshot.exists())
                         {
-                            //console.log("getting billed by Google!");
-                            var _json = snapshot.data();
-                            _toCache[cache[i]] = {
-                                user_id: snapshot.id,..._json
-                            }
-                            console.log("ADDED to cache", _toCache);
+                            var _json = {user_id: snapshot.id, ...snapshot.data()};
+                            _toCache[cache[i]] = _json;
+                            console.log("ADDED to cache", _json);
                         }
                         else console.log("COULDNT FIND " + cache[i]);
-                        // set users here on last iteration
+                        // set users on last iteration
                         if(i === cache.length - 1)
                         {
                             _setUsers( {..._users, ..._toCache});
-                            //console.log("members context set!", _toCache);
                         }
                     }).catch((error) => {alert(error)});
                 }
@@ -55,14 +54,49 @@ function MediaFeed (props)
     const _limit = 4;
 
     const postsRef = collection(_dbRef, 'posts');
-    const [oldDoc, setOldDoc] = useState(null);
-    const [newDoc, setNewDoc] = useState(null);
-    const [posts, _setPosts] = useState({});
+
+    const [oldDoc, setOldDoc] = useState(null); // oldest post, for scrolling down
+    useEffect(() => {
+        if(oldDoc !== null && oldDoc !== undefined) hasMore(true); 
+        else hasMore(false);
+    }, [oldDoc]);
+    const [lastUser, setLastUser] = useState(""); // remember the last user's id to recognize profile page switching
+    const [newDoc, setNewDoc] = useState(null); // latest, ask Firebase for any posts after this one
+    useEffect(() => {
+        if(newDoc !== null && newDoc !== undefined)
+        {
+            setLastUser(newDoc.data().user_id);
+        }
+    }, [newDoc]);
+    const [switching, setSwitching] = useState(false);
+
+    // when the profile page switches users, it will now wipe existing posts from the previous user.
+    useEffect(() => {
+        if(newDoc === null && oldDoc === null && switching)
+        {
+            var profile = document.getElementById("mainProfile");
+            // wanted to give it smooth behavior but it often starts requesting more
+            // posts in the middle of the page scroll since the images don't load right away.
+            profile.scrollIntoView({block:"start"});
+            next_batch();
+        }
+    }, [newDoc, oldDoc, switching]);
+
+    const [posts, _setPosts] = useState({}); // mapped to MediaPost components
+    
     function next_batch ()
     {
-        //console.log("fetching batch");
+        var startFresh = false; // replace old posts?
+        if(props.focus !== undefined && props.focus !== lastUser && lastUser !== "" && !switching)
+        {
+            setNewDoc(null); setOldDoc(null); setSwitching(true);
+            return;
+        }
+        else if (switching)
+        {
+            setSwitching(false); startFresh = true;
+        }
         var _query;
-        //if(props.focus) console.log("focusing " + props.focus);
         if (oldDoc === null || oldDoc === undefined)
         {
             if(props.focus === undefined) _query = query(postsRef, orderBy('date', 'desc'), limit(_limit));
@@ -74,7 +108,9 @@ function MediaFeed (props)
             if(props.focus === undefined) _query = query(postsRef, orderBy('date', 'desc'), startAfter(oldDoc), limit(_limit));
             else _query = query(postsRef, where("user_id", "==", props.focus), startAfter(oldDoc), limit(_limit));
         }
-        var _posts = posts;
+        var _posts;
+        if (startFresh) _posts = {};
+        else _posts = posts;
         var _toCache = [];
         getDocs(_query).then((snap) => {
             var _old = null;
@@ -92,10 +128,9 @@ function MediaFeed (props)
                 }
             });
             if(_toCache.length > 0) requestAnimationFrame((e) => {
-                setCache(cache.concat(_toCache))
+                setCache(cache.concat(_toCache));
             });
-            if(newDoc === null) setNewDoc(_new);
-            //else console.log("cant replace new doc", newDoc);
+            if(newDoc === null || newDoc !== null && lastUser !== _user.user_id && props.focus !== undefined) setNewDoc(_new);
             setOldDoc(_old);
             _setPosts(_posts);
         });
@@ -137,18 +172,8 @@ function MediaFeed (props)
         if(Object.keys(posts).length > 0)
         {
             console.log("posts are,",posts);
-            //console.log(Object.entries(posts).length);
-            //setOldDoc(posts[2]);
         }
     }, [posts]);
-    useEffect(() => {
-        if(oldDoc !== null && oldDoc !== undefined)
-        {
-            hasMore(true);
-            //console.log("old doc is now," + oldDoc);
-        }
-        else hasMore(false);
-    }, [oldDoc]);
     const [more, hasMore] = useState(true);
     function show_posts()
     {

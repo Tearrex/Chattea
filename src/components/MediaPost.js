@@ -4,29 +4,24 @@ import { useEffect, useState, useRef, useContext } from 'react';
 import { useAuth, dbRef, _dbRef, _storageRef } from './firebase';
 import SmileButton from './SmileButton';
 import { deleteObject, ref } from "firebase/storage";
-import UserProfile from "./UserProfile";
 import React from 'react';
 import { MembersContext, UserContext } from './UserContext';
 import Comments, { post_comment } from './Comments';
+import { useNavigate } from 'react-router';
 function MediaPost(props)
 {
+    const navigate = useNavigate();
     const {_user, _setUser} = useContext(UserContext);
     const {_users, _setUsers} = useContext(MembersContext);
-    const currentUser = useAuth();
     const { caption, content, date, image_url, user_id} = props.msg;
     const [captionInput, setCaption] = useState("");
-    const [origCaption, setOrigCaption] = useState("");
     const [isAuthor, setAuthor] = useState(false);
     const [postDate, setPostDate] = useState("");
     const postID = props.postID;
 
-    const [name, setName] = useState("");
     const [pfp, setPfp] = useState("/default_user.png");
-    const [joinDate, setJoinDate] = useState("");
 
-    const _captionInput = useRef();
     useEffect(() => {
-        setOrigCaption(caption);
         setCaption(caption)
     }, [caption]);
     useEffect(() => {
@@ -45,16 +40,12 @@ function MediaPost(props)
             //if(_users[user_id] !== undefined) return;
             if(user_id === _user["user_id"] && user_id !== undefined)
             {
-                setName(_user["username"]);
                 setPfp(_user["pfp"]);
-                setJoinDate(_user["join_date"]);
-                if (caption !== "" && _captionInput.current !== undefined) _captionInput.current.disabled = false;
                 setAuthor(true);
                 return;
             }
             if (user_id === "")
             {
-                setName("UNKNOWN");
                 console.log("USER HAS NO EMAIL");
             }
             else
@@ -65,16 +56,13 @@ function MediaPost(props)
                 {
                     var user = _users[user_id];
                     //console.log("user info exists in cache ! " + user.username);
-                    setName(user.username);
                     var _pfp = user.pfp;
                     var _join = user.join_date;
                     if(_pfp !== "") setPfp(_pfp);
-                    if(_join !== "") setJoinDate(_join);
                     return;
                 }
             }
         }
-        else if(props.name !== undefined) setName(props.name);
     }, [_users, _user]);
     const imageNest = useRef();
     useEffect(() => {
@@ -146,24 +134,6 @@ function MediaPost(props)
         props.onDelete();
         console.log("Removed post " + props.postID);
     }
-    const saveOptions = useRef();
-    useEffect(() => {
-        if(captionInput !== origCaption)
-        {
-            saveOptions.current.style.display = "flex";
-        }
-        else saveOptions.current.style.display = "none";
-    }, [captionInput]);
-    function edit_caption(e)
-    {
-        var _new = e.target.value;
-        if (_new.length > 30) return;
-        setCaption(_new);
-    }
-    function revert_caption()
-    {
-        setCaption(origCaption);
-    }
     const commentBox = useRef();
     const commentSub = useRef();
     const textInput = useRef();
@@ -210,41 +180,31 @@ function MediaPost(props)
     return (
         <div className="mediaCard" onClick={() => console.log("POST: " + props.postID + " AUTHOR: " + props.authorID)}>
             <div className="postUserInfo" style={{boxShadow:image_url === "" ? "none":null}}>
-                {/**(currentUser && user_id !== _user["user_id"]) ? 
-                    <SmileButton canSmile="true" smiled={props.smiled} postID={postID} author={user_id}/> : 
-                    <SmileButton canSmile="false" postID={postID} smiles={0} author={user_id} />
-                 */}
-                <div className="mediaContent" style={{display:(content !== "") ? "flex": "none"}}>
+                <div className="mediaContent">
                     <p style={{marginBottom:0,fontSize:"1.3rem"}}>{content}</p>
                 </div>
                 <div className="userAndPfp">
-                    {isAuthor ? 
-                        <p className="username" style={{display:(user_id === _user["user_id"]) ? "none":"block"}}>
-                            {_user["user_id"]}
-                                {/**_user["user_id"] === user_id ? _user["username"] : name */}</p>
-                    :
+                    {isAuthor ? null :
                         <p className="username" style={{display:(user_id === _user["user_id"]) ? "none":"block"}}>
                             {(_users[props.authorID] !== undefined) ? _users[props.authorID].username : "User"}</p>
                     }
-                    <UserProfile pfp={pfp} name={name} joined={joinDate} uid={props.authorID}/>
+                    <div onClick={() => navigate("/profile/" + props.authorID)}>
+                        <div style={{backgroundImage:"url("+pfp+")"}} className="profilePicture niceClip" />
+                    </div>
                 </div>
             </div>
             <div className="mediaSecondary">
                 {image_url !== "" ?
                 <div ref={imageNest} className="mediaPostImg">
                     <div className="imgOverlay" 
-                        style={{opacity:(captionInput !== "" || props.authorID === _user["user_id"]) ? "1": "0"}}>
-                        <input ref={_captionInput}type="text" placeholder="Add a caption..." value={captionInput}
-                            onChange={(e) => edit_caption(e)} disabled/>
+                        style={{opacity:(captionInput !== "" || props.authorID === _user["user_id"]) ? null: "0"}}>
+                        <input type="text" placeholder="Add a caption..." value={captionInput}
+                            disabled/>
                     </div>
                     {/**<div style={{backgroundImage:"url("+image_url+")"}} /> */}
                 </div> : null
                 }
                 <div style={{zIndex:"1"}}>
-                    <div ref={saveOptions} className="actions" style={{flexFlow:"row-reverse", display:"none"}}>
-                            <button style={{backgroundColor:"#3498DB"}}>Save</button>
-                            <button onClick={revert_caption} style={{backgroundColor:"#aaa"}}>Revert</button>
-                    </div>
                     <div className="postActions">
                         <div ref={deleteOverlay} className="deleteOverlay" style={{maxWidth:"0%"}}/>
                         <div className="actionBundle">
