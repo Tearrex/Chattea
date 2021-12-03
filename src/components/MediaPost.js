@@ -198,8 +198,7 @@ function MediaPost(props)
                 <div ref={imageNest} className="mediaPostImg">
                     <div className="imgOverlay" 
                         style={{opacity:(captionInput !== "" || props.authorID === _user["user_id"]) ? null: "0"}}>
-                        <input type="text" placeholder="Add a caption..." value={captionInput}
-                            disabled/>
+                        <p>{captionInput}</p>
                     </div>
                     {/**<div style={{backgroundImage:"url("+image_url+")"}} /> */}
                 </div> : null
