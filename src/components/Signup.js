@@ -22,6 +22,7 @@ function Signup(props) {
         saucerRef.current.style.transform = "translate(50vw, -50%)";
         console.log("Cancelled log in process...");
     }
+    // when transitioning, the popup cannot be dismissed by clicking on the background
     const [transitioning, setTransition] = useState(false);
     const emailRef = useRef();
     const passwordRef = useRef();
@@ -109,7 +110,7 @@ function Signup(props) {
     const emailWindow = useRef();
     function switcheroo(yes)
     {
-        if (yes === true)
+        if (yes)
         {
             if (transitioning === true || locked === true) return;
             setTransition(true);
@@ -139,22 +140,36 @@ function Signup(props) {
             if (currentUser.emailVerified === true) setVerified(true);
         }
     }, [currentUser]);
-    function dismiss_verification(wasEmailVerified)
+    function dismiss_verification(wasEmailVerified, skipped=false)
     {
         if (wasEmailVerified === false) saucerRef.current.style.display = "none";
         navigate("/main");
         setTimeout(() => {
             overlayBG.current.style.opacity = "0";
-            if (wasEmailVerified === true) saucerRef.current.style.transform = "translate(-150vw, -50%)";
-            else emailWindow.current.style.transform = "scale(0) translate(-50%,-50%)";
+            if (wasEmailVerified)
+            {
+                saucerRef.current.style.transform = "translate(-150vw, -50%)";
+                setDone(true);
+            }
+            else
+            {
+                emailWindow.current.style.transform = "scale(0) translate(-50%,-50%)";
+            }
             setTransition(false);
-            setDone(true); setLock(true);
+            setLock(true);
         }, 2000);
-
     }
+    useEffect(() => {
+        if(isDone)
+        {
+            finish_transition();
+            setDone(false);
+        }
+    }, [isDone]);
     function finish_transition(e)
     {
         if (linkSent === false || isDone === false) return;
+        saucerRef.current.style.display = "none";
         overlayBG.current.style.display = "none";
         console.log("transition finished");
     }
@@ -175,9 +190,17 @@ function Signup(props) {
             console.log("email updated!");
         }
         try { await sendEmailVerification(currentUser); emailInput.current.disabled = true; }
-        catch (e) { alert("Failed to send verification link: " + e); setVerifying(false); return; }
+        catch (e)
+        {
+            alert("Failed to send verification link: " + e); setVerifying(false);
+            dismiss_verification(false);
+            return;
+        }
         setLinkSent(true);
     }
+    useEffect(() => {
+        console.log("transitionionign now", transitioning);
+    }, [transitioning]);
     function dismiss_overlay(e)
     {
         //console.log("dismiss overlay ubghhghh");
@@ -188,13 +211,20 @@ function Signup(props) {
         //document.body.style.overflowY = "hidden";
     }
     useEffect(() => {
+        // reverts the login form back into its original position
         if (currentUser === null || currentUser === undefined) {
             setDone(false);
             switcheroo(false);
         }
     }, [isDone]);
+    function skip_email(e)
+    {
+        e.preventDefault();
+        dismiss_verification(false, true);
+        console.log("skip email");
+    }
     return (
-        <div style={{ overflow: "hidden" }}>
+        <div className="teaDescendant">
             {!currentUser ? <button className="signinBtn" onClick={show}>Already a member?</button> : null}
             <div ref={overlayBG} className="overlay" onClick={closePopup} style={{ display: "none", opacity: "0", zIndex:"5" }} onTransitionEnd={(e) => dismiss_overlay(e)} />
             <div ref={saucerRef} className="flyingSaucer" style={{ transform: "translate(50vw, -50%)" }}>
@@ -202,7 +232,7 @@ function Signup(props) {
                     <form ref={formRef} className="loginForm" onSubmit={handleLogin} style={{ transform: "translateX(0)" }}>
                         <input ref={emailRef} type="email" placeholder="*Email address" required></input>
                         <input ref={passwordRef} type="password" placeholder="*Password" required></input>
-                        <input type="submit" disabled={loading || currentUser} className="loginBtn" value="Continue"></input>
+                        <input type="submit" disabled={loading || currentUser} className="loginBtn" value="sign in"></input>
                     </form>
                 </div>
                 <div ref={avatarRef} className="cozy" style={{ transform: "translate(150%, -50%)" }}>
@@ -229,6 +259,7 @@ function Signup(props) {
                 <form onSubmit={(e) => handle_email(e)}>
                     <input ref={emailInput} type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                     <input type="submit" value={linkSent === false ? "Send Link" : "Dismiss"} />
+                    <input type="submit" value={"Later"} style={{backgroundColor:"#747474"}} onClick={(e) => skip_email(e)}/>
                 </form>
             </div>
         </div>
