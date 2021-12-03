@@ -96,8 +96,8 @@ function TeaBar ()
         }
     }
     return (
-        <div>
-            <div className="teaBar">
+        <div style={{overflow:"hidden", zIndex:"1"}}>
+            <div className="teaBar persistor">
                 <div className="welcomer" style={{position:null}}>
                     <div className="chattea" 
                             style={{transform:currentUser? "translateX(0)" : "translateX(-50%)",
