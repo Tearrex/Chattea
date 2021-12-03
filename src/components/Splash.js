@@ -138,6 +138,20 @@ function Splash() {
     }
     return (
         <div className="splashBody">
+            <div className="catch">
+                <h1>Wander around the <span>interwebs</span></h1>
+                <p>Ever wonder what other people are up to during their day to day lives?
+                    Got some freetime? Let's build a tight-knit community with daily digests of what's been
+                    going on around you!
+                </p>
+                {/**
+                listening to
+                watching
+                reading
+                studying
+                daily digest
+                 */}
+            </div>
             <div className="splashNet">
                 <div className="splash" style={{ backgroundImage: "url('network.png')" }}></div>
                 <div className="splashRegister">
@@ -153,12 +167,14 @@ function Splash() {
                     </form>
                 </div>
             </div>
-            <div className="other">
+            <footer>
                 <button className="githuBtn" onClick={() => window.open("https://github.com/Tearrex/Chattea","_blank")}>
-                    <div/>
-                    <p>See the <span>code</span></p>
+                    <div className="invertees">
+                        <div/>
+                        <p>See the code</p>
+                    </div>
                 </button>
-            </div>
+            </footer>
         </div>
     );
 }

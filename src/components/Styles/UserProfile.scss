@@ -1,11 +1,8 @@
+@import "utils.scss";
 .flyingSaucer {
-    z-index: 6;
-    transition: transform 1s ease;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    border-radius: 20px;
-    overflow: hidden;
+    z-index: 6; transition: transform 1s ease;
+    position: fixed; overflow: hidden;
+    top: 50%; left: 50%; border-radius: 20px;
     transform: translate(-50%, -50%);
     width: clamp(200px, 90%, 350px);
     background-color: rgb(246, 246, 246);
@@ -19,27 +16,24 @@
         top: 50%; left: 50%;
         transform: translate(-50%, -50%);
         transition: transform 1s ease;
+        div {
+            display: flex; gap: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+        img {
+            width: 90px; height: 90px;
+            border-radius: 50%; background-color: $niceOrange;
+            object-fit: cover;
+        }
+        p {
+            font-size: 2.3rem; margin:0;
+            color: $niceOrange;
+        }
+        h1 {
+            color: rgb(85,85,85); margin: 0 0 10px 0;
+        }
     }
-}
-.cozy {
-    
-}
-.cozy div {
-    display: flex; gap: 10px;
-    justify-content: center;
-    align-items: center;
-}
-.cozy img {
-    width: 90px; height: 90px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-.cozy p {
-    font-size: 2.3rem; margin:0;
-    color: #E74C3C;
-}
-.cozy h1 {
-    color: rgb(85,85,85); margin: 0 0 10px 0;
 }
 .profilePopup {
     width: 100%; height: 100%; z-index: 1000;
@@ -53,15 +47,11 @@
     flex-shrink: 0; flex-basis: fit-content;
     div {
         height: 50px; width: 50px; border-radius: 50%; flex-shrink: 0;
-        background-color: #E74C3C; background-position: center;
+        background-color: $teaColor; background-position: center;
         background-repeat: no-repeat; background-size: cover;
     }
     span {
-        color: #E74C3C;
-        /*&::after {
-            color: #fff; font-size: 1.3rem;
-            content: " made you their buddy";
-        }*/
+        color: $teaColor;
     }
     p {
         margin: 0;
@@ -83,16 +73,20 @@
     width: clamp(300px, 400px, 90%);
     background-color: #1e1e1e;
 }
-.mainProfile .primaryInfo {
-    justify-content: left; padding-top: 35%;
-}
-.mainProfile .nameField input {
-    color: #fff; font-size: 2rem;
-    text-shadow: 2px 2px 5px #000;
-}
-.mainProfile .nameField input:focus {
-    color: rgb(98,98,98);
-    text-shadow: none;
+.mainProfile {
+    .primaryInfo {
+        justify-content: left; padding-top: 35%;
+    }
+    .nameField {
+        input {
+            color: #fff; font-size: 2rem;
+            text-shadow: 2px 2px 5px #000;
+            &:focus {
+                color: rgb(98,98,98);
+                text-shadow: none;
+            }
+        }
+    }
 }
 .profileMemo {
     margin: 0; color: #000;
@@ -101,10 +95,10 @@
 .userAndPfp {
     display: flex; align-items: center; text-align: right;
     justify-content: right; gap: 10px; flex-shrink: 0;
-}
-.userAndPfp p {
-    white-space: nowrap;
-    margin: 0;
+    p {
+        white-space: nowrap;
+        margin: 0;
+    }
 }
 .primaryInfo .pUsername {
     margin: 0 0 0 15px;
@@ -123,12 +117,12 @@
     margin-top: 10px; margin-right: 10px; opacity: 0.5;
     transform: rotate(45deg);
     transition: opacity 0.5s ease-in-out, transform 0.5s ease;
-}
-.bannerBtn:hover {
-    transform: rotate(0deg);
-}
-.bannerBtn input{
-    display: none;
+    &:hover {
+        transform: rotate(0deg);
+    }
+    input{
+        display: none;
+    }
 }
 .aboutSection {
     gap:0; width: 100%; background-color: #fff;
@@ -139,17 +133,22 @@
     margin-left: auto; margin-right: auto;
     text-align: center; overflow: hidden;
     width: 110px; height: 110px;
-}
-.pfpNest label {
-    width: 100%; height: 100%; display: block;
-    position: absolute; border-radius: 50%;
-    background-color: rgba(0,0,0,0.4);
-    background-size: 30px; background-position: center;
-    background-repeat: no-repeat;
-    cursor: pointer;
-}
-.pfpNest label input {
-    display: none;
+    label {
+        width: 100%; height: 100%; display: block;
+        position: absolute; border-radius: 50%;
+        background-color: rgba(0,0,0,0.4);
+        background-size: 30px; background-position: center;
+        background-repeat: no-repeat;
+        cursor: pointer;
+        input {
+            display: none;
+        }
+    }
+    .profilePic {
+        width: 100%; height: 100%;
+        border: none;
+        background-color: $niceOrange;
+    }
 }
 .pfpOverlay {
     background-color: rgba(0,0,0,0.5);
@@ -157,17 +156,13 @@
     position: absolute;
     border-radius: 50%;
     transition: opacity 0.5s ease-out;
-}
-.pfpOverlay img {
-    filter: invert(1);
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 30px; height: 30px;
-}
-.pfpNest .profilePic {
-    width: 100%; height: 100%;
-    border: none;
+    img {
+        filter: invert(1);
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 30px; height: 30px;
+    }
 }
 .profilePicture {
     width: 70px;
@@ -183,31 +178,31 @@
 .nameField {
     display: flex; gap: 10px;
     align-items: center; justify-content: center;
-}
-.nameField input {
-    border: none; outline: none;
-    vertical-align: middle; width: 80%;
-    padding: 5px;
-    color: #000; font-size: 1.4rem;
-    width: 90%; background: none;
-}
-.nameField input:focus {
-    background-color: #fff;
-}
-.nameField input:focus + .charCount {
-    opacity: 1;
-}
-.nameField .charCount {
-    margin:0; opacity: 0; font-size: 1.5rem;
-    color: #fff; font-weight: normal; width: 0;
+    input {
+        border: none; outline: none;
+        vertical-align: middle; width: 80%;
+        padding: 5px;
+        color: #000; font-size: 1.4rem;
+        width: 90%; background: none;
+        &:focus {
+            background-color: #fff;
+        }
+        &:focus + .charCount {
+            opacity: 1;
+        }
+        .charCount {
+            margin:0; opacity: 0; font-size: 1.5rem;
+            color: #fff; font-weight: normal; width: 0;
+        }
+    }
 }
 .aboutSection {
     box-shadow: 0 5px 5px rgba(0,0,0,0.5); z-index: 1;
-}
-.aboutSection .userBio, .aboutSection textarea {
-    padding: 10px 0; outline: none; border: none;
-    text-align: center; font-size: 1.4rem; width: 100%;
-    color: rgb(98,98,98);
+    .userBio, textarea {
+        padding: 10px 0; outline: none; border: none;
+        text-align: center; font-size: 1.4rem; width: 100%;
+        color: rgb(98,98,98);
+    }
 }
 .userInfo {
     background-color: #c6c6c6; gap: 10px;
@@ -252,37 +247,37 @@
 .actions {
     display: flex; z-index: 2;
     justify-content: center;
-}
-.actions button {
-    font-size: 1.4rem; flex: 50%;
-    border: none; outline: none; padding: 15px 0;
-    transition: box-shadow 0.2s ease-in;
-    box-shadow: none;
-}
-.actions button:hover {
-    box-shadow: inset 0 0 0 5px rgba(0,0,0,0.2);
-}
-.actions button:first-child {
-    background-color: #FF5733; color: #fff;
+    button {
+        font-size: 1.4rem; flex: 50%;
+        border: none; outline: none; padding: 15px 0;
+        transition: box-shadow 0.2s ease-in;
+        box-shadow: none;
+        &:hover {
+            box-shadow: inset 0 0 0 5px rgba(0,0,0,0.2);
+        }
+        &:first-child {
+            background-color: $sweettea; color: #fff;
+        }
+    }
 }
 .profileMod {
     display: flex; flex-direction: row;
     margin-left: 10px; margin-bottom: 10px;
     gap: 10px; flex-wrap: nowrap;
     white-space: nowrap; justify-content: center;
-}
-.profileMod .nameField {
-    justify-content: left;
-}
-.profileMod .pfpNest {
-    margin: 0; flex-shrink: 0;
-}
-.profileMod .pfpNest label {
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-}
-.profileMod .pfpNest label:hover {
-    opacity: 1;
+    .nameField {
+        justify-content: left;
+    }
+    .pfpNest {
+        margin: 0; flex-shrink: 0;
+    }
+    .pfpNest label {
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+        &:hover {
+            opacity: 1;
+        }
+    }
 }
 .smiley {
     display: flex; align-items: center;
@@ -290,12 +285,12 @@
 .primaryInfo .actions button {
     display: inline-block;
     width: auto; color: #fff;
-}
-.primaryInfo .actions button:first-child {
-    background-color: #3498DB;
-}
-.primaryInfo .actions button:last-child {
-    background-color: rgb(153, 153, 153);
+    &:first-child {
+        background-color: #3498DB;
+    }
+    &:last-child {
+        background-color: rgb(153, 153, 153);
+    }
 }
 .profilePic {
     width: 60px; height: 60px;
@@ -311,24 +306,24 @@
 .postOptions {
     display: flex; align-items: center;
     height: 100%;
-}
-.postOptions .editPost {
-    background-color: #F39C12;
+    .editPost {
+        background-color: #F39C12;
+    }
+    button {
+        width: 50px; height: 100%;
+        background-size: 50%;
+        outline: none; border: none;
+    }
 }
 .deletePost {
-    background-color: #E74C3C;
+    background-color: $teaColor;
     background-size: 50%; z-index: 2;
     overflow: hidden; flex-shrink: 1;
     flex: 0;
 }
-.postOptions button {
-    width: 50px; height: 100%;
-    background-size: 50%;
-    outline: none; border: none;
-}
 .stealthBtn {
     transition: box-shadow 0.2s ease-in;
-}
-.stealthBtn:hover {
-    box-shadow: inset 0 0 0 5px rgba(0,0,0,0.2);
+    &:hover {
+        box-shadow: inset 0 0 0 5px rgba(0,0,0,0.2);
+    }
 }

@@ -1,11 +1,4 @@
-$teaColor: #E74C3C;
-$usercolor: #FF5733;
-$assetPath:"/assets/";
-
-$lightText:#f0f0f0;
-
-$paleSmile:#F9E79F;
-$richSmile:#F5B041;
+@import "utils.scss";
 #home {
     width: clamp(400px, 100%, 600px);
     margin-bottom: 30px;
@@ -13,8 +6,9 @@ $richSmile:#F5B041;
     flex-flow: column;
     gap: 10px;
 }
-.other {
-    display: flex; flex-flow: column; margin-top: 20px;
+footer {
+    display: flex; flex-flow: column; width: 100%;
+    background-color: #2b3137; bottom: 0; padding: 10px 0;
 }
 .githuBtn {
     // i dont know why it took me so long to
@@ -23,30 +17,36 @@ $richSmile:#F5B041;
     display: flex; flex-flow: row; justify-content: center; align-items: center;
     border: none; outline: none; padding: 5px 10px; gap: 10px; color: #fff;
     font-size: 1.2rem; font-weight: 300; border-radius: 10px;
-    transition: background-color 0.4s ease-out;
-    div {
-        width: 50px; height: 50px; background-image: url(#{$assetPath}/github.png);
-        background-position: center; background-size: cover; background-repeat: no-repeat;
+    transition: background-color 0.4s ease-in-out;
+    .invertees {
+        display: flex; flex-flow: row; align-items: center; gap: 10px;
+        // looks trippy, keep it
+        transition: filter 1s ease-in-out;
+        p {
+            margin: 0;
+        }
+        div {
+            width: 50px; height: 50px; background-image: url(#{$assetPath}/github.png);
+            background-position: center; background-size: cover; background-repeat: no-repeat;
+            border-radius: 50%; // sharpen up the icon edges
+        }
     }
     &:hover {
-        background-color: #24292d;
-        span {
-            color: #0f0;
+        // background-color: #24292d;
+        background-color: rgb(238, 238, 238);
+        .invertees {
+            filter: invert(1);
         }
     }
 }
 .homeWrapper {
-    display: flex;
+    display: flex; //margin-top: 10px;
     width: 100%;
     justify-content: center;
 }
 
 .teaPrefix {
     overflow: hidden;
-}
-
-.welcomer p {
-    transition: opacity 1s ease, max-width 1s ease;
 }
 
 body {
@@ -59,23 +59,24 @@ body {
         transition: background-image 1s ease;
     }
     .dark {
-        background-image: radial-gradient(#6b6b6b 35%, #3a3a3a 70%)
+        background-image: linear-gradient(#6b6b6b 35%, #3a3a3a 70%);
     }
     .light {
-        background-image: radial-gradient(#cacaca 35%, #919191 70%)
+        // background-image: linear-gradient(#f7941d, #F5B041);
+        background-image: linear-gradient(#cacaca , #919191);
     }
 }
 
 .welcomer {
-    justify-content: right; flex-shrink: 0;
-    padding: 10px 0;
-    display: flex;
-    width: 100%;
-    height: 60px;
-    top: 0;
-    background-color: rgb(207, 207, 207);
+    justify-content: right; flex-shrink: 0; top: 0;
+    padding: 10px 0; display: flex;
+    width: 100%; height: 60px;
+    background-color: $mainFore;
     color: rgb(98, 98, 98);
-    box-shadow: 0px 6px 5px rgba(0, 0, 0, 0.7);
+    // box-shadow: 0px 6px 5px rgba(0, 0, 0, 0.7);
+    p {
+        transition: opacity 1s ease, max-width 1s ease;
+    }
 }
 
 .welcome {
@@ -90,8 +91,10 @@ body {
     -webkit-transition: transform 1s ease-out;
     align-items: center;
 }
+.persistor {
+    position: sticky; top: 0; z-index: 5;
+}
 .teaBar {
-    position: fixed; width: 100%;
     z-index: 5; top: 0;
     display: flex; flex-flow: column;
 }
@@ -108,30 +111,28 @@ body {
     justify-content: revert;
     align-items: center;
     gap: 10px;
+    p {
+        margin: 0;
+    }
+    div {
+        display: flex;
+        font-size: 1.7rem;
+        align-items: center;
+        span {
+            color: $niceOrange;
+        }
+        // im not proud of the lack of organization here.....
+        div {
+            width: 60px;
+            height: 60px;
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            cursor: pointer;
+        }
+    }
 }
 
-.chattea p {
-    margin: 0;
-}
-
-.chattea div {
-    display: flex;
-    font-size: 1.7rem;
-    align-items: center;
-}
-
-.chattea div span {
-    color: $teaColor;
-}
-
-.chattea div div {
-    width: 60px;
-    height: 60px;
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    cursor: pointer;
-}
 
 .scroller {
     z-index: 1;
@@ -151,42 +152,16 @@ body {
     transition: bottom 0.5s ease-out;
 }
 
-#bloom {
-    left: 0;
-    bottom: 0;
-    z-index: -2;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background-color: #000;
-    /*background: radial-gradient(#FFBF00, #FF7F50);
-background-repeat: no-repeat;
-background-size: cover;*/
-}
-
 #root, #main {
     text-align: center;
-    /*display: grid;*/
-    grid-gap: 10px;
     justify-content: center;
     justify-items: center;
 }
-
-#main {
-    margin-top: 90px;
-}
-
 .center {
-    position: absolute;
+    position: fixed;
     left: 50%;
     top: 50%;
     transform: translate(-50%);
-}
-
-#root {
-    width: 100%;
-    height: 100%;
-    /*overflow-y: hidden;*/
 }
 
 .overlay {
@@ -207,51 +182,29 @@ background-size: cover;*/
 }
 .userOptions {
     align-items: center;
-}
-.userOptions p {
-    margin: 0; width: 100%; color:#3e3e3e;
-}
-.userOptions .mpContent {
-    margin-top: 0; left: 0;
-    display: none;
-    button {
-        padding: 15px 25px;
+    p {
+        margin: 0; width: 100%; color:#3e3e3e;
     }
-}
-
-.userOptions:hover .mpContent {
-    display: flex;
+    .mpContent {
+        margin-top: 0; left: 0;
+        display: none;
+        button {
+            padding: 15px 25px;
+        }
+    }
+    &:hover .mpContent {
+        display: flex;
+    }
 }
 .notifNest {
     width: 100%; display: flex; flex-flow: column;
     .notification:nth-child(even) {
-        background-color: #cacaca;
-    }
-}
-.notifMain {
-    display: flex; justify-content: center; align-items: center;
-    position: relative; font-weight: normal; gap: 5px; cursor: pointer;
-    background-color: #414141; padding: 5px; border-radius: 5px;
-    p {
-        margin: 0;
-    }
-    span {
-        background-color: #8f8f8f;
-        padding: 5px 10px; border-radius: 5px;
-        transition: background-color 0.5s ease-in;
-    }
-    .mpContent {
-        color: #000; position: absolute; right: 0;
-    }
-    &:hover {
-        .mpContent {
-            display: block;
-        }
+        background-color: $mainEven;
     }
 }
 .notification {
     display: flex; padding: 10px;
-    background-color: #bebebe;
+    background-color: $mainOdd;
     align-items: stretch; flex-basis: content;
     transition: max-height 0.5s ease-in;
     flex-grow: 0;
@@ -286,48 +239,33 @@ background-size: cover;*/
         background-color: #4d4d4d;
     }
 }
+.notifMain {
+    display: flex; justify-content: center; align-items: center;
+    position: relative; font-weight: normal; gap: 5px; cursor: pointer;
+    background-color: #414141; padding: 5px; border-radius: 5px;
+    p {
+        margin: 0;
+    }
+    span {
+        background-color: #8f8f8f;
+        padding: 5px 10px; border-radius: 5px;
+        transition: background-color 0.5s ease-in;
+    }
+    .mpContent {
+        color: #000; position: absolute; right: 0;
+    }
+    &:hover {
+        .mpContent {
+            display: block;
+        }
+    }
+}
 .welcome .pfp {
     width: 60px;
     height: 60px;
+    background-color: $niceOrange;
     border-radius: 50%;
     align-items: stretch;
-}
-
-.login {
-    color: #1ABC9C;
-    margin: 0;
-}
-
-.signup {
-    margin-top: 15px;
-    margin-bottom: 0;
-    color: #ccff00;
-}
-
-.loginForm input {
-    border: 2px solid rgb(172, 172, 172);
-    color: #fff;
-    background-color: rgb(180, 180, 180);
-    transition: border 1s ease;
-    border-radius: 10px;
-    outline: none;
-    padding: 15px;
-    margin: 5px 0;
-    font-size: 1.2rem;
-}
-
-.loginForm input::placeholder {
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.loginForm input:active, .loginForm input:focus {
-    border: 2px solid #F39C12;
-}
-
-.loginForm input[type="submit"] {
-    background-color: #F39C12;
-    color: #fff;
-    border: none;
 }
 
 .signinBtn {
@@ -336,10 +274,11 @@ background-size: cover;*/
     padding: 10px;
     background-color: rgba(0, 0, 0, 0);
     border-radius: 10px;
-    border: 4px solid #F39C12;
-    color: #e2e2e2;
+    border: 4px solid $niceOrange;
+    color: $lightText;
     &:hover {
-        background-color: #F39C12;
+        background-color: $niceOrange;
+        border: 4px solid $niceOrange;
         color: #fff;
     }
 }
@@ -400,7 +339,25 @@ background-size: cover;*/
     transition: transform 1s ease;
     display: grid; gap: 10px;
     input {
-        margin: 0;
+        border: 2px solid rgb(172, 172, 172); margin: 0;
+        color: #fff;
+        background-color: rgb(180, 180, 180);
+        transition: border 1s ease;
+        border-radius: 10px;
+        outline: none;
+        padding: 15px;
+        font-size: 1.2rem;
+        &::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        &:active, &:focus {
+            border: 2px solid #F39C12;
+        }
+        &[type="submit"] {
+            background-color: #F39C12;
+            color: #fff;
+            border: none;
+        }
     }
 }
 
@@ -429,6 +386,34 @@ background-size: cover;*/
     padding: 10px;
     background-color: #181818;
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+    label {
+        background-image: url(#{$assetPath}/cam_icon.svg);
+    
+        background-size: 40px 40px;
+        background-color: $niceOrange;
+        border-radius: 20px 0 0 20px;
+    }
+    input[type="file"] {
+        border: none;
+        outline: none;
+        height: 100%;
+    }
+    input[type="text"] {
+        width: 100%;
+        height: 50px;
+        border: none;
+        outline: none;
+        font-size: 1.1rem;
+        display: inline-block;
+        padding: 0 15px;
+        /*width: 60%;
+    height: 100%;*/
+    }
+    input[type="submit"] {
+        background-color: $richSmile;
+        border-radius: 0 20px 20px 0;
+        background-image: url(#{$assetPath}/generated.svg);
+    }
 }
 .subWarning {
     display: flex; color: #fff; justify-content: center;
@@ -466,30 +451,6 @@ background-size: cover;*/
     flex-flow: column;
     z-index: 1;
     overflow: hidden;
-}
-
-.submission input[type="file"] {
-    border: none;
-    outline: none;
-    height: 100%;
-}
-
-.submission input[type="text"] {
-    width: 100%;
-    height: 50px;
-    border: none;
-    outline: none;
-    font-size: 1.1rem;
-    display: inline-block;
-    padding: 0 15px;
-    /*width: 60%;
-height: 100%;*/
-}
-
-.submission input[type="submit"] {
-    background-color: #FF5733;
-    border-radius: 0 20px 20px 0;
-    background-image: url(#{$assetPath}/generated.svg);
 }
 
 .subWidget {
@@ -644,7 +605,7 @@ height: 100%;*/
     background-color: #0f0f0f;
 }
 @media only screen and (min-width:400px) {
-    .imgOverlay input {
+    .imgOverlay input, .imgOverlay p {
         font-size: 1.4rem;
     }
 }
@@ -683,44 +644,36 @@ height: 100%;*/
     &:hover {
         opacity: 0;
     }
-}
-.imgOverlay button {
-    position: absolute;
-    left: 0; top: 0; background-color: #E74C3C;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-    font-size: 1.3rem;
-    outline: none; border: none;
-    width: 60px; height: 60px; border-radius: 50%;
-    margin-left: 10px; margin-top: 10px;
-}
-.imgOverlay button:hover {
-    font-size: 1.5rem;
-}
-.imgOverlay input {
-    bottom: 0;
-    font-weight: lighter;
-    width: 100%;
-    // font-size: 1.8rem;
-    color: #fff;
-    text-align: center;
-    border: none;
-    outline: none;
-    background: none;
-    margin-bottom: 20px;
+    button {
+        position: absolute;
+        left: 0; top: 0; background-color: #E74C3C;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        outline: none; border: none;
+        width: 60px; height: 60px; border-radius: 50%;
+        margin-left: 10px; margin-top: 10px;
+        &:hover {
+            font-size: 1.5rem;
+        }
+    }
+    input, p {
+        bottom: 0;
+        font-weight: lighter;
+        width: 100%;
+        // font-size: 1.8rem;
+        color: #fff;
+        text-align: center;
+        border: none;
+        outline: none;
+        background: none;
+        margin-bottom: 20px;
+        &::placeholder {
+            color: #fff;
+            opacity: 0.7;
+        }
+    }
 }
 
-.imgOverlay input::placeholder {
-    color: #fff;
-    opacity: 0.7;
-}
-
-.submission label {
-    background-image: url(#{$assetPath}/cam_icon.svg);
-
-    background-size: 40px 40px;
-    background-color: $teaColor;
-    border-radius: 20px 0 0 20px;
-}
 .postPage {
     display: flex; justify-content: center;
     .mediaCard {
@@ -855,7 +808,7 @@ height: 100%;*/
     display: inline-block;
     vertical-align: middle;
     font-size: 1.2rem;
-    color: #FF5733;
+    color: $niceOrange;
 }
 .commenter {
     display: none; position: relative;
