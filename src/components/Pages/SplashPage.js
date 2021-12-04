@@ -1,17 +1,18 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useContext } from "react";
 import { sendEmailVerification } from "@firebase/auth";
-import { signup } from "./firebase";
-import MediaPost from "./MediaPost";
-import Signup from "./Signup";
+import { signup } from "../firebase";
+import MediaPost from "../MediaPost";
+import Signup from "../Signup";
 import { useNavigate } from "react-router";
-function Splash() {
+import { showLogin } from "./LoginContext";
+function SplashPage() {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const inputHeight = 60;
     const [formHeight, setFormHeight] = useState(inputHeight);
     const offsetHeight = 5;
     const expandForm = useRef();
-
+    const { _showLogin, setLogin } = useContext(showLogin);
     const nameField = useRef();
     const [nameInput, setName] = useState("");
     function name_input(e) {
@@ -138,6 +139,9 @@ function Splash() {
     }
     return (
         <div className="splashBody">
+            <div className="buttonPad">
+                <button className="signinBtn" onClick={(e) => setLogin(true)}>Already a member?</button>
+            </div>
             <div className="catch">
                 <h1>Wander around the <span>interwebs</span></h1>
                 <p>Ever wonder what other people are up to during their day to day lives?
@@ -178,4 +182,4 @@ function Splash() {
         </div>
     );
 }
-export default Splash;
+export default SplashPage;

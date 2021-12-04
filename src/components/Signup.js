@@ -6,23 +6,26 @@ import { useNavigate } from "react-router-dom"
 import { MembersContext, UserContext } from "./UserContext";
 import { updateEmail, sendEmailVerification, getAuth } from '@firebase/auth';
 import { doc } from "@firebase/firestore";
+import { showLogin } from "./Pages/LoginContext";
 function Signup(props) {
     const navigate = useNavigate();
     const currentUser = useAuth();
+    const {_showLogin, setLogin } = useContext(showLogin);
     const { _user, _setUser } = useContext(UserContext);
     const { _users, _setUsers } = useContext(MembersContext);
     const [loading, setLoading] = useState(false);
-    const overlay = useRef();
     const overlayBG = useRef();
     const [locked, setLock] = useState(true)
-    const [isDone, setDone] = useState(false);
+    const [focus, setFocus] = useState(false);
     function closePopup() {
-        if (transitioning === true) return;
+        if (!focus && showLogin) return;
         overlayBG.current.style.opacity = "0";
-        saucerRef.current.style.transform = "translate(50vw, -50%)";
+        if(_user === undefined)saucerRef.current.style.transform = "translate(50vw, -50%)";
         console.log("Cancelled log in process...");
     }
-    // when transitioning, the popup cannot be dismissed by clicking on the background
+    /*
+    when the profile card slides into view with the welcome text, this is true.
+    */
     const [transitioning, setTransition] = useState(false);
     const emailRef = useRef();
     const passwordRef = useRef();
@@ -40,30 +43,33 @@ function Signup(props) {
     */
     useEffect(() => {
         const abort = new AbortController();
-        if (_user !== undefined && shouldLoad) {
+        if (_user !== undefined && shouldLoad)
+        {
             var oldImage = pictureNest.current.querySelector("img");
-            if (oldImage) {
-                if (oldImage.src == _user.pfp) {
+            if (oldImage)
+            {
+                if (oldImage.src === _user.pfp)
+                {
                     console.log("Recycling previous user image");
-                    switcheroo(true); setShouldLoad(false);
+                    setTransition(true); setShouldLoad(false);
                     return;
                 }
-                else
-                {
-                    oldImage.remove();
-                }
+                else oldImage.remove();
             }
             console.log("just logged in", _user["user_id"]);
             var img = new Image();
             img.src = _user.pfp;
             //img.id = "richImage"
-            img.onload = function () {
-                if (abort.signal["aborted"] === true) {
+            img.onload = function ()
+            {
+                if (abort.signal["aborted"] === true)
+                {
                     console.log("image load stopped, not in view");
                     return;
                 }
+                console.log("pfp loaded");
                 pictureNest.current.insertBefore(img, pictureNest.current.childNodes[0]);
-                switcheroo(true); setShouldLoad(false);
+                setTransition(true); setShouldLoad(false);
             };
         }
         return () => abort.abort();
@@ -104,7 +110,6 @@ function Signup(props) {
         saucerRef.current.style.transform = "translate(-50%,-50%)";
         saucerRef.current.style.display = "block";
         overlayBG.current.style.display = "block";
-        overlayBG.current.style.opacity = "0.7";
         emailRef.current.focus();
     }
     const emailWindow = useRef();
@@ -112,8 +117,8 @@ function Signup(props) {
     {
         if (yes)
         {
-            if (transitioning === true || locked === true) return;
-            setTransition(true);
+            // show welcome banner
+            if (locked) return;
             overlayBG.current.style.opacity = "1";
             formRef.current.style.transform = "translateX(-200vw)";
             avatarRef.current.style.transform = "translate(-50%, -50%)";
@@ -128,6 +133,7 @@ function Signup(props) {
         }
         else
         {
+            // show login form
             formRef.current.style.transform = "translateX(0)";
             avatarRef.current.style.transform = "translate(300%, -50%)";
         }
@@ -140,7 +146,7 @@ function Signup(props) {
             if (currentUser.emailVerified === true) setVerified(true);
         }
     }, [currentUser]);
-    function dismiss_verification(wasEmailVerified, skipped=false)
+    function dismiss_verification(wasEmailVerified)
     {
         if (wasEmailVerified === false) saucerRef.current.style.display = "none";
         navigate("/main");
@@ -149,28 +155,21 @@ function Signup(props) {
             if (wasEmailVerified)
             {
                 saucerRef.current.style.transform = "translate(-150vw, -50%)";
-                setDone(true);
+                setTransition(false);
             }
             else
             {
                 emailWindow.current.style.transform = "scale(0) translate(-50%,-50%)";
             }
-            setTransition(false);
             setLock(true);
         }, 2000);
     }
-    useEffect(() => {
-        if(isDone)
-        {
-            finish_transition();
-            setDone(false);
-        }
-    }, [isDone]);
     function finish_transition(e)
     {
-        if (linkSent === false || isDone === false) return;
+        if (linkSent === false && !skip || transitioning) return;
         saucerRef.current.style.display = "none";
-        overlayBG.current.style.display = "none";
+        setFocus(false);
+        setTransition(false); setSkip(false);
         console.log("transition finished");
     }
     const [verifying, setVerifying] = useState(false);
@@ -179,12 +178,14 @@ function Signup(props) {
     async function handle_email(e)
     {
         e.preventDefault();
-        if (linkSent === true) {
+        if (linkSent === true)
+        {
             dismiss_verification(false);
             return;
         }
         setVerifying(true);
-        if (email !== currentUser.email) {
+        if (email !== currentUser.email)
+        {
             try { await updateEmail(currentUser, email) }
             catch (e) { alert("Failed to update email: " + e); setVerifying(false); return; }
             console.log("email updated!");
@@ -199,35 +200,80 @@ function Signup(props) {
         setLinkSent(true);
     }
     useEffect(() => {
-        console.log("transitionionign now", transitioning);
-    }, [transitioning]);
-    function dismiss_overlay(e)
-    {
-        //console.log("dismiss overlay ubghhghh");
-        if (transitioning === true) return;
-        //popupRef.current.style.display = "none";
-        overlayBG.current.style.display = "none";
-        //document.body.style.overflowY = "hidden";
-        //document.body.style.overflowY = "hidden";
-    }
-    useEffect(() => {
-        // reverts the login form back into its original position
-        if (currentUser === null || currentUser === undefined) {
-            setDone(false);
-            switcheroo(false);
+        console.log("transitioning is",transitioning);
+        if(transitioning)
+        {
+            console.log("switcheroo!");
+            switcheroo(true);
         }
-    }, [isDone]);
+        else finish_transition();
+    }, [transitioning]);
+    useEffect(() => {
+        console.log("locked is",locked);
+        if(locked)
+        {
+            setLogin(false);
+        }
+    }, [locked]);
+    const [skip, setSkip] = useState(false);
     function skip_email(e)
     {
         e.preventDefault();
-        dismiss_verification(false, true);
-        console.log("skip email");
+        setSkip(true);
     }
+    useEffect(() => {
+        if(skip)
+        {
+            dismiss_verification(false);
+            console.log("skip email");
+        }
+    }, [skip]);
+    useEffect(() => {
+        if(_showLogin && !focus)
+        {
+            show(); document.body.style.overflow = "hidden";
+        }
+        else
+        {
+            closePopup(); document.body.style.overflow = null;
+        }
+    }, [_showLogin]);
+
+    // called when the background overlay is done fading
+    function dismiss_overlay(e)
+    {
+        /*
+        trying times
+        console.log("end transition", transitioning);
+        console.log("end login", _showLogin);
+        console.log("end focus", focus);
+        console.log("end lock", locked);
+        */
+        if(!_showLogin)
+        {
+            setTransition(false);
+        }
+        else
+        {
+            setFocus(true); overlayBG.current.style.display = "block";
+        }
+    }
+    useEffect(() => {
+        console.log("focus is", focus);
+        if(focus)
+        {
+            if(!transitioning)overlayBG.current.style.opacity = "0.7";
+        }
+        else
+        {
+            if(overlayBG.current.style.opacity !== "0") overlayBG.current.style.opacity = "0";
+            else overlayBG.current.style.display = "none";
+        }
+    }, [focus, skip]);
     return (
         <div className="teaDescendant">
-            {!currentUser ? <button className="signinBtn" onClick={show}>Already a member?</button> : null}
-            <div ref={overlayBG} className="overlay" onClick={closePopup} style={{ display: "none", opacity: "0", zIndex:"5" }} onTransitionEnd={(e) => dismiss_overlay(e)} />
-            <div ref={saucerRef} className="flyingSaucer" style={{ transform: "translate(50vw, -50%)" }}>
+            <div ref={overlayBG} className="overlay" onClick={(e) => {if(focus && document.body.style.overflow === "hidden" && !transitioning)setLogin(false)}} style={{ display: "none", opacity: "0", zIndex:"5" }} onTransitionEnd={(e) => dismiss_overlay(e)} />
+            <div ref={saucerRef} className="flyingSaucer" style={{ transform: "translate(50vw, -50%)" }} onTransitionEnd={(e) => {setFocus(_showLogin)}}>
                 <div ref={popupRef} className="popup">
                     <form ref={formRef} className="loginForm" onSubmit={handleLogin} style={{ transform: "translateX(0)" }}>
                         <input ref={emailRef} type="email" placeholder="*Email address" required></input>

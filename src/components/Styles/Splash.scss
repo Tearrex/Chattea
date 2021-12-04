@@ -7,9 +7,13 @@
 }
 .teaDescendant {
     padding: 10px 0; background-color: $mainOdd;
+    position: revert; position: absolute;
 }
 .splashBody {
     display: flex; flex-flow: column; justify-content: center;
+    .buttonPad {
+        background-color: $mainOdd; padding: 10px;
+    }
     .catch {
         font-weight: 300; font-size: 1rem; gap: 5px; background-color: $mainEven;
         display: flex; flex-flow: column; padding: 10px; align-items: center;
@@ -42,14 +46,11 @@
     0% {
         transform: scale(1);
     }
-    10% {
-        transform: scale(1);
+    40% {
+        transform: scale(0.92);
     }
     50% {
-        transform: scale(0.95);
-    }
-    60% {
-        transform: scale(0.95);
+        transform: scale(0.92);
     }
     100% {
         transform: scale(1);

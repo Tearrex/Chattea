@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth, _dbRef } from "./components/firebase";
 import { doc, addDoc, getDoc, getDocs, collection, query, where } from 'firebase/firestore'
-import Splash from './components/Splash';
 import {BrowserRouter as Router, Route, Link, Routes, useNavigate} from "react-router-dom";
 import { MembersContext, UserContext } from './components/UserContext';
 import Home from './components/Pages/Home';
@@ -11,6 +10,9 @@ import "./components/Styles/Home.scss";
 import "./components/Styles/Splash.scss";
 import "./components/Styles/UserProfile.scss";
 import BriefPost from './components/Pages/BriefPost';
+import SplashPage from './components/Pages/SplashPage';
+import { showLogin } from './components/Pages/LoginContext';
+import Signup from './components/Signup';
 function App() {
 
   const currentUser = useAuth();
@@ -54,21 +56,25 @@ function App() {
     }
   }, [_user]);
 
+  const [_showLogin, setLogin] = useState(false);
   return (
     <Router>
       <UserContext.Provider value={{_user, _setUser}}>
         <MembersContext.Provider value={{_users, _setUsers}}>
-          <div id="main">
-            <div className={currentUser ? "passive light" : "passive dark"} />
-            <TeaBar />
-            <Routes>
-              <Route path="/" element={<Splash />}/>
-              {/* make a whole page component for the main feed */}
-              <Route path="/main" element={<Home/>}/>
-              <Route exact path="/profile/:user_id" element={<ProfilePage/>}/>
-              <Route exact path="/post/:post_id" element={<BriefPost />}/>
-            </Routes>
-          </div>
+          <showLogin.Provider value={{_showLogin, setLogin}}>
+            <div id="main">
+              <div className={currentUser ? "passive light" : "passive dark"} />
+              <TeaBar />
+              <Signup />
+              <Routes>
+                <Route path="/" element={<SplashPage />}/>
+                {/* make a whole page component for the main feed */}
+                <Route path="/main" element={<Home/>}/>
+                <Route exact path="/profile/:user_id" element={<ProfilePage/>}/>
+                <Route exact path="/post/:post_id" element={<BriefPost />}/>
+              </Routes>
+            </div>
+          </showLogin.Provider>
         </MembersContext.Provider>
       </UserContext.Provider>
     </Router>
