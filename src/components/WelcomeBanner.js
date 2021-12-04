@@ -5,14 +5,12 @@ import { MembersContext, UserContext } from './UserContext';
 function WelcomeBanner (props)
 {
     const navigate = useNavigate();
-    const currentUser = useAuth();
     const {_user, _setUser} = useContext(UserContext);
     const {_users, _setUsers} = useContext(MembersContext);
     const [pfp, setPfp] = useState("");
     const [user_id, setUserID] = useState("");
-    const [verified, setVerified] = useState(false);
+    const [show, setShow] = useState(false);
     useEffect(() => {
-        //console.log("name has changed",_user.username);
         if(_user !== undefined)
         {
             setPfp(_user["pfp"]);
@@ -27,35 +25,41 @@ function WelcomeBanner (props)
             //Save the user's data so we don't have to ask for it again.
             _setUsers({..._users, _user});
         }
+        setShow(false);
         logout()
         _setUser(undefined); navigate("/");
     }
-    function make_entry()
+    useEffect(() => {
+        if(show)
+        {
+            selfRef.current.style.zIndex = null;
+            selfRef.current.style.opacity = "1";
+        }
+        else selfRef.current.style.opacity = "0";
+    }, [show]);
+    function hide()
     {
-        selfRef.current.style.transform = null;
+        if(!show) selfRef.current.style.zIndex = "-5";
     }
     return (
-        <div>
-            <div ref={selfRef} className="welcome" id="welcome"
-                    style={{transform:_user === undefined ? "translateX(200%)" : "translateX(0%)",
-                        marginRight:"10px"}}>
-                <img className="pfp" style={{objectFit:"cover", cursor:"pointer"}} src={pfp}
-                    onLoad={make_entry} onClick={(e) => navigate("/profile/" + user_id)}/>
-                <div className="userOptions">
-                    <p>▼</p>
-                    <div className="mpContent">
-                        {/**verified === false ?
-                            <button className="verifyEmail"><span>📧</span>Verify</button>
-                        : null */}
-                        <button className="logout stealthBtn" onClick={logout_user}>log out</button>
-                    </div>
-                </div>
-                <div className="notifMain" onClick={props.notifEvent}>
-                    <p>🔔</p>
-                    <span style={{backgroundColor:(props.notifCount === 0) ? "#8f8f8f": "#E74C3C"}}>{props.notifCount}</span>
+        <div ref={selfRef} className="welcome" id="welcome"
+                style={{zIndex:"-5", opacity:"0", marginRight:"10px"}}
+                    onTransitionEnd={hide}>
+            <img className="pfp" style={{objectFit:"cover", cursor:"pointer"}} src={pfp}
+                onLoad={(e) => setShow(true)} onClick={(e) => navigate("/profile/" + user_id)}/>
+            <div className="userOptions">
+                <p>▼</p>
+                <div className="mpContent">
+                    {/**verified === false ?
+                        <button className="verifyEmail"><span>📧</span>Verify</button>
+                    : null */}
+                    <button className="logout stealthBtn" onClick={logout_user}>log out</button>
                 </div>
             </div>
-
+            <div className="notifMain" onClick={props.notifEvent}>
+                <p>🔔</p>
+                <span style={{backgroundColor:(props.notifCount === 0) ? "#8f8f8f": "#E74C3C"}}>{props.notifCount}</span>
+            </div>
         </div>
     )
 }
