@@ -7,7 +7,7 @@ import { deleteObject, ref } from "firebase/storage";
 import React from 'react';
 import { MembersContext, UserContext } from './UserContext';
 import Comments, { post_comment } from './Comments';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 function MediaPost(props)
 {
     const navigate = useNavigate();
@@ -78,6 +78,18 @@ function MediaPost(props)
         const abort = new AbortController();
         if(image_url !== undefined && image_url !== "")
         {
+            if(!image_url.startsWith("https://firebasestorage.googleapis.com/v0/b/reactback-1cf7d.appspot.com/"))
+            {
+                /*
+                Since the document writes are done in the clientside, it is possible for users
+                to tinker with the JSON values.
+                An alternative would be a proxy server that serves the API on the backend.
+
+                Don't fetch the image link if it's not coming from Firebase, it might be malicious!
+                */
+                warningRef.current.style.display="flex";
+                return;
+            }
             var _oldImage = imageNest.current.getElementsByTagName("img");
             if (_oldImage.length > 0)
             {
@@ -204,6 +216,10 @@ function MediaPost(props)
                 </div>
             </div>
             <div className="mediaSecondary">
+                <div ref={warningRef} className="medWarning" style={{display:"none"}}>
+                    <p className="alienTitle"><span>🛸</span>Uh oh</p>
+                    <p>This image appears to have been abducted by aliens...</p>
+                </div>
                 {image_url !== "" ?
                 <div ref={imageNest} className="mediaPostImg">
                     <div className="imgOverlay" 
