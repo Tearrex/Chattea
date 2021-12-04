@@ -5,8 +5,10 @@ import MediaPost from "../MediaPost";
 import Signup from "../Signup";
 import { useNavigate } from "react-router";
 import { showLogin } from "./LoginContext";
+import { UserContext } from "../UserContext";
 function SplashPage() {
     const [loading, setLoading] = useState(true);
+    const { _user, _setUser} = useContext(UserContext);
     const navigate = useNavigate();
     const inputHeight = 60;
     const [formHeight, setFormHeight] = useState(inputHeight);
@@ -137,10 +139,15 @@ function SplashPage() {
             }
         }
     }
+    function login_action()
+    {
+        if(_user === undefined) setLogin(true);
+        else navigate("/main");
+    }
     return (
         <div className="splashBody">
             <div className="buttonPad">
-                <button className="signinBtn" onClick={(e) => setLogin(true)}>Already a member?</button>
+                <button className="signinBtn" onClick={login_action}>{_user ? "Enter" : "Already a member?"}</button>
             </div>
             <div className="catch">
                 <h1>Wander around the <span>interwebs</span></h1>
