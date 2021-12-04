@@ -11,6 +11,8 @@ import { useNavigate } from 'react-router';
 function MediaPost(props)
 {
     const navigate = useNavigate();
+    // didn't have time to finish, will commit feature later
+    //const {page_user_id} = useParams();
     const {_user, _setUser} = useContext(UserContext);
     const {_users, _setUsers} = useContext(MembersContext);
     const { caption, content, date, image_url, user_id} = props.msg;
@@ -21,9 +23,13 @@ function MediaPost(props)
 
     const [pfp, setPfp] = useState("/default_user.png");
 
+    // i don't think this is necessary...
     useEffect(() => {
         setCaption(caption)
     }, [caption]);
+    /*
+    Formats the timestamp value of the post for a nice looking date.
+    */
     useEffect(() => {
         if(date !== null && date !== undefined && postDate === "")
         {
@@ -31,14 +37,16 @@ function MediaPost(props)
             .format(date.toDate()).toString());
         }
     }, [date]);
+    /*
+    This effect is called when there are new additions to the
+    client's user cache. It will set the appropriate username and profile picture
+    as soon as it is pulled from the database.
+    */
     useEffect(() => {
-        //if(_users !== undefined) console.log(_users["members"]);
-        //if(currentUser !== undefined && user_id !== undefined && user_id !== null && user_id !== "" && name === "")
-        
         if(user_id !== undefined)
         {
             //if(_users[user_id] !== undefined) return;
-            if(user_id === _user["user_id"] && user_id !== undefined)
+            if(_user !== undefined && user_id === _user["user_id"])
             {
                 setPfp(_user["pfp"]);
                 setAuthor(true);
@@ -50,14 +58,10 @@ function MediaPost(props)
             }
             else
             {
-                //console.log("USER ID FROM POST: " + user_id);
-                //console.log("is this it?");
                 if(_users[user_id] !== undefined)
                 {
                     var user = _users[user_id];
-                    //console.log("user info exists in cache ! " + user.username);
                     var _pfp = user.pfp;
-                    var _join = user.join_date;
                     if(_pfp !== "") setPfp(_pfp);
                     return;
                 }
@@ -65,6 +69,11 @@ function MediaPost(props)
         }
     }, [_users, _user]);
     const imageNest = useRef();
+    /*
+    If the post has an image url, it will be loaded into a new image element.
+    I prefer this method as I can add loading animations later on to make it smoother.
+    */
+    const warningRef = useRef();
     useEffect(() => {
         const abort = new AbortController();
         if(image_url !== undefined && image_url !== "")
@@ -177,6 +186,7 @@ function MediaPost(props)
             props.toCache(commenters);
         })
     }
+    
     return (
         <div className="mediaCard" onClick={() => console.log("POST: " + props.postID + " AUTHOR: " + props.authorID)}>
             <div className="postUserInfo" style={{boxShadow:image_url === "" ? "none":null}}>

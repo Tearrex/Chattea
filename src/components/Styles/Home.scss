@@ -80,19 +80,18 @@ body {
 }
 
 .welcome {
-    margin: 0; position: absolute; right: 0;
     z-index: 5; gap: 10px;
     /*width: 100%; position: absolute;*/
     color: #fff; flex-flow: row-reverse;
     font-size: 1.5rem;
     font-weight: lighter;
     display: flex;
-    transition: transform 1s ease-out;
-    -webkit-transition: transform 1s ease-out;
+    transition: opacity 0.4s ease-in;
+    -webkit-transition: opacity 0.4s ease-in;
     align-items: center;
 }
 .persistor {
-    position: sticky; top: 0; z-index: 5;
+    position: sticky; top: 0; z-index: 2;
 }
 .teaBar {
     z-index: 5; top: 0;
@@ -106,7 +105,7 @@ body {
     transform: translateX(-50%);
     /*width: 100%;*/
     transition: transform 2s ease, left 2s ease-in-out;
-    color: rgb(98, 98, 98);
+    color: $darkText;
     font-size: 1.3rem;
     justify-content: revert;
     align-items: center;
@@ -118,6 +117,7 @@ body {
         display: flex;
         font-size: 1.7rem;
         align-items: center;
+        color: $darkerText;
         span {
             color: $niceOrange;
         }
@@ -152,7 +152,7 @@ body {
     transition: bottom 0.5s ease-out;
 }
 
-#root, #main {
+#main {
     text-align: center;
     justify-content: center;
     justify-items: center;
@@ -165,29 +165,24 @@ body {
 }
 
 .overlay {
-    position: fixed;
-    z-index: 5;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #000;
-    opacity: 0.7;
+    position: fixed; z-index: 3; display: none;
+    top: 0; left: 0; bottom: 0;
+    width: 100%; height: 100%;
+    background-color: #000; opacity: 0.7;
     transition: opacity 0.5s ease-out;
+    form {
+        display: grid;
+    }
 }
 
-.overlay form {
-    display: grid;
-}
 .userOptions {
-    align-items: center;
+    align-items: center; position: relative;
     p {
         margin: 0; width: 100%; color:#3e3e3e;
     }
     .mpContent {
-        margin-top: 0; left: 0;
-        display: none;
+        margin-top: 0; right: 0;
+        display: none; white-space: nowrap;
         button {
             padding: 15px 25px;
         }
@@ -250,9 +245,6 @@ body {
         background-color: #8f8f8f;
         padding: 5px 10px; border-radius: 5px;
         transition: background-color 0.5s ease-in;
-    }
-    .mpContent {
-        color: #000; position: absolute; right: 0;
     }
     &:hover {
         .mpContent {
@@ -388,7 +380,6 @@ body {
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
     label {
         background-image: url(#{$assetPath}/cam_icon.svg);
-    
         background-size: 40px 40px;
         background-color: $niceOrange;
         border-radius: 20px 0 0 20px;
@@ -498,7 +489,6 @@ body {
         border: none;
         background-color: #d1d1d1;
         padding: 15px 10px;
-        width: 100%;
         font-size: 1.2rem;
         transition: background-color 0.5s ease-out, box-shadow 0.2s ease-in;
     }
@@ -522,7 +512,7 @@ body {
     }
     p {
         color: rgb(182, 182, 182);
-        font-size: 1.2rem;
+        font-size: 1.2rem; margin: 10px 0;
     }
 }
 #loader {
@@ -765,6 +755,22 @@ body {
 }
 .mediaSecondary {
     width: 100%;
+    .medWarning {
+        display: flex; flex-flow: column; padding: 20px;
+        background-color: #5f5f5f; color: #18cc0e; gap: 10px;
+        background-image: linear-gradient(to right, #948e8e 15%, #a8a4a4, #948e8e 85%);
+        .alienTitle {
+            color: $lightText;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0; font-weight: normal; font-size: 1.4rem;
+            span {
+                font-size: 3rem;
+            }
+        }
+        p {
+            margin: 0; font-size: 1.2rem;
+        }
+    }
 }
 .postActions {
     display: flex; height: 50px; position: relative;
