@@ -165,15 +165,9 @@
     }
 }
 .profilePicture {
-    width: 70px;
-    height: 70px;
-    display: inline-block;
-    vertical-align: middle;
-    border-radius: 50%;
-    transition: border-radius 0.5s ease;
-}
-.userAndPfp:hover .profilePicture {
-    cursor: pointer;
+    width: 70px; height: 70px;
+    border-radius: 50%; background-color: $niceOrange;
+    transition: border-radius 0.5s ease; cursor: pointer;
 }
 .nameField {
     display: flex; gap: 10px;
@@ -190,10 +184,11 @@
         &:focus + .charCount {
             opacity: 1;
         }
-        .charCount {
-            margin:0; opacity: 0; font-size: 1.5rem;
-            color: #fff; font-weight: normal; width: 0;
-        }
+        
+    }
+    .charCount {
+        margin:0; opacity: 0; font-size: 1.5rem;
+        color: #fff; font-weight: normal; width: 0;
     }
 }
 .aboutSection {
