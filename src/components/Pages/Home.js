@@ -5,7 +5,7 @@ import WelcomeBanner from "../WelcomeBanner";
 import { Timestamp, addDoc, getDoc, getDocs, collection, orderBy, query, limit, serverTimestamp, doc, where, setDoc } from 'firebase/firestore'
 import { useAuth, _dbRef } from "../firebase";
 import { useContext } from "react";
-import { UserContext } from "../UserContext";
+import { UserContext } from "../Contexts";
 function Home()
 {
     const {_user, _setUser} = useContext(UserContext);

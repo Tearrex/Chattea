@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth, _dbRef } from "./components/firebase";
 import { doc, addDoc, getDoc, getDocs, collection, query, where } from 'firebase/firestore'
 import {BrowserRouter as Router, Route, Link, Routes, useNavigate} from "react-router-dom";
-import { MembersContext, UserContext } from './components/UserContext';
 import Home from './components/Pages/Home';
+import { MembersContext, UserContext, showLogin } from './components/Contexts';
 import TeaBar from './components/TeaBar';
 import ProfilePage from './components/Pages/ProfilePage';
 import "./components/Styles/Home.scss";
@@ -11,7 +11,6 @@ import "./components/Styles/Splash.scss";
 import "./components/Styles/UserProfile.scss";
 import BriefPost from './components/Pages/BriefPost';
 import SplashPage from './components/Pages/SplashPage';
-import { showLogin } from './components/Pages/LoginContext';
 import Signup from './components/Signup';
 function App() {
 

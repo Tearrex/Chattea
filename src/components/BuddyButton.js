@@ -1,7 +1,7 @@
 import { doc, updateDoc, arrayRemove, arrayUnion, setDoc, serverTimestamp } from "firebase/firestore";
 import { useState, useEffect, useContext, useRef } from "react";
 import { _dbRef } from "./firebase";
-import { UserContext } from "./UserContext";
+import { UserContext } from "./Contexts";
 
 function BuddyButton(props) {
     const {_user, _setUser} = useContext(UserContext);

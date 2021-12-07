@@ -5,7 +5,7 @@ import { useAuth, dbRef, _dbRef, _storageRef } from './firebase';
 import SmileButton from './SmileButton';
 import { deleteObject, ref } from "firebase/storage";
 import React from 'react';
-import { MembersContext, UserContext } from './UserContext';
+import { MembersContext, UserContext } from './Contexts';
 import Comments, { post_comment } from './Comments';
 import { useNavigate, useParams } from 'react-router';
 function MediaPost(props)

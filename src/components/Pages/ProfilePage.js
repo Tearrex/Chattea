@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState, useRef } from "react";
 import MediaFeed from "../MediaFeed";
-import { MembersContext, UserContext } from "../UserContext";
+import { MembersContext, UserContext } from "../Contexts";
 import { updateDoc, doc } from "firebase/firestore";
 import { useAuth, _storageRef, _dbRef } from "../firebase";
 import { uploadBytesResumable, ref, getDownloadURL } from "firebase/storage";

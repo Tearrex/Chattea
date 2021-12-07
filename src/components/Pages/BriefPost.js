@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { _dbRef } from "../firebase";
 import MediaPost from "../MediaPost";
-import { MembersContext, UserContext } from "../UserContext";
+import { MembersContext, UserContext } from "../Contexts";
 
 function BriefPost()
 {

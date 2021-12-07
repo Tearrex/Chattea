@@ -5,7 +5,7 @@ import { _dbRef } from "./firebase";
 import { addDoc, serverTimestamp } from "@firebase/firestore";
 import { ref } from "@firebase/storage";
 import { useContext, useEffect, useState } from "react";
-import { MembersContext, UserContext } from "./UserContext";
+import { MembersContext, UserContext } from "./Contexts";
 async function post_comment(text, postID, user_id, author_id)
 {
     if(text.trim() === "") return;

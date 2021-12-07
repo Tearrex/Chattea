@@ -4,8 +4,7 @@ import { signup } from "../firebase";
 import MediaPost from "../MediaPost";
 import Signup from "../Signup";
 import { useNavigate } from "react-router";
-import { showLogin } from "./LoginContext";
-import { UserContext } from "../UserContext";
+import { UserContext, showLogin } from "../Contexts";
 function SplashPage() {
     const [loading, setLoading] = useState(true);
     const { _user, _setUser} = useContext(UserContext);

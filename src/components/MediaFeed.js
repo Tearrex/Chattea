@@ -3,7 +3,7 @@ import { useCollectionData, useCollection } from "react-firebase-hooks/firestore
 import MediaPost from './MediaPost';
 import { _dbRef } from "./firebase";
 import React, { useContext, useEffect, useState } from 'react';
-import { MembersContext, UserContext } from './UserContext';
+import { MembersContext, UserContext } from './Contexts';
 import { getDoc, getDocs, doc, where, startAfter, startAt, endAt, endBefore } from '@firebase/firestore';
 import InfiniteScroll from 'react-infinite-scroll-component';
 function MediaFeed (props)

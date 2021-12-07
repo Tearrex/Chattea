@@ -3,10 +3,9 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import { signup, useAuth, login } from "./firebase"
 import { useNavigate } from "react-router-dom"
-import { MembersContext, UserContext } from "./UserContext";
+import { MembersContext, UserContext, showLogin } from "./Contexts";
 import { updateEmail, sendEmailVerification, getAuth } from '@firebase/auth';
 import { doc } from "@firebase/firestore";
-import { showLogin } from "./Pages/LoginContext";
 function Signup(props) {
     const navigate = useNavigate();
     const currentUser = useAuth();

@@ -3,7 +3,7 @@ import { getDoc, doc, arrayUnion, arrayRemove, updateDoc, deleteDoc, query } fro
 import { deleteObject, ref } from "firebase/storage";
 import { useAuth, _dbRef, _storageRef } from './firebase';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
-import { UserContext } from "./UserContext";
+import { UserContext } from "./Contexts";
 import { collection } from "@firebase/firestore";
 import SmileCounter from "./SmileCounter";
 

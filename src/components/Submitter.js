@@ -4,7 +4,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { useAuth, _storageRef, _dbRef } from './firebase'
 import { uploadBytesResumable, ref, getDownloadURL } from "firebase/storage"
 import { doc, updateDoc } from "firebase/firestore";
-import { UserContext } from './UserContext';
+import { UserContext } from './Contexts';
 import { Timestamp, addDoc, setDoc, collection } from 'firebase/firestore';
 import imageCompression from 'browser-image-compression';
 //import axios from 'axios';
