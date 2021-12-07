@@ -1,8 +1,8 @@
 import { useContext, useRef, useState, useEffect } from 'react';
 import { logout, useAuth } from './firebase'
 import { useNavigate } from 'react-router';
-import { MembersContext, UserContext } from './UserContext';
-function WelcomeBanner (props)
+import { MembersContext, UserContext } from './Contexts';
+function UserPanel (props)
 {
     const navigate = useNavigate();
     const {_user, _setUser} = useContext(UserContext);
@@ -16,6 +16,7 @@ function WelcomeBanner (props)
             setPfp(_user["pfp"]);
             setUserID(_user["user_id"]);
         }
+        else setPfp(null);
     }, [_user]);
     const selfRef = useRef();
     function logout_user()
@@ -63,4 +64,4 @@ function WelcomeBanner (props)
         </div>
     )
 }
-export default WelcomeBanner;
+export default UserPanel;
