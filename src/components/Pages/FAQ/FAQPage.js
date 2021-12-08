@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router";
 import { useContext } from "react/cjs/react.development";
-import { UserContext } from "../Contexts";
-import GithubButton from "../GithubButton";
+import { UserContext } from "../../Contexts";
+import GithubButton from "../../GithubButton";
 import FAQuestion from "./FAQuestion";
 
-function FAQ (props)
+function FAQPage (props)
 {
     const navigate = useNavigate();
     const { _user, _setUser } = useContext(UserContext);
@@ -113,4 +113,4 @@ function FAQ (props)
         </div>
     )
 }
-export default FAQ;
+export default FAQPage;
