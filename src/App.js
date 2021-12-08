@@ -11,7 +11,7 @@ import Home from './components/Pages/Home';
 import ProfilePage from './components/Pages/ProfilePage';
 import BriefPost from './components/Pages/BriefPost';
 import SplashPage from './components/Pages/SplashPage';
-import FAQ from './components/Pages/FAQ/FAQPage';
+import FAQ from './components/Pages/FAQPage';
 // Styles
 import "./components/Styles/Home.scss";
 import "./components/Styles/Splash.scss";

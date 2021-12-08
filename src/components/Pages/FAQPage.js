@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router";
 import { useContext } from "react/cjs/react.development";
-import { UserContext } from "../../Contexts";
-import GithubButton from "../../GithubButton";
+import { UserContext } from "../Contexts";
+import GithubButton from "../GithubButton";
 import FAQuestion from "./FAQuestion";
 
 function FAQ (props)
