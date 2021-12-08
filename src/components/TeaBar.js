@@ -4,7 +4,7 @@ import WelcomeBanner from "./WelcomeBanner";
 import Signup from "./Signup";
 import { Link } from "react-router-dom";
 import { useContext, useEffect, useState, useRef } from "react";
-import { MembersContext, UserContext } from "./UserContext";
+import { MembersContext, UserContext } from "./Contexts";
 import NotificationChild from "./NotificationChild";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { collection, getDoc, limit, orderBy, query, doc } from "@firebase/firestore";
@@ -108,7 +108,7 @@ function TeaBar ()
                         </div>
                         <p style={{opacity:currentUser ? "0" : "1"}}>with people!</p>
                     </div>
-                    <WelcomeBanner notifEvent={toggle_notif_nest} notifCount={notifCount} pfp={_user !== undefined ? _user["pfp"] : ""}/>
+                    <UserPanel notifEvent={toggle_notif_nest} notifCount={notifCount} pfp={_user !== undefined ? _user["pfp"] : ""}/>
                 </div>
                 <div ref={notifNest} className="notifNest" style={{display:"none"}}>
 
