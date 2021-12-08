@@ -1,7 +1,7 @@
 import MediaFeed from "../MediaFeed";
 import Scroller from "../Scroller";
 import Submitter from "../Submitter";
-import WelcomeBanner from "../WelcomeBanner";
+import UserPanel from "../UserPanel";
 import { Timestamp, addDoc, getDoc, getDocs, collection, orderBy, query, limit, serverTimestamp, doc, where, setDoc } from 'firebase/firestore'
 import { useAuth, _dbRef } from "../firebase";
 import { useContext } from "react";

@@ -1,6 +1,6 @@
 //import { Link } from "react-router-dom";
 import { useAuth, _dbRef } from "./firebase";
-import WelcomeBanner from "./WelcomeBanner";
+import UserPanel from "./UserPanel";
 import Signup from "./Signup";
 import { Link } from "react-router-dom";
 import { useContext, useEffect, useState, useRef } from "react";
