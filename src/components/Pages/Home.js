@@ -44,7 +44,7 @@ function Home()
     }
     return (
         <div className="homeWrapper">
-            <div id="home">
+            <div id="home" className="clamper">
                 <Submitter onMessageSend={postMessage}/>
                 <MediaFeed />
             </div>
