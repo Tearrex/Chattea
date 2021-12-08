@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { useContext } from "react/cjs/react.development";
+import { useContext } from "react";
 import { UserContext } from "../../Contexts";
 import GithubButton from "../../GithubButton";
 import FAQuestion from "./FAQuestion";
