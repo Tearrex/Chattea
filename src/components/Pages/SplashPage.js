@@ -5,6 +5,7 @@ import MediaPost from "../MediaPost";
 import Signup from "../Signup";
 import { useNavigate } from "react-router";
 import { UserContext, showLogin } from "../Contexts";
+import GithubButton from "../GithubButton";
 function SplashPage() {
     const [loading, setLoading] = useState(true);
     const { _user, _setUser} = useContext(UserContext);
@@ -181,12 +182,7 @@ function SplashPage() {
                 <p>Before diving in, check out the <span onClick={() => navigate("/faq")}><b>FAQ</b></span></p>
             </div>
             <footer>
-                <button className="githuBtn" onClick={() => window.open("https://github.com/Tearrex/Chattea","_blank")}>
-                    <div className="invertees">
-                        <div/>
-                        <p>See the code</p>
-                    </div>
-                </button>
+                <GithubButton />
             </footer>
         </div>
     );
