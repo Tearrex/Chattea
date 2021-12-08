@@ -2,15 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { useAuth, _dbRef } from "./components/firebase";
 import { doc, addDoc, getDoc, getDocs, collection, query, where } from 'firebase/firestore'
 import {BrowserRouter as Router, Route, Link, Routes, useNavigate} from "react-router-dom";
-import Home from './components/Pages/Home';
 import { MembersContext, UserContext, showLogin } from './components/Contexts';
+
 import TeaBar from './components/TeaBar';
+
+// Pages
+import Home from './components/Pages/Home';
 import ProfilePage from './components/Pages/ProfilePage';
+import BriefPost from './components/Pages/BriefPost';
+import SplashPage from './components/Pages/SplashPage';
+import FAQ from './components/Pages/FAQ/FAQPage';
+// Styles
 import "./components/Styles/Home.scss";
 import "./components/Styles/Splash.scss";
 import "./components/Styles/UserProfile.scss";
-import BriefPost from './components/Pages/BriefPost';
-import SplashPage from './components/Pages/SplashPage';
+
+
 import Signup from './components/Signup';
 function App() {
 
@@ -21,7 +28,7 @@ function App() {
     fetch("/home").then(
       res => res.json()
     ).then(
-      posts => {
+      (posts) => {
         setPosts(posts.members)
         console.log("fetched posts")
         console.log(posts)
@@ -71,6 +78,7 @@ function App() {
                 <Route path="/main" element={<Home/>}/>
                 <Route exact path="/profile/:user_id" element={<ProfilePage/>}/>
                 <Route exact path="/post/:post_id" element={<BriefPost />}/>
+                <Route path="/faq" element={<FAQ/>}/>
               </Routes>
             </div>
           </showLogin.Provider>

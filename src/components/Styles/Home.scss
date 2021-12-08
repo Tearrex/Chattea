@@ -1,10 +1,10 @@
 @import "utils.scss";
-#home {
+.clamper {
     width: clamp(400px, 100%, 600px);
+}
+#home {
     margin-bottom: 30px;
-    display: flex;
-    flex-flow: column;
-    gap: 10px;
+    display: flex; flex-flow: column; gap: 10px;
 }
 footer {
     display: flex; flex-flow: column; width: 100%;
@@ -15,7 +15,7 @@ footer {
     // vertically center the button.....
     margin-left: auto; margin-right: auto; background-color: #2b3137;
     display: flex; flex-flow: row; justify-content: center; align-items: center;
-    border: none; outline: none; padding: 5px 10px; gap: 10px; color: #fff;
+    border: none; outline: none; padding: 10px; gap: 10px; color: #fff;
     font-size: 1.2rem; font-weight: 300; border-radius: 10px;
     transition: background-color 0.4s ease-in-out;
     .invertees {
@@ -39,6 +39,71 @@ footer {
         }
     }
 }
+
+// FAQ SECTION
+.faqNest {
+    display: flex; gap: 10px; flex-flow: column; align-items: center;
+    .faqSignUp {
+        border: none; outline: none; width: 100%; padding:  15px 10px; cursor: pointer;
+        background-color: $niceOrange; color: $lightText; font-size: 1.2rem;
+        &:hover {
+            background-color: $richSmile;
+        }
+    }
+    .faQuestion {
+        width: 100%;
+        button:first-child {
+            display: flex; position: relative;
+            border: none; outline: none; width: 100%; padding:  15px 10px;
+            color: $darkerText; font-size: 1.2rem;
+            // the emoji
+            p {
+                position: absolute; right: 0; margin: 0; margin-right: 10px;
+                font-size: 1.5rem; top: 50%; transform: translateY(-50%);
+            }
+        }
+        .expandable {
+            text-align: left;
+            background-color: $mainEven; overflow: hidden; max-height: 0;
+            transition: max-height 0.4s ease-in;
+            p {
+                margin: 0;
+            }
+            .expansion {
+                display: flex; align-items: center; flex-flow: column;
+                padding: 10px; gap: 10px;
+                .dataSection {
+                    margin: 0; padding: 0;
+                    list-style-position: inside;
+                }
+            }
+        }
+        &:hover {
+            .discordBtn {
+                box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.3);
+            }
+        }
+        .discordBtn {
+            align-self: center;
+            border: none; outline: none; padding: 10px;
+            border-radius:15px; background-color: #7289da; cursor: pointer;
+            transition: box-shadow 0.5s ease-in-out;
+            div:first-child {
+                display: flex; flex-flow: row; align-items: center; gap: 10px;
+                div {
+                    background-image: url(#{$assetPath}/discord.svg);
+                    background-size: contain; background-position: center; background-repeat: no-repeat;
+                    width: 40px; height: 40px;
+                }
+                p {
+                    margin: 0; font-size: 1.2rem; color: $lightText;
+                }
+            }
+        }
+    }
+    
+}
+
 .homeWrapper {
     display: flex; //margin-top: 10px;
     width: 100%;

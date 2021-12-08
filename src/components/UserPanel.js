@@ -55,6 +55,7 @@ function UserPanel (props)
                         <button className="verifyEmail"><span>📧</span>Verify</button>
                     : null */}
                     <button className="logout stealthBtn" onClick={logout_user}>log out</button>
+                    <button className="stealthBtn" onClick={() => navigate("/faq")}>FAQ</button>
                 </div>
             </div>
             <div className="notifMain" onClick={props.notifEvent}>

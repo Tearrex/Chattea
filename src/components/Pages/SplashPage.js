@@ -177,6 +177,9 @@ function SplashPage() {
                     </form>
                 </div>
             </div>
+            <div className="faqMessage">
+                <p>Before diving in, check out the <span onClick={() => navigate("/faq")}><b>FAQ</b></span></p>
+            </div>
             <footer>
                 <button className="githuBtn" onClick={() => window.open("https://github.com/Tearrex/Chattea","_blank")}>
                     <div className="invertees">
