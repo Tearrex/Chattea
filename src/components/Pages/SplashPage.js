@@ -165,7 +165,7 @@ function SplashPage() {
             </div>
             <div className="splashNet">
                 <div className="splash" style={{ backgroundImage: "url('network.png')" }}></div>
-                <div className="splashRegister">
+                <div className="splashRegister" style={{display:(_user === undefined) ? "block" : "none"}}>
                     <p className="splashSub">Start <span>brewing</span> your memories</p>
                     <form onSubmit={(e) => advance_form(e)}>
                         <div ref={expandForm} style={{ maxHeight: formHeight + "px" }}>
