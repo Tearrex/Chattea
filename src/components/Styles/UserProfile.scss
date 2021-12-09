@@ -205,11 +205,39 @@
     padding: 10px; align-items: center;
     .buddyInfo {
         display: flex; align-items: center; flex-flow: row; flex-shrink: 0;
-        justify-content: center; gap: 20px;
+        justify-content: center; gap: 10px;
         .buddies {
             display: flex; flex-flow: row; align-items: center;
-            span {
-                font-size: 1.5rem;
+            background-color: #85C1E9; padding: 10px;
+            p {
+                margin: 0;
+            }
+            &:hover {
+                background-color: #5DADE2;
+            }
+        }
+    }
+    .buddiesFrame {
+        z-index: 4; padding: 10px; background-color: $mainFore;
+        width: clamp(200px, 70%, 600px); max-height: 50%; overflow-y: scroll;
+        display: flex; flex-flow: column; gap: 10px;
+        .buddyItem {
+            position: relative;
+            display: flex; flex-flow: row; justify-content: center; align-items: center; gap: 10px;
+            background-color: $mainEven; padding: 10px; color: $darkerText; font-size: 1.2rem;
+            .buddy {
+                flex: 100%;
+                display: flex; flex-flow: row; align-items: center; gap: 10px;
+            }
+            .pfp {
+                width: 60px; height: 60px; background-color: $niceOrange; border-radius: 50%;
+                flex-shrink: 0; cursor: pointer;
+            }
+            .buddyBtn {
+                flex-shrink: 0;
+            }
+            &:hover {
+                background-color: #bdbdbd; 
             }
         }
     }
@@ -232,10 +260,11 @@
     input {
         display: none;
     }
-    span {
+    p {
         color: #fff; background-color: #E67E22; padding: 10px 15px;
+        font-size: 1.2rem; margin: 0;
     }
-    input:checked + span {
+    input:checked + p {
         background-color: #414141;
     }
 }

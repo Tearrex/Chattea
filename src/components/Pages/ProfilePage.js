@@ -5,7 +5,8 @@ import { updateDoc, doc } from "firebase/firestore";
 import { useAuth, _storageRef, _dbRef } from "../firebase";
 import { uploadBytesResumable, ref, getDownloadURL } from "firebase/storage";
 import { useParams } from "react-router";
-import BuddyButton from "../BuddyButton";
+import BuddyButton from "../Buddies/BuddyButton";
+import BuddyList from "../Buddies/BuddyList";
 function ProfilePage(props) {
     const { _user, _setUser } = useContext(UserContext);
     const { _users, _setUsers } = useContext(MembersContext);
@@ -37,7 +38,7 @@ function ProfilePage(props) {
     const profileCard = useRef();
     const bannerChanger = useRef();
     const pfpChanger = useRef();
-    const [buddies, setBuddies] = useState(0);
+    const [buddies, setBuddies] = useState([]);
     useEffect(() => {
         console.log("PASSED ID HEREE ->>>", user_id);
         if(_user !== undefined) profile_cleanup();
@@ -45,10 +46,12 @@ function ProfilePage(props) {
     function profile_cleanup()
     {
         console.log("cleanup called!");
-        var inputs = profileCard.current.getElementsByTagName("input");
-        //console.log("fetched inputs", inputs);
+        /*
+        If the user is viewing a profile other than their own,
+        don't allow them to edit the input fields.
+        */
         var isUserSelf = (user_id === _user.user_id);
-        //console.log("user is self?", isUserSelf);
+        var inputs = profileCard.current.getElementsByTagName("input");
         for(let i = 0; i < inputs.length; i++)
         {
             if(inputs[i].className === "addBuddy") continue;
@@ -64,12 +67,13 @@ function ProfilePage(props) {
             bannerChanger.current.style.opacity = "0";
             pfpChanger.current.style.display = "none";
         }
+        // if it's the user's own profile, set their information
         if (_user !== undefined && user_id === _user.user_id) {
             var __user = _user;
             //console.log("User's profile", __user);
             setName(__user.username);
             setUserPfp(__user.pfp);
-            setBuddies(__user.buddies.length);
+            setBuddies(__user.buddies);
             setOrigPfp(__user.pfp);
             //setFocus(__user.user_id);
             setBio(__user.about);
@@ -79,13 +83,14 @@ function ProfilePage(props) {
                 setBanner(__user.banner); setOrigBanner(__user.banner);
             }
         }
+        // otherwise, grab info from the members context/cache
         else if (user_id !== undefined && _users[user_id] !== undefined)
         {
             var __user = _users[user_id];
             console.log("Author's profile", __user);
             setName(__user.username);
             setUserPfp(__user.pfp);
-            setBuddies(__user.buddies.length);
+            setBuddies(__user.buddies);
             setOrigPfp(__user.pfp);
             //setFocus(__user.user_id);
             setBio(__user.about);
@@ -140,14 +145,12 @@ function ProfilePage(props) {
 
     }, [bioText]);
     function update_pfp(e) {
-        console.log("pfp changed!");
         console.log(e.target.files[0]);
         setSave(true);
         setPfpFile(e.target.files[0]);
         setUserPfp(URL.createObjectURL(e.target.files[0]));
     }
     function update_banner(e) {
-        console.log("banner changed!");
         console.log(e.target.files[0]);
         setSave(true);
         setBannerFile(e.target.files[0]);
@@ -271,7 +274,7 @@ function ProfilePage(props) {
     const bannerRef = useRef();
     return (
         <div className="homeWrapper">
-            <div id="home">
+            <div id="home" className="clamper">
                 <div ref={profileCard} className="mainProfile" id="mainProfile" style={{ width: "100%" }}>
                     <div className="niceClip" style={{ backgroundImage: "url('"+ userBanner +"')",position:"relative"}}>
                         <label ref={bannerChanger} className="bannerBtn niceClip" style={{ backgroundImage: "url('/cam_icon.svg')", borderRadius: "0" }}>
@@ -306,10 +309,7 @@ function ProfilePage(props) {
                     <div className="userInfo">
                         <p>Joined <span>{joinDate}</span></p>
                         <div className="buddyInfo">
-                            <div className="buddies">
-                                <span>👥</span>
-                                <p>{buddies}</p>
-                            </div>
+                            <BuddyList buddies={buddies}/>
                             {(_user !== undefined && _user.user_id !== user_id) ?
                             <BuddyButton buddy={user_id}/> : null}
                         </div>

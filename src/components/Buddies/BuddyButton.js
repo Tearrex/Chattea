@@ -1,7 +1,7 @@
 import { doc, updateDoc, arrayRemove, arrayUnion, setDoc, serverTimestamp } from "firebase/firestore";
 import { useState, useEffect, useContext, useRef } from "react";
-import { _dbRef } from "./firebase";
-import { UserContext } from "./Contexts";
+import { _dbRef } from "../firebase";
+import { UserContext } from "../Contexts";
 
 function BuddyButton(props) {
     const {_user, _setUser} = useContext(UserContext);
@@ -24,7 +24,7 @@ function BuddyButton(props) {
                 buddies: arrayUnion(props.buddy)
             }).then(() => {
                 setAdded(true);
-                const _notifRef = doc(_dbRef, "users/"+props.buddy+"/notifications/"+_user.user_id);
+                /*const _notifRef = doc(_dbRef, "users/"+props.buddy+"/notifications/"+_user.user_id);
                 try {
                     setDoc(_notifRef, {
                         type: "buddy",
@@ -33,7 +33,7 @@ function BuddyButton(props) {
                     .catch((e) => console.log("failed to notify user"));
                 } catch (error) {
                     console.log("failed to notify user");
-                }
+                }*/
             });
             oldUser.buddies.push(props.buddy);
         }
@@ -52,7 +52,7 @@ function BuddyButton(props) {
     return (
         <label className="buddyBtn">
             <input ref={inputRef} className="addBuddy" type="checkbox" onClick={(e) => buddify(e.target.checked)} />
-            <span className="stealthBtn">{!added ? "Add" : "Remove"}</span>
+            <p className="stealthBtn">{!added ? "Add" : "Remove"}</p>
         </label>
     )
 }
