@@ -15,6 +15,14 @@ function Submitter(props)
     const [file, setFile] = useState(null);
     const [localFile, setLocalFile] = useState(null);
 
+    /*
+    used to prevent the user from spamming, it starts to get expensive!
+    this is only checked on the clientside, so it is still vulnerable.
+    */
+    const [lastAction, setLastAction] = useState(0);
+    const [cooldown, setCooldown] = useState(0);
+    const cooldownIncrement = 10000;
+
     const subWarning = useRef();
     function onFileChange (e)
     {
@@ -36,11 +44,9 @@ function Submitter(props)
     }, [localFile]);
     function remove_image()
     {
-        //console.log("remove damni!");
         setCaption("");
         imageField.current.value = null;
         setFile(null); setLocalFile(null);
-        //fileNest.current.style.transform = "scale(0)";
         fileNest.current.style.maxHeight = "0";
     }
     const fileNest = useRef();
@@ -98,7 +104,11 @@ function Submitter(props)
         if(!currentUser || canSave === false) return;
         if(uploading || compressing) return;
         if (_text.trim() === "" && file === null) return;
-        //_setText("");
+        if(lastAction > 0 && cooldown >= (Date.now() - lastAction))
+        {
+            alert("Spam Protection: Please wait " + ((cooldown - (Date.now() - lastAction))/1000).toFixed(1) + " seconds before posting again.");
+            return;
+        }
         const newPost = doc(collection(_dbRef, "posts"));
         var _content = _text;
         var _author = _user.user_id;
@@ -113,6 +123,7 @@ function Submitter(props)
             const _ref = ref(_storageRef, "images/" + _author + "/" + newPost.id);
             if(_file === false)
             {
+                // need to improve my error handles...
                 alert("compression process failed!");
                 return;
             }
@@ -159,7 +170,7 @@ function Submitter(props)
             }
             catch (e){console.log(e);}
         }
-        _setText("");
+        _setText(""); setLastAction(Date.now()); setCooldown(cooldown + cooldownIncrement);
     }
     useEffect(() => {
         if(_text.trim() === "" && localFile === null) setSave(false);

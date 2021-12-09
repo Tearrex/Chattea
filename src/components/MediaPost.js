@@ -158,11 +158,23 @@ function MediaPost(props)
     const commentSub = useRef();
     const textInput = useRef();
     const [comment, setComment] = useState("");
+    /*
+    used to prevent the user from spamming, it starts to get expensive!
+    this is only checked on the clientside, so it is still vulnerable.
+    */
+    const [lastAction, setLastAction] = useState(0);
+    const [cooldown, setCooldown] = useState(0);
+    const cooldownIncrement = 10000;
     async function handle_comment(e)
     {
         e.preventDefault();
+        if(lastAction > 0 && cooldown >= (Date.now() - lastAction))
+        {
+            alert("Spam Protection: Please wait " + ((cooldown - (Date.now() - lastAction))/1000).toFixed(1) + " seconds before commenting again.");
+            return;
+        }
         var _comment = comment;
-        setComment("");
+        setComment(""); setLastAction(Date.now()); setCooldown(cooldown + cooldownIncrement);
         var result = await post_comment(_comment, postID, _user["user_id"], user_id);
         //if(result === true) textInput.current.value = "";
     }
