@@ -129,7 +129,6 @@ function MediaPost(props)
     const deleteOverlay = useRef();
     function toggle_options(show)
     {
-        console.log("toggle",show);
         if(show === false)
         {
             deleteOptions.current.style.display="none";
@@ -223,7 +222,7 @@ function MediaPost(props)
                 {image_url !== "" ?
                 <div ref={imageNest} className="mediaPostImg">
                     <div className="imgOverlay" 
-                        style={{opacity:(captionInput !== "" || props.authorID === _user["user_id"]) ? null: "0"}}>
+                        style={{opacity:(captionInput !== "") ? null: "0"}}>
                         <p>{captionInput}</p>
                     </div>
                     {/**<div style={{backgroundImage:"url("+image_url+")"}} /> */}
