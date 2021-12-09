@@ -8,6 +8,37 @@ import { MembersContext, UserContext } from "../Contexts";
 function BriefPost()
 {
     const navigate = useNavigate();
+    const [cache, setCache] = useState([]);
+    useEffect(() => {
+        if(cache.length > 0)
+        {
+            var _toCache = {};
+            for (let i = 0; i < cache.length; i++)
+            {
+                if(_users[cache[i]] === undefined && cache[i] !== _user.user_id)
+                {
+                    if (_toCache[cache[i]] !== undefined) continue;
+                    const userRef = doc(_dbRef, "users", cache[i]);
+                    getDoc(userRef).then((snapshot) => {
+                        if(snapshot.exists())
+                        {
+                            //console.log("getting billed by Google!");
+                            var _json = {user_id: snapshot.id, ...snapshot.data()};
+                            _toCache[cache[i]] = _json;
+                            console.log("ADDED to cache (buddy list)", _json);
+                        }
+                        else console.log("COULDNT FIND " + cache[i]);
+                        // set users here on last iteration
+                        if(i === cache.length - 1)
+                        {
+                            _setUsers( {..._users, ..._toCache});
+                            //console.log("members context set!", _toCache);
+                        }
+                    }).catch((error) => {alert(error)});
+                }
+            }
+        }
+    }, [cache]);
     const {_user, _setUser} = useContext(UserContext);
     const {_users, _setUsers} = useContext(MembersContext);
     const [post, setPost] = useState(null);
@@ -43,6 +74,18 @@ function BriefPost()
             }
         }
     }, [post, _user]);
+    function send_commenters_to_cache(commenters)
+    {
+        var _cache = [];
+        for(let i = 0; i < commenters.length; i++)
+        {
+            if(commenters[i] !== _user.user_id && !cache.includes(commenters[i]) && _users[commenters[i]] === undefined)
+            {
+                _cache.push(commenters[i]);
+            }
+        }
+        if(_cache.length > 0) setCache([...cache, ..._cache]);
+    }
     return (
         //clamp(400px, 100%, 600px)
         <div className="postPage">
@@ -51,7 +94,8 @@ function BriefPost()
                 <h1 style={{color:"#fff", fontWeight:"normal"}}>🤔 That post does not exist!</h1>
                 <button onClick={(e) => navigate("/main")}>Go back home</button>
             </div> :
-            <MediaPost onDelete={(e) => navigate("/main")} replaceImg={true} postID={post_id} msg={post} authorID={post.user_id}/>
+            <MediaPost onDelete={(e) => navigate("/main")} replaceImg={true}
+                postID={post_id} msg={post} authorID={post.user_id} toCache={(e) => send_commenters_to_cache(e)}/>
             }
         </div>
     )
