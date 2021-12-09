@@ -35,6 +35,7 @@ function NotificationChild (props)
         if (props.placeholder === true) return;
         if(type === "comment") navigate("post/"+id);
         else navigate("profile/"+id);
+        document.body.style.overflow = null;
         delete_notif();
     }
     return (
