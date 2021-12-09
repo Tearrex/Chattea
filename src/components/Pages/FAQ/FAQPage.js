@@ -77,7 +77,7 @@ function FAQPage (props)
                             <li>Add a buddy</li>
                         </ul>
                         <p>
-                        This data is NEVER shared with anyone except those that are browsing the website.
+                        This data is NEVER shared with anyone other than those browsing the website.
                         It is only used to make Chattea function properly.
                         </p>
                         <h2 style={{margin:"0"}}>Remember</h2>
