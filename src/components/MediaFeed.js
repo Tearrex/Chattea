@@ -22,32 +22,29 @@ function MediaFeed (props)
     and fetches it from the database into a JSON object if not.
     */
     const [cache, setCache] = useState([]);
-    useEffect(() => {
+    useEffect(async () => {
         if(cache.length > 0)
         {
+            console.log("initial cache is",cache);
             var _toCache = {};
             for(let i = 0; i < cache.length; i++)
             {
-                if(_users[cache[i]] === undefined && cache[i] !== _user.user_id && _user.user_id !== undefined)
+                if(_users[cache[i]] === undefined && cache[i] !== _user.user_id && _toCache[cache[i]] === undefined)
                 {
-                    if (_toCache[cache[i]] !== undefined) continue;
                     const userRef = doc(_dbRef, "users", cache[i]);
-                    getDoc(userRef).then((snapshot) => {
-                        if(snapshot.exists())
-                        {
-                            var _json = {user_id: snapshot.id, ...snapshot.data()};
-                            _toCache[cache[i]] = _json;
-                            console.log("ADDED to cache", _json);
-                        }
-                        else console.log("COULDNT FIND " + cache[i]);
-                        // set users on last iteration
-                        if(i === cache.length - 1)
-                        {
-                            _setUsers( {..._users, ..._toCache});
-                        }
-                    }).catch((error) => {alert(error)});
+                    const _doc = await getDoc(userRef);
+                    if(_doc.exists())
+                    {
+                        var _json = {user_id: _doc.id, ..._doc.data()};
+                        _toCache[cache[i]] = _json;
+                        console.log("ADDED to cache", _json);
+                    }
+                    else console.log("COULDNT FIND " + cache[i]);
                 }
-                
+            }
+            if(Object.entries(_toCache).length > 0)
+            {
+                _setUsers( {..._users, ..._toCache});
             }
         }
     }, [cache]);
@@ -74,10 +71,9 @@ function MediaFeed (props)
     useEffect(() => {
         if(newDoc === null && oldDoc === null && switching)
         {
-            var profile = document.getElementById("mainProfile");
             // wanted to give it smooth behavior but it often starts requesting more
             // posts in the middle of the page scroll since the images don't load right away.
-            profile.scrollIntoView({block:"start"});
+            window.scrollTo(0,0);
             next_batch();
         }
     }, [newDoc, oldDoc, switching]);
@@ -174,7 +170,7 @@ function MediaFeed (props)
             console.log("posts are,",posts);
         }
     }, [posts]);
-    const [more, hasMore] = useState(true);
+    const [more, hasMore] = useState(false);
     function show_posts()
     {
         Object.entries(posts).map((msg) => {
@@ -205,31 +201,21 @@ function MediaFeed (props)
     }
     function cache_user(post)
     {
-        /*if((post[1].user_id !== _user["user_id"] && _user["user_id"] !== undefined) && !cache.includes(post[1].user_id))
-        {
-            //console.log(postContent["user_id"] + " != " + _user["user_id"]);
-            setCache([...cache, post[1].user_id]);
-        }*/
         return (<MediaPost toCache={(e) => send_commenters_to_cache(e)} onDelete={(e) => delete_post(post[0])}key={post[0]} msg={post[1]} postID={post[0]} authorID={post[1].user_id}/>)
     }
     return (
-        /*(Object.entries(posts).length === 0) ? (<p>Loading...</p>) : (
-            Object.entries(posts).map((msg) => 
-                (cache_user(msg))
-            )
-        )*/
         <InfiniteScroll 
-            dataLength={Object.entries(posts).length} //This is important field to render the next data
+            dataLength={Object.entries(posts).length}
             next={next_batch}
             hasMore={more}
             scrollThreshold={"100%"}
-            loader={<h4 style={{color:"#FFF"}}>Loading...</h4>}
+            loader={<div className="loader" />}
             endMessage={
             <h2 style={{textAlign: 'center', color:"#FFF", fontWeight:"normal"}}>
                 ☕ There is no more tea down here...
             </h2>
         }>
-            {(Object.entries(posts).length === 0) ? (<p>Loading...</p>) : (
+            {(Object.entries(posts).length === 0) ? null : (
                 Object.entries(posts).map((msg) => 
                     (cache_user(msg))
                 )
