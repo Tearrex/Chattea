@@ -62,7 +62,7 @@ footer {
             // the emoji
             p {
                 position: absolute; right: 0; margin: 0; margin-right: 10px;
-                font-size: 1.5rem; top: 50%; transform: translateY(-50%);
+                font-size: 1.5rem; top: 50%; transform: translateY(-50%); line-height: 0;
             }
         }
         .expandable {
