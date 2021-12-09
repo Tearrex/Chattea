@@ -219,7 +219,7 @@
     }
     .buddiesFrame {
         z-index: 4; padding: 10px; background-color: $mainFore;
-        width: clamp(200px, 70%, 600px); max-height: 50%; overflow-y: scroll;
+        width: clamp(200px, 90%, 600px); max-height: 50%; overflow-y: scroll;
         display: flex; flex-flow: column; gap: 10px;
         .buddyItem {
             position: relative;
