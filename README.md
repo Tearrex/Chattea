@@ -1,4 +1,6 @@
 # Chattea
+[Live Version](https://chattea.me/)
+
 I wanted to learn React and start off with a social media platform. Before this, I was only familiar with jQuery (a blessing). Being comfortable with pure JavaScript, it was time to give myself a challenge—ON TOP of the social media challenge. I was drawn to the idea of showing it off to friends and it has kept me engaged throughout this learning curve. Sometimes I got so deep into a certain bug that I almost forgot this was only the front-end I was working on.
 Though the satisfaction of solving these headaches beats the sorrow of being stuck!
 
