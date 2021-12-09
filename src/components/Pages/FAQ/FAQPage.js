@@ -96,7 +96,7 @@ function FAQPage (props)
                         feel free to join the Discord server. It is the easiest and fastest
                         way to stay in the loop.
                         </p>
-                        <span className="discordBtn" onClick={() => window.open("https://discord.gg/Z9NnH4eyK8","_blank")}>
+                        <span className="discordBtn" onClick={() => window.open("https://discord.gg/S5gzJpFKKa","_blank")}>
                             <div>
                                 <div/>
                                 <p>Join Server</p>
