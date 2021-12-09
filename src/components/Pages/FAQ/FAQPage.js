@@ -61,7 +61,7 @@ function FAQPage (props)
                         <p>
                         This information is recorded on a database to keep track of every user that exists on the website.
                         Other websites follow a similar process, though they probably collect a lot more
-                        and hide it behind a lengthy terms of service agreement that looks like gibberish (can you relate?).
+                        and hide it behind a lengthy terms of service agreement that looks like gibberish—can you relate?
                         </p>
                         <p>Every user is assigned an <b>identifier</b> upon signing up.
                         The identifier (ID) is a unique sequence of random letters and numbers that is used to distinguish you
@@ -78,8 +78,7 @@ function FAQPage (props)
                         </ul>
                         <p>
                         This data is NEVER shared with anyone except those that are browsing the website.
-                        It is only used to make Chattea function properly. Social medias are just huge bulks of data
-                        that are presented to the user with a pretty interface.
+                        It is only used to make Chattea function properly.
                         </p>
                         <h2 style={{margin:"0"}}>Remember</h2>
                         <p>
@@ -91,7 +90,7 @@ function FAQPage (props)
                     <FAQuestion question="But why tea?" emote="🤔">
                         <p>It's just catchy...</p>
                     </FAQuestion>
-                    <FAQuestion question="More questions?" emote="❓">
+                    <FAQuestion question="More questions?" emote="❔">
                         <p>
                         If you have a lingering question, problem or suggestion,
                         feel free to join the Discord server. It is the easiest and fastest
