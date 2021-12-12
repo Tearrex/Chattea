@@ -1,11 +1,10 @@
 import Comment from "./Comment";
 import { query, collection, orderBy, limit, setDoc, doc, getDoc } from '@firebase/firestore';
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import { _dbRef } from "./firebase";
+import { _dbRef } from "../Main/firebase";
 import { addDoc, serverTimestamp } from "@firebase/firestore";
-import { ref } from "@firebase/storage";
 import { useContext, useEffect, useState } from "react";
-import { MembersContext, UserContext } from "./Contexts";
+import { MembersContext, UserContext } from "../Main/Contexts";
 async function post_comment(text, postID, user_id, author_id)
 {
     if(text.trim() === "") return;

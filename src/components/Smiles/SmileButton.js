@@ -1,10 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { getDoc, doc, arrayUnion, arrayRemove, updateDoc, deleteDoc, query } from "firebase/firestore";
-import { deleteObject, ref } from "firebase/storage";
-import { useAuth, _dbRef, _storageRef } from './firebase';
-import { useDocumentData } from 'react-firebase-hooks/firestore';
-import { UserContext } from "./Contexts";
-import { collection } from "@firebase/firestore";
+import { useAuth, _dbRef, _storageRef } from '../Main/firebase';
+import { UserContext } from "../Main/Contexts";
 import SmileCounter from "./SmileCounter";
 
 function SmileButton(props)

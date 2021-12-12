@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth, _dbRef } from "./components/firebase";
 import { doc, addDoc, getDoc, getDocs, collection, query, where } from 'firebase/firestore'
 import {BrowserRouter as Router, Route, Link, Routes, useNavigate} from "react-router-dom";
-import { MembersContext, UserContext, showLogin } from './components/Contexts';
 
-import TeaBar from './components/TeaBar';
+// Main
+import { useAuth, _dbRef } from "./components/Main/firebase";
+import { MembersContext, UserContext, showLogin } from './components/Main/Contexts';
+import TeaBar from './components/Main/TeaBar';
+import Signup from './components/Main/Signup';
 
 // Pages
 import Home from './components/Pages/Home';
@@ -17,8 +19,6 @@ import "./components/Styles/Home.scss";
 import "./components/Styles/Splash.scss";
 import "./components/Styles/UserProfile.scss";
 
-
-import Signup from './components/Signup';
 function App() {
 
   const currentUser = useAuth();

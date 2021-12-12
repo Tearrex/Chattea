@@ -1,12 +1,11 @@
-import { addDoc, getDoc, collection, query, doc, deleteDoc } from 'firebase/firestore';
+import { doc, deleteDoc } from 'firebase/firestore';
 import { useEffect, useState, useRef, useContext } from 'react';
-//import pfp from './default_user.png';
-import { useAuth, dbRef, _dbRef, _storageRef } from './firebase';
-import SmileButton from './SmileButton';
+import { _dbRef, _storageRef } from '../Main/firebase';
+import SmileButton from '../Smiles/SmileButton';
 import { deleteObject, ref } from "firebase/storage";
 import React from 'react';
-import { MembersContext, UserContext } from './Contexts';
-import Comments, { post_comment } from './Comments';
+import { MembersContext, UserContext } from '../Main/Contexts';
+import Comments, { post_comment } from '../Comments/Comments';
 import { useNavigate, useParams } from 'react-router';
 function MediaPost(props)
 {

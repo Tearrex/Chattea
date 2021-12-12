@@ -5,7 +5,6 @@ import { signup, useAuth, login } from "./firebase"
 import { useNavigate } from "react-router-dom"
 import { MembersContext, UserContext, showLogin } from "./Contexts";
 import { updateEmail, sendEmailVerification, getAuth } from '@firebase/auth';
-import { doc } from "@firebase/firestore";
 function Signup(props) {
     const navigate = useNavigate();
     const currentUser = useAuth();

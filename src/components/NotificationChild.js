@@ -1,8 +1,8 @@
 import { ref, doc, deleteDoc } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { useAuth, _dbRef } from "./firebase";
-import { MembersContext } from "./Contexts";
+import { useAuth, _dbRef } from "./Main/firebase";
+import { MembersContext } from "./Main/Contexts";
 
 function NotificationChild (props)
 {

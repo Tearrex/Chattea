@@ -1,11 +1,10 @@
-import MediaFeed from "../MediaFeed";
+import MediaFeed from "../Media/MediaFeed";
 import Scroller from "../Scroller";
-import Submitter from "../Submitter";
-import UserPanel from "../UserPanel";
-import { Timestamp, addDoc, getDoc, getDocs, collection, orderBy, query, limit, serverTimestamp, doc, where, setDoc } from 'firebase/firestore'
-import { useAuth, _dbRef } from "../firebase";
+import Submitter from "../Media/Submitter";
+import { Timestamp, addDoc, collection, doc, setDoc } from 'firebase/firestore'
+import { useAuth, _dbRef } from "../Main/firebase";
 import { useContext } from "react";
-import { UserContext } from "../Contexts";
+import { UserContext } from "../Main/Contexts";
 function Home()
 {
     const {_user, _setUser} = useContext(UserContext);

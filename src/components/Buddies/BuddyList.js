@@ -1,8 +1,8 @@
 import { useState, useEffect, useContext, useRef } from "react";
-import { MembersContext, UserContext } from "../Contexts";
+import { MembersContext, UserContext } from "../Main/Contexts";
 import BuddyListItem from "./BuddyListItem";
 import { getDoc, limit, orderBy, query, doc } from "@firebase/firestore";
-import { _dbRef } from "../firebase";
+import { _dbRef } from "../Main/firebase";
 import { useParams } from "react-router";
 function BuddyList(props) {
     //console.log("friends are",props.buddies);

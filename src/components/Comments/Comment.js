@@ -1,8 +1,7 @@
 import { useContext, useState, useEffect } from "react";
-import { MembersContext, UserContext } from "./Contexts";
-import { Link } from "react-router-dom";
+import { MembersContext, UserContext } from "../Main/Contexts";
 import { deleteDoc, doc } from "@firebase/firestore";
-import { _dbRef } from "./firebase";
+import { _dbRef } from "../Main/firebase";
 import { useNavigate } from "react-router";
 function Comment(props)
 {

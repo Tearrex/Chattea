@@ -1,12 +1,14 @@
 import { useContext, useEffect, useState, useRef } from "react";
-import MediaFeed from "../MediaFeed";
-import { MembersContext, UserContext } from "../Contexts";
-import { updateDoc, doc } from "firebase/firestore";
-import { useAuth, _storageRef, _dbRef } from "../firebase";
-import { uploadBytesResumable, ref, getDownloadURL } from "firebase/storage";
 import { useParams } from "react-router";
+import { updateDoc, doc } from "firebase/firestore";
+import { uploadBytesResumable, ref, getDownloadURL } from "firebase/storage";
+
+import MediaFeed from "../Media/MediaFeed";
+import { MembersContext, UserContext } from "../Main/Contexts";
+import { useAuth, _storageRef, _dbRef } from "../Main/firebase";
 import BuddyButton from "../Buddies/BuddyButton";
 import BuddyList from "../Buddies/BuddyList";
+
 function ProfilePage(props) {
     const { _user, _setUser } = useContext(UserContext);
     const { _users, _setUsers } = useContext(MembersContext);

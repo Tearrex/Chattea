@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 import { useContext } from "react";
-import { UserContext } from "../../Contexts";
+import { UserContext } from "../../Main/Contexts";
 import GithubButton from "../../GithubButton";
 import FAQuestion from "./FAQuestion";
 

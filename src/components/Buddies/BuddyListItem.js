@@ -1,6 +1,6 @@
 import { useEffect, useContext, useState } from "react";
 import { useNavigate } from "react-router";
-import { MembersContext, UserContext } from "../Contexts";
+import { MembersContext, UserContext } from "../Main/Contexts";
 import BuddyButton from "./BuddyButton";
 
 function BuddyListItem(props) {

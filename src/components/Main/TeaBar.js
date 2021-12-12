@@ -5,7 +5,7 @@ import Signup from "./Signup";
 import { Link } from "react-router-dom";
 import { useContext, useEffect, useState, useRef } from "react";
 import { MembersContext, UserContext } from "./Contexts";
-import NotificationChild from "./NotificationChild";
+import NotificationChild from "../NotificationChild";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { collection, getDoc, limit, orderBy, query, doc } from "@firebase/firestore";
 function TeaBar ()

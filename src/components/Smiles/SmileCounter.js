@@ -1,8 +1,8 @@
 import { useDocumentData } from 'react-firebase-hooks/firestore';
 import { getDoc, doc, arrayUnion, arrayRemove, updateDoc, deleteDoc, query } from "firebase/firestore";
 import { useContext, useEffect, useRef, useState } from "react";
-import { _dbRef } from './firebase';
-import { UserContext } from './Contexts';
+import { _dbRef } from '../Main/firebase';
+import { UserContext } from '../Main/Contexts';
 function SmileCounter(props)
 {
     const [_smiles, setSmiles] = useState(-1);//props.smiles;

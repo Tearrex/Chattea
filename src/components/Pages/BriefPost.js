@@ -1,9 +1,9 @@
 import { doc, getDoc } from "@firebase/firestore";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { _dbRef } from "../firebase";
-import MediaPost from "../MediaPost";
-import { MembersContext, UserContext } from "../Contexts";
+import { _dbRef } from "../Main/firebase";
+import MediaPost from "../Media/MediaPost";
+import { MembersContext, UserContext } from "../Main/Contexts";
 
 function BriefPost()
 {

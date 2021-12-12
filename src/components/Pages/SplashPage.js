@@ -1,10 +1,8 @@
 import { useRef, useState, useEffect, useContext } from "react";
 import { sendEmailVerification } from "@firebase/auth";
-import { signup } from "../firebase";
-import MediaPost from "../MediaPost";
-import Signup from "../Signup";
+import { signup } from "../Main/firebase";
 import { useNavigate } from "react-router";
-import { UserContext, showLogin } from "../Contexts";
+import { UserContext, showLogin } from "../Main/Contexts";
 import GithubButton from "../GithubButton";
 function SplashPage() {
     const [loading, setLoading] = useState(true);
