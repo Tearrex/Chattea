@@ -30,8 +30,8 @@ function BuddyListItem(props) {
     }
     return (
         <div className="buddyItem">
-            <div className="buddy">
-                <div className="pfp niceClip" style={{backgroundImage:"url("+pfp+")"}} onClick={go_to_profile}/>
+            <div className="buddy" onClick={go_to_profile}>
+                <div className="pfp niceClip" style={{backgroundImage:"url("+pfp+")"}}/>
                 {name}
             </div>
             {(_user !== undefined && props.buddy !== _user.user_id) ?

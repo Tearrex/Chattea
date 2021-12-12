@@ -64,7 +64,7 @@ function FAQPage (props)
                         and hide it behind a lengthy terms of service agreement that looks like gibberish—can you relate?
                         </p>
                         <p>Every user is assigned an <b>identifier</b> upon signing up.
-                        The identifier (ID) is a unique sequence of random letters and numbers that is used to distinguish you
+                        The identifier (ID) is a unique sequence of random letters and numbers that distinguishes you
                         from the rest of the users on Chattea.
                         </p>
                         <p>
@@ -77,8 +77,8 @@ function FAQPage (props)
                             <li>Add a buddy</li>
                         </ul>
                         <p>
-                        This data is NEVER shared with anyone other than those browsing the website.
-                        It is only used to make Chattea function properly.
+                        This is only used to make Chattea function properly. For the sake of transparency, this question will be
+                        kept updated with the latest information of how your data is handled.
                         </p>
                         <h2 style={{margin:"0"}}>Remember</h2>
                         <p>
