@@ -189,7 +189,7 @@ function Submitter(props)
         }
     }, [canSave]);
     return (
-        <div className="subPop">
+        <div className="subPop" id="subPop">
             <form className="submission" onSubmit={postMessage}>
                 <label className="subWidget" style={{borderRadius:"50%"}}>
                     <input ref={imageField} type="file" accept=".png, .jpg" style={{display:"none"}} onChange={(e) => onFileChange(e)}/>

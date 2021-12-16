@@ -2,7 +2,7 @@
 import { useAuth, _dbRef } from "./firebase";
 import UserPanel from "./UserPanel";
 import Signup from "./Signup";
-import { Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useContext, useEffect, useState, useRef } from "react";
 import { MembersContext, UserContext } from "./Contexts";
 import NotificationChild from "../NotificationChild";
@@ -10,6 +10,7 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 import { collection, getDoc, limit, orderBy, query, doc } from "@firebase/firestore";
 function TeaBar ()
 {
+    const navigate = useNavigate(); const location = useLocation();
     const {_user, _setUser} = useContext(UserContext);
     const {_users, _setUsers} = useContext(MembersContext);
     const currentUser = useAuth();
@@ -94,6 +95,16 @@ function TeaBar ()
             if(!hasCached) setHasCached(true);
         }
     }
+    // called when the teacup is clicked from the navigation bar
+    function tea_click()
+    {
+        if(location.pathname === "/main" && currentUser)
+        {
+            // scroll to the top on the main page
+            document.getElementById("subPop").scrollIntoView({behavior:"smooth", block:"end"});
+        }
+        document.body.style.overflow = null; navigate(currentUser ? "/main" : "/")
+    }
     return (
         <div className="teaBar persistor">
                 <div className="welcomer" style={{position:null}}>
@@ -102,7 +113,7 @@ function TeaBar ()
                                 left:currentUser?"0":"50%"}}>
                         <p className="teaPrefix" style={{maxWidth:currentUser ? "0" : "100%"}}>Get</p>
                         <div style={{gap:"10px"}}>
-                            <Link to={currentUser?"/main":"/"}><div style={{backgroundImage:"url('/tea.png')"}}></div></Link>
+                            <div onClick={tea_click}style={{backgroundImage:"url('/tea.png')"}}></div>
                             <p>Chat<span>tea</span></p>
                         </div>
                         <p style={{opacity:currentUser ? "0" : "1"}}>with people!</p>
