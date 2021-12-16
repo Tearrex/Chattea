@@ -10,16 +10,6 @@ function Home()
     const {_user, _setUser} = useContext(UserContext);
     async function postMessage(_content, imgFunc=null)
     {
-        //console.log("the creature speaks " + content);
-        /*var id = Math.random().toString(16).slice(2);
-        var pid = currentUser.email.split('@')[0] + id;
-        set(ref(dbRef, 'posts/' + pid), {
-        user: currentUser.email,
-        content: content,
-        img: "",
-        smiles:"",
-        date: new Date().toLocaleString()
-        });*/
         try
         {
             // now post!

@@ -72,12 +72,10 @@ function ProfilePage(props) {
         // if it's the user's own profile, set their information
         if (_user !== undefined && user_id === _user.user_id) {
             var __user = _user;
-            //console.log("User's profile", __user);
             setName(__user.username);
             setUserPfp(__user.pfp);
             setBuddies(__user.buddies);
             setOrigPfp(__user.pfp);
-            //setFocus(__user.user_id);
             setBio(__user.about);
             setOrigBio(__user.about);
             setJoinDate(__user.joined);
@@ -94,7 +92,6 @@ function ProfilePage(props) {
             setUserPfp(__user.pfp);
             setBuddies(__user.buddies);
             setOrigPfp(__user.pfp);
-            //setFocus(__user.user_id);
             setBio(__user.about);
             setOrigBio(__user.about);
             setJoinDate(__user.joined);
@@ -128,7 +125,6 @@ function ProfilePage(props) {
         }
         else {
             usernameField.current.style.border = null;
-            //changeMsg();
             if (inputName !== _user.username && user_id === _user.user_id) setSave(true);
             else {
                 if (userPfp === origPfp) setSave(false);
@@ -223,10 +219,7 @@ function ProfilePage(props) {
             );
         }
         else setBannerSaved(true);
-
-        //setPfpFile(null);
         changeMsg("");
-        //console.log("set new pfp " + changesRef["pfp"]);
         setSave(false); setUploading(false);
     }
     useEffect(() => {
@@ -302,8 +295,6 @@ function ProfilePage(props) {
                         <input className="userBio" type='text' value={bioText}
                             placeholder={(_user !== undefined && user_id === _user["user_id"]) ? "Brief description about you...":"No description"} onChange={(e) => change_bio(e)}/>
                     </div>
-                    {/**<p className="profileMsg" ref={updateMessage} style={{display:_msg ? "block" : "none", color:_msg?_msg[1]:"#FFF"}}>
-                            {_msg ? _msg[0] : null}</p> */}
                     <div ref={saveOptions} className="actions">
                         <button onClick={submit_changes} style={{backgroundColor:"#3498DB"}}>{!uploading ? "Save" : "Uploading..."}</button>
                         <button onClick={revert_changes}>{!uploading ? "Cancel" : _msg}</button>
