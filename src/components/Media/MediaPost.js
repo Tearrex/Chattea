@@ -220,7 +220,7 @@ function MediaPost(props)
                         <p className="username" style={{display:(user_id === _user["user_id"]) ? "none":"block"}}>
                             {(_users[props.authorID] !== undefined) ? _users[props.authorID].username : "User"}</p>
                     }
-                    <div onClick={() => navigate("/profile/" + props.authorID)}>
+                    <div onClick={() => { window.scrollTo(0,0); navigate("/profile/" + props.authorID); }}>
                         <div style={{backgroundImage:"url("+pfp+")"}} className="profilePicture niceClip" />
                     </div>
                 </div>
