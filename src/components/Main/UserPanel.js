@@ -21,10 +21,19 @@ function UserPanel (props)
     const selfRef = useRef();
     function logout_user()
     {
-        if(_users[_user.user_id] === undefined)
+        /*if(_users[_user.user_id] === undefined)
         {
-            //Save the user's data so we don't have to ask for it again.
+            // add the current user's data to the _users state
+            // we make sure to save all of their edits,
+            // so it will remain up to date
             _setUsers({..._users, _user});
+        }*/
+        var _localUsers = localStorage.getItem("users");
+        if(_localUsers)
+        {
+            var count = Object.entries(JSON.parse(_localUsers)).length;
+            localStorage.removeItem("users");
+            console.log(`Cleared ${count} users from localStorage`);
         }
         setShow(false);
         logout()

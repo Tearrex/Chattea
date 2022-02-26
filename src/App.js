@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { doc, addDoc, getDoc, getDocs, collection, query, where } from 'firebase/firestore'
-import {BrowserRouter as Router, Route, Link, Routes, useNavigate} from "react-router-dom";
+import { doc, getDoc } from 'firebase/firestore'
+import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 
 // Main
 import { useAuth, _dbRef } from "./components/Main/firebase";
@@ -22,8 +22,21 @@ import "./components/Styles/UserProfile.scss";
 function App() {
 
   const currentUser = useAuth();
+
+  // This state holds the profile data of
+  // the user that is currently logged in.
+  // if _user is undefined, they are most likely a guest
   const [_user, _setUser] = useState(undefined);
+
+  // stores profile data of people that
+  // the user encounters on the website.
+
+  // the state will be backed up into localStorage
+  // to persist through page refreshes,
+  // mitigating the client's read requests
   const [_users, _setUsers] = useState({});
+
+  // i had no idea what this did before...
   /*useEffect(() => {
     fetch("/home").then(
       res => res.json()
@@ -35,10 +48,11 @@ function App() {
       }
     )
   }, [])*/
-  const [_username, setUsername] = useState("");
-  const[_pfp, setPfp] = useState("default_user.png");
+
+  // as soon as the user authenticates, we request their
+  // account info to personalize their experience.
   useEffect(() => {
-    if(currentUser !== null && currentUser !== undefined)
+    if(currentUser && !_user)
     {
       // get the current user's data for future reference
       const docRef = doc(_dbRef, "users", currentUser.uid);
@@ -52,16 +66,37 @@ function App() {
           });
         }
       });
+      // check if the user has cached profile data in their browser
+
+      // it should probably be cleared when the user logs out
+      // otherwhise, refresh with new data every few days or so
+      const localUsers = localStorage.getItem("users");
+      if(localUsers)
+      {
+        // if so, save the cache of the users
+        // into state so we don't ask for their data again
+        var _json = JSON.parse(localUsers);
+        _setUsers(_json);
+        console.log(`Loaded ${Object.entries(_json).length} users from localStorage`);
+      }
     }
   }, [currentUser]);
 
   useEffect(() => {
     if (_user !== undefined)
     {
-      console.log("Fetched user:",_user);
+      console.log("Current User:",_user);
     }
   }, [_user]);
-
+  useEffect(() => {
+    if(_users && Object.entries(_users).length > 0)
+    {
+      // don't overwrite yourself
+      if(JSON.stringify(_users) === localStorage.getItem("users")) return;
+      localStorage.setItem("users", JSON.stringify(_users));
+      console.log("Users saved to localStorage");
+    }
+  }, [_users]);
   const [_showLogin, setLogin] = useState(false);
   return (
     <Router>
