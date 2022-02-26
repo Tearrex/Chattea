@@ -44,7 +44,10 @@ function ProfilePage(props) {
     useEffect(() => {
         console.log("PASSED ID HEREE ->>>", user_id);
         if(_user !== undefined) profile_cleanup();
-    }, [user_id, _user, _users]);
+    }, [_user, user_id]);
+
+    // used to rerender the main profile card
+    // every time the client jumps between profile pages
     function profile_cleanup()
     {
         console.log("cleanup called!");
@@ -59,7 +62,7 @@ function ProfilePage(props) {
             if(inputs[i].className === "addBuddy") continue;
             inputs[i].disabled = !isUserSelf;
         }
-        if(isUserSelf === true)
+        if(isUserSelf)
         {
             bannerChanger.current.style.opacity = null;
             pfpChanger.current.style.display = "block";
@@ -83,7 +86,7 @@ function ProfilePage(props) {
                 setBanner(__user.banner); setOrigBanner(__user.banner);
             }
         }
-        // otherwise, grab info from the members context/cache
+        // otherwise, grab info from the _users state
         else if (user_id !== undefined && _users[user_id] !== undefined)
         {
             var __user = _users[user_id];
@@ -104,6 +107,8 @@ function ProfilePage(props) {
             }
         }
     }
+
+    // write firebase rules
     function change_name(e) {
         if (e.target.value.length > nameCharLimit) return;
         setName(e.target.value);
@@ -112,36 +117,28 @@ function ProfilePage(props) {
         if (e.target.value.length > bioCharLimit) return;
         setBio(e.target.value);
     }
+
     const usernameField = useRef();
     const [_msg, changeMsg] = useState("");
-    const updateMessage = useRef();
 
     const saveOptions = useRef();
     useEffect(() => {
-        if (inputName === "") {
+        if (String(inputName).trim() === "") {
+            // add red border when name field is empty
             usernameField.current.style.border = "3px solid #f00";
             setSave(false);
             changeMsg("Name missing!");
         }
         else {
             usernameField.current.style.border = null;
+            // show save options if the name field has been altered
             if (inputName !== _user.username && user_id === _user.user_id) setSave(true);
             else {
                 if (userPfp === origPfp) setSave(false);
             }
         }
     }, [inputName]);
-    useEffect(() => {
-        if(bioText === origBio)
-        {
-            setSave(false);
-        }
-        else
-        {
-            setSave(true);
-        }
-
-    }, [bioText]);
+    useEffect(() => setSave(bioText !== origBio), [bioText]);
     function update_pfp(e) {
         console.log(e.target.files[0]);
         setSave(true);

@@ -10,22 +10,17 @@ function MediaFeed (props)
 {
     const {_user, _setUser} = useContext(UserContext);
     const {_users, _setUsers} = useContext(MembersContext);
-    useEffect(() => {
-        if(_users !== undefined && Object.entries(_users).length > 0)
-        {
-            console.log("CACHED USERS", _users);
-        }
-    }, [_users]);
 
     /*
-    Iterates over every requested user, checks if their info is cached
-    and fetches it from the database into a JSON object if not.
+    Iterates over every requested user, checks if their info is
+    already cached and fetches it from the database into if not.
+
+    Array behaves as a queue for who's data to ask for. it works.
     */
     const [cache, setCache] = useState([]);
     useEffect(async () => {
         if(cache.length > 0)
         {
-            console.log("initial cache is",cache);
             var _toCache = {};
             for(let i = 0; i < cache.length; i++)
             {
@@ -167,7 +162,7 @@ function MediaFeed (props)
     useEffect(() => {
         if(Object.keys(posts).length > 0)
         {
-            console.log("posts are,",posts);
+            console.log("Media feed posts:",posts);
         }
     }, [posts]);
     const [more, hasMore] = useState(false);

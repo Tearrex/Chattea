@@ -198,7 +198,6 @@ function Signup(props) {
         setLinkSent(true);
     }
     useEffect(() => {
-        console.log("transitioning is",transitioning);
         if(transitioning)
         {
             console.log("switcheroo!");
@@ -207,7 +206,6 @@ function Signup(props) {
         else finish_transition();
     }, [transitioning]);
     useEffect(() => {
-        console.log("locked is",locked);
         if(locked)
         {
             setLogin(false);
@@ -257,7 +255,6 @@ function Signup(props) {
         }
     }
     useEffect(() => {
-        console.log("focus is", focus);
         if(focus)
         {
             if(!transitioning)overlayBG.current.style.opacity = "0.7";

@@ -73,8 +73,8 @@ function BuddyList(props) {
                 <div className="buddiesFrame center">
                     {(props.buddies === undefined || props.buddies.length === 0) ?
                     <p>No friends :(</p> :
-                    props.buddies.map((n) => {
-                        return <BuddyListItem buddy={n} toggle={toggle_list}/>
+                    props.buddies.map((buddy, i) => {
+                        return <BuddyListItem buddy={buddy} key={i} toggle={toggle_list}/>
                     })
                     }
                 </div>
