@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { MembersContext, UserContext } from "../Main/Contexts";
 import BuddyButton from "./BuddyButton";
 
-function BuddyListItem(props) {
+function UserListItem(props) {
     const navigate = useNavigate();
     const { _user, _setUser } = useContext(UserContext);
     const { _users, _setUsers } = useContext(MembersContext);
@@ -40,4 +40,4 @@ function BuddyListItem(props) {
     );
 }
 
-export default BuddyListItem;
+export default UserListItem;

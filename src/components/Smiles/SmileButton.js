@@ -59,19 +59,19 @@ function SmileButton(props)
             check.current.checked = smiled;
         }
     }, [smiled]);
-    if(props.canSmile === "true")
+    if(props.canSmile)
     {
         return (
             <label className="smileButton" style={{flex:smiled ? "10%" : "50%"}}>
                 <input ref={check} type="checkbox" onClick={smile}/>
                 <span className="smile stealthBtn">{smiled ? "😊" : "🙂 Smile"}</span>
-                {/**<span>{smiled ? "😊" : "🙂"}</span> */}
+                {/*<span>{smiled ? "😊" : "🙂"}</span>*/}
             </label>
         )
     }
     else
     {
-        return <SmileCounter postID={_postID} authorID={props.author}/>
+        return <SmileCounter postID={_postID} authorID={props.author} setSmilers={props.setSmilers}/>
     }
 }
 

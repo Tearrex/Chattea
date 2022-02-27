@@ -7,7 +7,7 @@ import MediaFeed from "../Media/MediaFeed";
 import { MembersContext, UserContext } from "../Main/Contexts";
 import { useAuth, _storageRef, _dbRef } from "../Main/firebase";
 import BuddyButton from "../Buddies/BuddyButton";
-import BuddyList from "../Buddies/BuddyList";
+import UserList from "../Buddies/UserList";
 
 function ProfilePage(props) {
     const { _user, _setUser } = useContext(UserContext);
@@ -239,8 +239,9 @@ function ProfilePage(props) {
             }
             if(bioText !== origBio)
             {
-                setOrigBio(bioText);
-                changesRef["about"] = bioText;
+                var trimmedBio = String(bioText).trimStart();
+                setOrigBio(trimmedBio);
+                changesRef["about"] = trimmedBio;
             }
             const docRef = doc(_dbRef, "users", _user["user_id"]);
             updateDoc(docRef, changesRef);
@@ -299,7 +300,7 @@ function ProfilePage(props) {
                     <div className="userInfo">
                         <p>Joined <span>{joinDate}</span></p>
                         <div className="buddyInfo">
-                            <BuddyList buddies={buddies}/>
+                            <UserList users={buddies} buddies/>
                             {(_user !== undefined && _user.user_id !== user_id) ?
                             <BuddyButton buddy={user_id}/> : null}
                         </div>
