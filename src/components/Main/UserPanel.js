@@ -34,6 +34,9 @@ function UserPanel (props)
             var count = Object.entries(JSON.parse(_localUsers)).length;
             localStorage.removeItem("users");
             console.log(`Cleared ${count} users from localStorage`);
+            // alternatively, we can store a timestamp with the _users object
+            // to determine when the client should refresh the cache with new data.
+            // in case users have made changes to their profiles since the last snapshot
         }
         setShow(false);
         logout()
