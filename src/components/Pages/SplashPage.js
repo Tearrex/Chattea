@@ -58,8 +58,12 @@ function SplashPage() {
 	async function handleSignup() {
 		setLoading(true);
 		try {
-			await signup(emailInput, passInput, nameInput);
-			navigate("/main"); /*window.location.reload();*/
+			const _profile = await signup(emailInput, passInput, nameInput);
+			// send the user over to their brand new profile page.
+			// hopefully they'll get the memo and personalize it
+
+			// ill add tooltips and suggestions later on
+			navigate(`/profile/${_profile.user_id}`);
 		} catch (e) {
 			alert(e);
 		}
