@@ -17,16 +17,15 @@ function FAQPage(props) {
 					<FAQuestion question="What is Chattea?" emote="☕">
 						<p>
 							Chattea is a modest social media platform for making pocket-sized
-							memories as you go . The idea is that you can meet new people as
-							they come along and vibe with those that share similar hobbies or
-							interests. You post updates of what you've been up to for those
-							curious about their surroundings.
+							memories as you go about your days. The idea is that you can meet
+							new people as they come along and vibe with those that share
+							similar hobbies or interests. Post glimpses of your activities and
+							add some mystery ;)
 							<br />
 						</p>
 						<p>
-							Life gets rough sometimes. You can check-in whenever you like and
-							perhaps you'll find something that will cheer you up, or you can
-							make a post that may brighten the day for others.
+							You can check-in whenever you like and perhaps you'll get a laugh
+							out of some goofy post.
 						</p>
 					</FAQuestion>
 					<FAQuestion question="Who can see my posts?" emote="👀">
@@ -55,7 +54,6 @@ function FAQPage(props) {
 							buddy if you know them. This feature will be expanded upon to make
 							it more useful later.
 						</p>
-						<p>You can </p>
 					</FAQuestion>
 					<FAQuestion question="What about my data?" emote="😱">
 						<p>Privacy concerns are a big deal! Here are the details:</p>
@@ -99,8 +97,8 @@ function FAQPage(props) {
 							As you browse the website, the profile data you fetch about other
 							users will be cached until you log out or clear your browser data,
 							similar to cookies. We do this to cut down on bandwidth costs and
-							the amount of requests your device makes to the server. This
-							means edits to your profile may not update for others right away.
+							the amount of requests your device makes to the server. This means
+							edits to your profile may not update for others right away.
 						</p>
 						<h2>Note</h2>
 						<p>
@@ -114,9 +112,10 @@ function FAQPage(props) {
 					</FAQuestion>
 					<FAQuestion question="More questions?" emote="❔">
 						<p>
-							If you have a lingering question, problem or suggestion, feel free
-							to join the Discord server. It is the easiest and fastest way to
-							stay in the loop.
+							If you have a lingering question, feel free to hang out in our
+							little Discord server.
+							<br />
+							In case the website ever combusts or anything.
 						</p>
 						<span
 							className="discordBtn"
