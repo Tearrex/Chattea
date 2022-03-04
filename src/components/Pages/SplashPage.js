@@ -105,7 +105,7 @@ function SplashPage() {
 			<div className="splashNet">
 				<div
 					className="splash"
-					style={{ backgroundImage: "url('networkkk.png')" }}
+					style={{ backgroundImage: "url('network.png')" }}
 				></div>
 				<div
 					className="splashRegister flashForm"
