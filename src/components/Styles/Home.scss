@@ -56,17 +56,14 @@ footer {
     }
     .faqSignUp {
         border: none; outline: none; width: 100%; padding:  15px 10px; cursor: pointer;
-        background-color: $niceOrange; color: $lightText; font-size: 1.2rem;
-        &:hover {
-            background-color: $richSmile;
-        }
+        background-color: $richSmile; color: $lightText; font-size: 1.2rem;
     }
     .faQuestion {
         width: 100%;
         button:first-child {
             display: flex; position: relative;
             border: none; outline: none; width: 100%; padding:  15px 10px;
-            color: $darkerText; font-size: 1.2rem;
+            color: $alttext; font-size: 1.2rem;
             // the emoji
             p {
                 position: absolute; right: 0; margin: 0; margin-right: 10px;
@@ -87,11 +84,6 @@ footer {
                     margin: 0; padding: 0;
                     list-style-position: inside;
                 }
-            }
-        }
-        &:hover {
-            .discordBtn {
-                box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.3);
             }
         }
         .discordBtn {
@@ -135,7 +127,8 @@ body {
         transition: background-image 1s ease;
     }
     .dark {
-        background-image: linear-gradient(#6b6b6b 35%, #3a3a3a 70%);
+        //background-image: linear-gradient(#6b6b6b 35%, #3a3a3a 70%);
+        background-color: $niceOrange;
     }
     .light {
         // background-image: linear-gradient(#f7941d, #F5B041);
@@ -424,10 +417,18 @@ body {
 .darkBlueBtn {
     background-color:  #2980b9 !important;
 }
+// i should probably learn mixins and stuff....
+.niceInputs {
+    .bad {
+        border-bottom: 5px solid #E74C3C;
+    }
+    .good {
+        border-bottom: 5px solid #2ECC71;
+    }
+}
 .niceInputs input {
     font-size: 1.1rem; color: #fff;
     display: block; outline: none; background: none;
-    //margin-left: auto; margin-right: auto;
     padding: 15px 10px; border: none;
     border-bottom: 5px solid rgba($color: #fefefe, $alpha: 0.5);
     &:focus + label, &:active + label {
@@ -438,7 +439,7 @@ body {
     }
 }
 .niceInputs input[type="submit"] {
-    border-bottom: none;
+    border-bottom: none; cursor: pointer;
 }
 .flashForm {
     .banner {
