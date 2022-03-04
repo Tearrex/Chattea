@@ -14,13 +14,17 @@ footer {
     display: flex; flex-flow: column; width: 100%;
     background-color: #2b3137; bottom: 0; padding: 10px 0;
 }
+.centered {
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+}
 .githuBtn {
     // i dont know why it took me so long to
     // vertically center the button.....
     margin-left: auto; margin-right: auto; background-color: #2b3137;
     display: flex; flex-flow: row; justify-content: center; align-items: center;
     border: none; outline: none; padding: 10px; gap: 10px; color: #fff;
-    font-size: 1.2rem; font-weight: 300; border-radius: 10px;
+    font-size: 1.2rem; font-weight: 300; border-radius: 100vw;
     transition: background-color 0.4s ease-in-out;
     .invertees {
         display: flex; flex-flow: row; align-items: center; gap: 10px;
@@ -47,6 +51,9 @@ footer {
 // FAQ SECTION
 .faqNest {
     display: flex; gap: 10px; flex-flow: column; align-items: center;
+    h2 {
+        margin: 0;
+    }
     .faqSignUp {
         border: none; outline: none; width: 100%; padding:  15px 10px; cursor: pointer;
         background-color: $niceOrange; color: $lightText; font-size: 1.2rem;
@@ -119,7 +126,7 @@ footer {
 }
 
 body {
-    font-family: 'Trebuchet MS';
+    font-family: 'Segoe UI';
     margin: 0;
     overflow-x: hidden;
     // background-color: #000;
@@ -398,28 +405,9 @@ body {
 
 .loginForm {
     transition: transform 1s ease;
-    display: grid; gap: 10px;
-    input {
-        border: 2px solid rgb(172, 172, 172); margin: 0;
-        color: #fff;
-        background-color: rgb(180, 180, 180);
-        transition: border 1s ease;
-        border-radius: 10px;
-        outline: none;
-        padding: 15px;
-        font-size: 1.2rem;
-        &::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-        &:active, &:focus {
-            border: 2px solid #F39C12;
-        }
-        &[type="submit"] {
-            background-color: #F39C12;
-            color: #fff;
-            border: none;
-        }
-    }
+    display: flex !important; flex-flow: column; gap: 10px;
+    transition: opacity 0.3s ease-in;
+    position: relative;
 }
 
 .signupBtn {
@@ -427,7 +415,53 @@ body {
 }
 
 .loginBtn {
-    background-color: #F39C12;
+    padding: 20px 0;
+    border: none; outline: none; color: #fff;
+}
+.loginOrange {
+    background-color: $niceOrange !important;
+}
+.darkBlueBtn {
+    background-color:  #2980b9 !important;
+}
+.niceInputs input {
+    font-size: 1.1rem; color: #fff;
+    display: block; outline: none; background: none;
+    //margin-left: auto; margin-right: auto;
+    padding: 15px 10px; border: none;
+    border-bottom: 5px solid rgba($color: #fefefe, $alpha: 0.5);
+    &:focus + label, &:active + label {
+        display: block;
+    }
+    &::placeholder {
+        color: rgba($color: #000000, $alpha: 0.5);
+    }
+}
+.niceInputs input[type="submit"] {
+    border-bottom: none;
+}
+.flashForm {
+    .banner {
+        box-shadow: inset 0 0 15px #000;
+    }
+    h2 {
+        margin: 0; padding: 20px 0; color: #fff;
+        span {
+            color: #000;
+        }
+    }
+    .desc {
+        background-color: #eff1f3; margin: 0; padding: 10px 20px;
+        .chat {
+            color: $darkerText; font-weight: bold;
+        }
+        .tea {
+            color: $niceOrange; font-weight: bold;
+        }
+    }
+    form {
+        background-color: #d6d6d6;
+    }
 }
 
 .overlay input[type="submit"] {
@@ -848,7 +882,7 @@ body {
 .postActions .deleteOverlay {
     width: 100%;
     height: 100%; background-color: #E74C3C;
-    z-index: 1; transition: max-width 0.5s ease;
+    z-index: 1; transition: max-width 0.4s ease;
     position: absolute; left: 0;
 }
 .postActions .actionBundle {
@@ -860,7 +894,7 @@ body {
 .postActions button, .postActions label {
     flex: 50%; border: none; outline: none;
     font-size: 1.2rem; padding: 0;
-    transition: flex 1s ease, background-color 0.5s ease, 
+    transition: flex 0.4s ease, background-color 0.5s ease, 
         box-shadow 0.2s ease-in;
 }
 .postActions .smile {

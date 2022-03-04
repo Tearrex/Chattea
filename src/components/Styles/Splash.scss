@@ -15,24 +15,24 @@
         background-color: $mainOdd; padding: 10px;
     }
     .catch {
-        font-weight: 300; font-size: 1rem; gap: 5px; background-color: $mainEven;
-        display: flex; flex-flow: column; padding: 10px; align-items: center;
+        font-weight: 300; font-size: 1rem; gap: 5px; background-color: $niceOrange; justify-content: left;
+        display: flex; flex-flow: column; padding: 10px; align-items: center; padding-top: 40px;
         h1 {
             margin: 0; color: #fff; font-size: 1.7rem;
             span {
-                color: $niceOrange;
+                color: #1e1e1e;
             }
         }
         p {
-            margin: 0; color: $darkerText; font-size: 1.1rem; max-width: 550px;
+            margin: 0; color: #0e0e0e; font-size: 1.1rem; max-width: 550px;
         }
     }
     .splashNet {
-        display: flex; flex-direction: row; padding: 10px 0;
+        display: flex; flex-direction: row; padding: 10px 0; padding-bottom: 40px;
         max-width:100%; flex-wrap: wrap;
         justify-content: center;
         align-items: center;
-        background-color: rgb(28,28,28);
+        background-color: $niceOrange;//rgb(28,28,28);
     }
     .faqMessage {
         background-color: $mainEven;
@@ -53,17 +53,17 @@
         transform: scale(1);
     }
     40% {
-        transform: scale(0.92);
+        transform: scale(0.96);
     }
     50% {
-        transform: scale(0.92);
+        transform: scale(0.96);
     }
     100% {
         transform: scale(1);
     }
 }
 .splashSub {
-    color: rgb(126, 126, 126); font-weight:500; font-size: 1.3rem;
+    color: #fff; font-weight:500; font-size: 1.3rem;
     margin: 0 0 10px 0;
 }
 .splashSub span {
@@ -71,34 +71,23 @@
     text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
 }
 .splashRegister h2 {
-    font-size: 2rem;
+    font-size: 2rem; margin: 0;
     color: #fff;
-    background: linear-gradient(to right, #04aba8, #92bf51, #04aba8);
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    -webkit-background-clip: text;
-    margin: 0 0 10px 0;
-
-}
-.splashRegister {
-    /*background-color: #111111;*/
-    background-color: rgb(214, 214, 214);
-    border-radius: 20px; padding: 15px;
+    // background: linear-gradient(to right, #04aba8, #92bf51, #04aba8);
+    // -webkit-text-fill-color: transparent;
+    // background-clip: text;
+    // -webkit-background-clip: text;
+    background-color: $sweettea; padding: 15px;
 }
 .splashRegister form {
-    display: grid; grid-gap: 10px;
+    display: grid;
+    label {
+        display: none;
+    }
 }
 .splashRegister form div {
-    display: grid; grid-gap: 10px;
-    overflow: hidden;
-    transition: max-height 0.5s ease-out;
-}
-.splashRegister form input {
-    font-size: 1.2rem;
-    transition: max-height 0.5s ease-out;
-    display: block; outline: none;
-    margin-left: auto; margin-right: auto;
-    padding: 15px 10px; border: 3px solid rgb(90, 90, 90);
+    display: flex; gap: 10px; flex-flow: column; align-items: stretch;
+    margin: 10px;
 }
 .splashRegister form input[type="submit"] {
     background-color: $niceOrange; color: #fff;

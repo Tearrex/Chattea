@@ -3,14 +3,44 @@
 .flyingSaucer {
     z-index: 6; transition: transform 1s ease;
     position: fixed; overflow: hidden;
-    top: 50%; left: 50%; border-radius: 20px;
-    transform: translate(-50%, -50%);
     width: clamp(200px, 90%, 350px);
     background-color: rgb(246, 246, 246);
-    box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.7);
-    .popup {
-        padding: 10px;
+    box-shadow: 0px 0px 5px 5px rgba(0, 0, 0, 0.5);
+    .teamatrix {
+        position: absolute; top: 0; left: 0;
+        background-image: url(#{$assetPath}/noc_cup.svg);
+        background-size: 10%; background-position: center;
+        background-color: $niceOrange;
+        z-index: -1;
+        transition: opacity 0.3s ease-in;
+        animation: matrix 8s ease-in-out infinite;
     }
+    @keyframes matrix {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 100% 100%; }
+    }
+    .banner h2 span {
+        //background-color: $niceOrange;
+        text-shadow: 2px 2px 5px #000;
+    }
+    .psa {
+        padding: 10px 0; color: $darkerText;
+    }
+    .popup, .profileAnchor {
+        position: relative;
+    }
+    .profileAnchor {
+        background-color: #d6d6d6;
+    }
+    // ill finish this later
+    // supposed to invert text with the tea matrix
+    // .popup .banner h2 {
+    //     background: inherit;
+    //     background-clip: text;
+    //     -webkit-background-clip: text;
+    //     color: transparent;
+    //     filter: invert(1) grayscale(1);
+    // }
     .cozy {
         z-index: 10; width: 100%;
         position: absolute;
