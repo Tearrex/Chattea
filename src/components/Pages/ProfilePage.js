@@ -5,14 +5,13 @@ import { uploadBytesResumable, ref, getDownloadURL } from "firebase/storage";
 
 import MediaFeed from "../Media/MediaFeed";
 import { MembersContext, UserContext } from "../Main/Contexts";
-import { useAuth, _storageRef, _dbRef } from "../Main/firebase";
+import { _storageRef, _dbRef } from "../Main/firebase";
 import BuddyButton from "../Buddies/BuddyButton";
 import UserList from "../Buddies/UserList";
 
 function ProfilePage(props) {
     const { _user, _setUser } = useContext(UserContext);
     const { _users, _setUsers } = useContext(MembersContext);
-    const [focus, setFocus] = useState(null);
     const {user_id} = useParams();
     const [canSave, setSave] = useState(false);
     const [uploading, setUploading] = useState(false);

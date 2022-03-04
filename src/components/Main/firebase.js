@@ -16,7 +16,6 @@ const app = initializeApp(firebaseConfig);
 export const _storageRef = getStorage(app);
 export const _dbRef = getFirestore(app);
 const auth = getAuth(app);
-//const databaseRef = firebase.database().ref()\
 
 export async function signup(email, password, username) {
     // get the date that the user signed up
@@ -26,9 +25,10 @@ export async function signup(email, password, username) {
     curYear = objToday.getFullYear()
     var today = curMonth + " " + objToday.getDate() + ", " + curYear;
 
+    // send request to server
     var newUser = await createUserWithEmailAndPassword(auth, email, password);
     console.log("made new user with ID " + newUser.user.uid + " and email " + newUser.user.email);
-    await setDoc(doc(_dbRef, "users", newUser.user.uid), {
+    const _user = {
         email: email,
         about:"",
         banner:"",
@@ -37,14 +37,12 @@ export async function signup(email, password, username) {
         buddies:[],
         pfp: "/default_user.png",
         username: username
-    });
-    //console.log("created user with ID: " + docRef.id);
+    };
+    await setDoc(doc(_dbRef, "users", newUser.user.uid), _user);
+    // return the object to store as the current user in memory
+    return {..._user, user_id: newUser.user.uid};
 }
 export function login(email, password) {
-    /*set(ref(dbRef, 'users/' + email.replace('.','_')), {
-        username: email.split('@')[0],
-        email: email
-    });*/
     return signInWithEmailAndPassword(auth, email, password);
 }
 export function logout()

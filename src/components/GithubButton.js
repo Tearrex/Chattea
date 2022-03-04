@@ -4,7 +4,7 @@ function GithubButton ()
         <button className="githuBtn" onClick={() => window.open("https://github.com/Tearrex/Chattea","_blank")}>
             <div className="invertees">
                 <div/>
-                <p>See the code</p>
+                <p>View Repo</p>
             </div>
         </button>
     )

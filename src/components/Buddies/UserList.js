@@ -61,12 +61,10 @@ function UserList(props) {
 		};
 		if (toggle == true) {
 			// show it
-			console.log("show please!!!!!!!!!!!!!!!!");
 			popupRef.current.style.display = "block";
 			document.body.style.overflow = "hidden";
 			setCached(true);
 		} else {
-			console.log("hiide please!!#####!!");
 			popupRef.current.style.display = "none";
 			document.body.style.overflow = null;
 		}

@@ -217,7 +217,7 @@ function MediaPost(props) {
 		<div
 			className="mediaCard"
 			onClick={() =>
-				console.log("POST: " + props.postID + " AUTHOR: " + props.authorID)
+				console.log({post: props.postID, author: props.authorID})
 			}
 		>
 			<div
