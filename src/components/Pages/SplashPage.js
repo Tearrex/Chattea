@@ -25,37 +25,51 @@ function SplashPage() {
 
 	const emailField = useRef();
 	const [emailInput, setEmail] = useState("");
+	// remember the provided email if it was already used before
+	const [prevEmail, setPrevEmail] = useState(null);
 
 	const passField = useRef();
 	const [passInput, setPass] = useState("");
 
-	useEffect(() => {
-		if (passInput.length >= 6) {
-			passField.current.style.border = null;
-		} else {
-			if (cpassInput === "") setLoading(true);
-		}
-	}, [passInput]);
-
 	const cpassField = useRef();
 	const [cpassInput, setCpass] = useState("");
-	const [submitText, setSubText] = useState("Continue");
+
+	// use the given reference to adjust the element's class
+	function swap_border(_ref, newClass) {
+		_ref.current.classList = [newClass];
+	}
+	useEffect(() => {
+		if (nameInput && nameInput.length >= 3) swap_border(nameField, null);
+	}, [nameInput]);
 	useEffect(() => {
 		if (cpassInput !== passInput && cpassInput !== "") {
-			passField.current.style.border = "3px solid #E74C3C";
-			cpassField.current.style.border = "3px solid #E74C3C";
-			setLoading(true);
-			setSubText("Continue");
+			// highlight password fields red if they do not match
+			swap_border(passField, "bad");
+			swap_border(cpassField, "bad");
 		} else {
-			if (passInput !== "" && passInput === cpassInput) {
-				passField.current.style.border = "3px solid #2ECC71";
-				cpassField.current.style.border = "3px solid #2ECC71";
+			if (
+				passInput !== "" &&
+				passInput === cpassInput &&
+				passInput.length >= 6
+			) {
+				// highlight green if they do match
+				swap_border(passField, "good");
+				swap_border(cpassField, "good");
 				setLoading(false);
-				setSubText("Finish");
 			}
 		}
 	}, [cpassInput, passInput]);
+	useEffect(() => {
+		// clear email highlight when input is changed
+		if (!is_email(emailInput)) return;
+		if (emailInput !== prevEmail) swap_border(emailField, null);
+	}, [emailInput]);
 	async function handleSignup() {
+		// don't submit form if the user has not
+		// made corrections to their email input
+		if (emailInput === prevEmail || loading) return;
+		// don't submit if the password fields are empty or incorrect
+		if (String(passInput).trim() === "" || passInput !== cpassInput) return;
 		setLoading(true);
 		try {
 			const _profile = await signup(emailInput, passInput, nameInput);
@@ -65,7 +79,14 @@ function SplashPage() {
 			// ill add tooltips and suggestions later on
 			navigate(`/profile/${_profile.user_id}`);
 		} catch (e) {
-			alert(e);
+			switch (e.code) {
+				case "auth/email-already-in-use":
+					setPrevEmail(emailInput); // no spamming
+					break;
+				default:
+					alert(e);
+					break;
+			}
 		}
 		setLoading(false);
 	}
@@ -73,31 +94,30 @@ function SplashPage() {
 		e.preventDefault();
 		if (loading === true) return;
 		if (nameField.current.value.length < 3) {
-			nameField.current.style.border = "3px solid #E74C3C";
-			//setFormHeight(inputHeight);
+			swap_border(nameField, "bad");
+			return nameField.current.focus();
 		} else {
 			if (is_email(emailInput) === true) {
-				if (passInput.length < 6) {
-					setLoading(true);
-				}
+				if (passInput.length < 6) return;
 				if (passInput.length >= 6) {
 					if (passInput === cpassInput) {
 						handleSignup();
 					}
-				} else passField.current.style.border = "3px solid #E74C3C";
+				} else return swap_border(passField, "bad");
 			} else {
-				setLoading(true);
-				emailField.current.style.border = "3px solid #E74C3C";
+				swap_border(emailField, "bad");
+				return emailField.current.focus();
 			}
 		}
 	}
-	function login_action() {
-		if (_user === undefined) setLogin(true); // show the login form
-		else navigate("/main"); // show the live feed
+	function members_action(e = null) {
+		// the members button is inside of the signup form, smh.....
+		if (e) e.preventDefault(); // prevent the button from submitting form
+		if (_user === undefined) setLogin(true);
+		// show login form
+		else navigate("/main"); // show live feed
 	}
-    useEffect(() => {
-        
-    }, [emailInput]);
+	useEffect(() => {}, [emailInput]);
 	return (
 		<div className="splashBody">
 			<div className="catch">
@@ -140,7 +160,13 @@ function SplashPage() {
 								value={emailInput}
 								onChange={(e) => setEmail(e.target.value)}
 							/>
-							<label>You'll have to verify this email.</label>
+							<label
+								style={{ display: emailInput === prevEmail ? "block" : null }}
+							>
+								{emailInput !== prevEmail
+									? "You'll have to verify this email."
+									: "This email is already in use."}
+							</label>
 							<input
 								ref={passField}
 								type="password"
@@ -156,9 +182,15 @@ function SplashPage() {
 								value={cpassInput}
 								onChange={(e) => setCpass(e.target.value)}
 							/>
-							{!loading && <input type="submit" value={submitText} />}
+							{!loading && emailInput !== prevEmail && (
+								<input type="submit" value="Complete" />
+							)}
 						</div>
-						<button className="loginBtn darkBlueBtn" onClick={login_action}>
+						<button
+							className="loginBtn darkBlueBtn stealthBtn"
+							type="button"
+							onClick={members_action}
+						>
 							Already a member?
 						</button>
 					</form>
