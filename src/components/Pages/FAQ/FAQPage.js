@@ -17,10 +17,9 @@ function FAQPage(props) {
 					<FAQuestion question="What is Chattea?" emote="☕">
 						<p>
 							Chattea is a modest social media platform for making pocket-sized
-							memories as you go about your days. The idea is that you can meet
-							new people as they come along and vibe with those that share
-							similar hobbies or interests. Post glimpses of your activities and
-							add some mystery ;)
+							memories as you go about your days. Meet new people as they come
+							along and vibe with those that share similar hobbies or interests.
+							Post glimpses of your activities and add some mystery ;)
 							<br />
 						</p>
 						<p>
@@ -30,22 +29,18 @@ function FAQPage(props) {
 					</FAQuestion>
 					<FAQuestion question="Who can see my posts?" emote="👀">
 						<p>
-							At the moment, every user that is logged in can see what you post.
-							In the future, you will be able to make it private for your
-							buddies.
+							At the moment, every user that is logged in can view what you
+							post. Stay tuned for updates!
 							<br />
-							For now, post only what you are comfortable with sharing in
-							public. Please keep the content appropriate for everyone and be
-							friendly to people you may not know!
+							Please keep the content appropriate for the general public, be
+							kind to others.
 						</p>
 					</FAQuestion>
 					<FAQuestion question="Can I edit my posts?" emote="✏️">
 						<p>
-							To keep things simple, you <b>cannot</b> edit the posts that you
-							make. Same goes for comments. Make sure to think it through before
-							you send it!
-							<br />
-							You can always <i>delete</i> your posts later.
+							To keep things simple, you cannot edit the posts that you make.
+							Same goes for comments. You can always <i>delete</i> your posts
+							later.
 						</p>
 					</FAQuestion>
 					<FAQuestion question="What are buddies?" emote="👥">
@@ -95,10 +90,10 @@ function FAQPage(props) {
 						</p>
 						<p>
 							As you browse the website, the profile data you fetch about other
-							users will be cached until you log out or clear your browser data,
-							similar to cookies. We do this to cut down on bandwidth costs and
-							the amount of requests your device makes to the server. This means
-							edits to your profile may not update for others right away.
+							users will be cached until you log out or clear your browser
+							cookies. We do this to cut down on bandwidth costs and the amount
+							of requests your device makes to the server. This means edits to
+							your profile may not update for others right away.
 						</p>
 						<h2>Note</h2>
 						<p>
