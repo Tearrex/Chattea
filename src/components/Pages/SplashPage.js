@@ -193,6 +193,13 @@ function SplashPage() {
 						>
 							Already a member?
 						</button>
+						<button
+							className="loginBtn guestBtn stealthBtn"
+							type="button"
+							onClick={() => navigate("/main")}
+						>
+							👀 View as Guest
+						</button>
 					</form>
 				</div>
 			</div>

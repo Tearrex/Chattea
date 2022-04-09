@@ -217,7 +217,7 @@ function MediaPost(props) {
 		<div
 			className="mediaCard"
 			onClick={() =>
-				console.log({post: props.postID, author: props.authorID})
+				console.log({ post: props.postID, author: props.authorID })
 			}
 		>
 			<div
@@ -232,7 +232,8 @@ function MediaPost(props) {
 						<p
 							className="username"
 							style={{
-								display: user_id === _user["user_id"] ? "none" : "block",
+								display:
+									_user && user_id === _user["user_id"] ? "none" : "block",
 							}}
 						>
 							{_users[props.authorID] !== undefined
@@ -299,7 +300,7 @@ function MediaPost(props) {
 									postID={postID}
 									author={user_id}
 									smiles={user_id === _user.user_id}
-                                    setSmilers={show_smilers}
+									setSmilers={show_smilers}
 								/>
 							</div>
 							<button className="stealthBtn" onClick={toggle_textbox}>
@@ -335,12 +336,16 @@ function MediaPost(props) {
 								value=""
 							/>
 						</form>
-						{smilers && Object.entries(smilers).length > 0  && <UserList users={smilers} onClose={() => setSmilers(null)}/>}
-						<Comments
-							postID={postID}
-							authorID={postID}
-							toCache={(e) => send_commenters_to_cache(e)}
-						/>
+						{smilers && Object.entries(smilers).length > 0 && (
+							<UserList users={smilers} onClose={() => setSmilers(null)} />
+						)}
+						{_user && (
+							<Comments
+								postID={postID}
+								authorID={postID}
+								toCache={(e) => send_commenters_to_cache(e)}
+							/>
+						)}
 					</div>
 					<span className="timestamp">Posted {postDate}</span>
 				</div>

@@ -1,10 +1,9 @@
 import { useState, useEffect, useContext, useRef } from "react";
 import { MembersContext, UserContext } from "../Main/Contexts";
 import UserListItem from "./UserListItem";
-import { getDoc, limit, orderBy, query, doc } from "@firebase/firestore";
+import { getDoc, doc } from "@firebase/firestore";
 import { _dbRef } from "../Main/firebase";
 import { useParams } from "react-router";
-import SmileCounter from "../Smiles/SmileCounter";
 function UserList(props) {
 	//console.log("friends are",users);
 	const { users } = props;
@@ -16,7 +15,7 @@ function UserList(props) {
 		if (users && Object.entries(users).length > 0) {
 			var _toCache = {};
 			for (let i = 0; i < users.length; i++) {
-				if (_users[users[i]] === undefined && users[i] !== _user.user_id) {
+				if (_users[users[i]] === undefined && (!_user || users[i] !== _user.user_id)) {
 					if (_toCache[users[i]] !== undefined) continue;
 					/*{
                         if(i < users.length - 1) continue;

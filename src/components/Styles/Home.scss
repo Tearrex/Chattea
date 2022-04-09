@@ -509,7 +509,27 @@ body {
         border-radius: 0 20px 20px 0;
         background-image: url(#{$assetPath}/generated.svg);
     }
-}
+    }
+    .submission.guestBanner {
+        flex-flow: column;
+    
+        h2 {
+            margin: 0;
+            color: $lightText;
+            font-weight: normal;
+        }
+    
+        .authBtns {
+            display: flex;
+            flex-flow: row;
+            gap: 10px;
+        }
+    
+        .authBtns button {
+            font-size: 1.1rem;
+            padding: 10px;
+        }
+    }
 .subWarning {
     display: flex; color: #fff; justify-content: center;
     align-items: center; padding: 15px 10px; background-color: #6f6f6f;//#F1C40F;
