@@ -41,19 +41,17 @@ function ProfilePage(props) {
 	const pfpChanger = useRef();
 	const [buddies, setBuddies] = useState([]);
 	useEffect(() => {
-		console.log("PASSED ID HEREE ->>>", user_id);
-		if (_user !== undefined) profile_cleanup();
-	}, [_user, user_id]);
+		profile_cleanup();
+	}, [_user, _users, user_id]);
 
 	// used to rerender the main profile card
 	// every time the client jumps between profile pages
 	function profile_cleanup() {
-		console.log("cleanup called!");
 		/*
         If the user is viewing a profile other than their own,
         don't allow them to edit the input fields.
         */
-		var isUserSelf = user_id === _user.user_id;
+		var isUserSelf = _user && user_id === _user.user_id;
 		var inputs = profileCard.current.getElementsByTagName("input");
 		for (let i = 0; i < inputs.length; i++) {
 			if (inputs[i].className === "addBuddy") continue;
@@ -67,8 +65,9 @@ function ProfilePage(props) {
 			pfpChanger.current.style.display = "none";
 		}
 		// if it's the user's own profile, set their information
+		var __user;
 		if (_user !== undefined && user_id === _user.user_id) {
-			var __user = _user;
+			__user = _user;
 			setName(__user.username);
 			setUserPfp(__user.pfp);
 			setBuddies(__user.buddies);
@@ -83,7 +82,7 @@ function ProfilePage(props) {
 		}
 		// otherwise, grab info from the _users state
 		else if (user_id !== undefined && _users[user_id] !== undefined) {
-			var __user = _users[user_id];
+			__user = _users[user_id];
 			console.log("Author's profile", __user);
 			setName(__user.username);
 			setUserPfp(__user.pfp);
@@ -116,6 +115,7 @@ function ProfilePage(props) {
 
 	const saveOptions = useRef();
 	useEffect(() => {
+		if (!_user) return;
 		if (String(inputName).trim() === "") {
 			// add red border when name field is empty
 			usernameField.current.style.border = "3px solid #f00";

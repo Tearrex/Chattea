@@ -29,15 +29,12 @@ function MediaFeed(props) {
     Array behaves as a queue for who's data to ask for. it works.
     */
 	const [cache, setCache] = useState([]);
-	useEffect(async () => {
-		if (cache.length > 0) {
+	useEffect(() => {
+		const checkCache = async () => {
 			var _toCache = {};
 			for (let i = 0; i < cache.length; i++) {
-				if (
-					_users[cache[i]] === undefined &&
-					cache[i] !== _user.user_id &&
-					_toCache[cache[i]] === undefined
-				) {
+				if (!_users[cache[i]] && !_toCache[cache[i]]) {
+					if (_user && cache[i] === _user.user_id) continue;
 					const userRef = doc(_dbRef, "users", cache[i]);
 					const _doc = await getDoc(userRef);
 					if (_doc.exists()) {
@@ -50,31 +47,33 @@ function MediaFeed(props) {
 			if (Object.entries(_toCache).length > 0) {
 				_setUsers({ ..._users, ..._toCache });
 			}
-		}
+		};
+		checkCache();
 	}, [cache]);
-	const _limit = 4;
+	const _limit = 4; // batch size, amount of documents to fetch at once
 
 	const postsRef = collection(_dbRef, "posts");
 
-	const [oldDoc, setOldDoc] = useState(null); // oldest post, for scrolling down
+	const [oldDoc, setOldDoc] = useState(null); // oldest firebase document, referenced for infinite scroll component
 	useEffect(() => {
-		if (oldDoc !== null && oldDoc !== undefined) hasMore(true);
-		else hasMore(false);
+		// whether to display the message that the user reached the end of the road/feed
+		hasMore(oldDoc !== null && oldDoc !== undefined);
 	}, [oldDoc]);
-	const [lastUser, setLastUser] = useState(""); // remember the last user's id to recognize profile page switching
-	const [newDoc, setNewDoc] = useState(null); // latest, ask Firebase for any posts after this one
+	const [newDoc, setNewDoc] = useState(null); // the latest document we fetched, referenced for realtime updates w/ Firebase hooks
+	const [lastUser, setLastUser] = useState("");
+	const [switching, setSwitching] = useState(false);
+	// remember the user id of the latest document to recognize profile page switching
 	useEffect(() => {
 		if (newDoc !== null && newDoc !== undefined) {
 			setLastUser(newDoc.data().user_id);
 		}
 	}, [newDoc]);
-	const [switching, setSwitching] = useState(false);
-
-	// when the profile page switches users, it will now wipe existing posts from the previous user.
+	// when the profile page switches users, it will now clear previous posts from the media feed.
 	useEffect(() => {
 		if (newDoc === null && oldDoc === null && switching) {
 			// wanted to give it smooth behavior but it often starts requesting more
-			// posts in the middle of the page scroll since the images don't load right away.
+			// batches of posts in the middle of the scroll animation since the images don't load right away.
+			// a placeholder element with a fixed height would help
 			window.scrollTo(0, 0);
 			next_batch();
 		}
@@ -102,6 +101,8 @@ function MediaFeed(props) {
 		if (oldDoc === null || oldDoc === undefined) {
 			if (props.focus === undefined)
 				_query = query(postsRef, orderBy("date", "desc"), limit(_limit));
+			// we can't order by date with the user_id filter
+			// firebase limitations....
 			else
 				_query = query(
 					postsRef,
@@ -109,7 +110,6 @@ function MediaFeed(props) {
 					limit(_limit)
 				);
 		} else {
-			//console.log("old doc exists");
 			if (props.focus === undefined)
 				_query = query(
 					postsRef,
@@ -140,9 +140,10 @@ function MediaFeed(props) {
 				else _old = s;
 				_posts = { ..._posts, [s.id]: data };
 				if (
-					data.user_id !== _user.user_id &&
-					!cache.includes(data.user_id) &&
-					!_toCache.includes(data.user_id)
+					!_user ||
+					(data.user_id !== _user.user_id &&
+						!cache.includes(data.user_id) &&
+						!_toCache.includes(data.user_id))
 				) {
 					_toCache.push(data.user_id);
 				}
@@ -153,6 +154,7 @@ function MediaFeed(props) {
 				});
 			if (
 				newDoc === null ||
+				!_user ||
 				(newDoc !== null &&
 					lastUser !== _user.user_id &&
 					props.focus !== undefined)
@@ -164,14 +166,17 @@ function MediaFeed(props) {
 	}
 
 	const col = collection(_dbRef, "posts");
+	var liveQuery;
 	if (props.focus === undefined) {
-		var liveQuery = query(
+		// viewing home page
+		liveQuery = query(
 			col,
 			orderBy("date", "desc"),
 			endBefore(newDoc === null || newDoc.data()["date"] === null ? "" : newDoc)
 		);
 	} else {
-		var liveQuery = query(
+		// viewing profile page
+		liveQuery = query(
 			col,
 			where("user_id", "==", props.focus),
 			orderBy("date", "desc"),
@@ -197,20 +202,14 @@ function MediaFeed(props) {
 		}
 	}, [livePosts]);
 	useEffect(() => {
-		if (_user !== undefined && _user.user_id !== undefined) next_batch();
-	}, [props.focus, _user]);
+		next_batch();
+	}, [props.focus]);
 	useEffect(() => {
 		if (Object.keys(posts).length > 0) {
 			console.log("Media feed posts:", posts);
 		}
 	}, [posts]);
 	const [more, hasMore] = useState(false);
-	function show_posts() {
-		Object.entries(posts).map((msg) => {
-			cache_user(msg);
-			console.log("weeee");
-		});
-	}
 	function delete_post(postID) {
 		const temp = { ...posts };
 		delete temp[postID];
@@ -260,8 +259,7 @@ function MediaFeed(props) {
 		>
 			{Object.entries(posts).length === 0
 				? null
-				: Object.entries(posts)
-						.map((msg) => cache_user(msg))}
+				: Object.entries(posts).map((msg) => cache_user(msg))}
 		</InfiniteScroll>
 	);
 }
