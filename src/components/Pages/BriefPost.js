@@ -58,9 +58,9 @@ function BriefPost()
         }
     }, [post_id]);
     useEffect(() => {
-        if(post !== null && _user !== undefined && _user !== null)
+        if(post !== null)
         {
-            if(post.user_id !== _user.user_id && _users[post.user_id] === undefined)
+            if((!_user || _user.user_id !== post.user_id) && !_users[post.user_id])
             {
                 // fetch profile data
                 const _doc = doc(_dbRef, "users/"+post.user_id);
@@ -73,7 +73,7 @@ function BriefPost()
                 });
             }
         }
-    }, [post, _user]);
+    }, [post]);
     function send_commenters_to_cache(commenters)
     {
         var _cache = [];
@@ -89,7 +89,7 @@ function BriefPost()
     return (
         //clamp(400px, 100%, 600px)
         <div className="postPage">
-            {(post === null || _user === undefined) ?
+            {(post === null) ?
             <div className="postNotFound">
                 <h1 style={{color:"#fff", fontWeight:"normal"}}>🤔 That post does not exist!</h1>
                 <button onClick={(e) => navigate("/main")}>Go back home</button>
