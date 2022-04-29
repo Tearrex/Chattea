@@ -226,6 +226,7 @@ function Signup(props) {
 				setTransition(false);
 			} else {
 				emailWindow.current.style.transform = "scale(0) translate(-50%,-50%)";
+				overlayBG.current.style.display = "none";
 			}
 			setLock(true);
 		}, 2000);
