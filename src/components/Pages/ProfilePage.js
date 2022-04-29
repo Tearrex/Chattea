@@ -365,7 +365,7 @@ function ProfilePage(props) {
 						</p>
 						<div className="buddyInfo">
 							<UserList users={buddies} buddies />
-							{_user !== undefined && _user.user_id !== user_id ? (
+							{_user !== undefined && _user.user_id !== user_id && _users[user_id] ? (
 								<BuddyButton buddy={user_id} />
 							) : null}
 						</div>
