@@ -371,7 +371,7 @@ function ProfilePage(props) {
 						</div>
 					</div>
 				</div>
-				<MediaFeed focus={user_id} />
+				{((_user && _user.user_id === user_id) || _users[user_id]) && <MediaFeed focus={user_id} />}
 			</div>
 		</div>
 	);
