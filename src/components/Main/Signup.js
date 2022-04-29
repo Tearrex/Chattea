@@ -422,8 +422,8 @@ function Signup(props) {
 					<div>
 						<h1>Email Verification</h1>
 						<p>
-							This is required for password resets and will be necessary for
-							uploading images in the future.
+							This is required for password resets and
+							uploading images to our community.
 						</p>
 					</div>
 				) : (
