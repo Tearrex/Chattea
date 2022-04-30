@@ -106,31 +106,61 @@ function TeaBar ()
         document.body.style.overflow = null; navigate(currentUser ? "/main" : "/")
     }
     return (
-        <div className="teaBar persistor">
-                <div className="welcomer" style={{position:null}}>
-                    <div className="chattea" 
-                            style={{transform:currentUser? "translateX(0)" : "translateX(-50%)",
-                                left:currentUser?"0":"50%"}}>
-                        <p className="teaPrefix" style={{maxWidth:currentUser ? "0" : "100%"}}>Get</p>
-                        <div style={{gap:"10px"}}>
-                            <div onClick={tea_click}style={{backgroundImage:"url('/tea.png')"}}></div>
-                            <p>Chat<span>tea</span></p>
-                        </div>
-                        <p style={{opacity:currentUser ? "0" : "1"}}>with people!</p>
-                    </div>
-                    <UserPanel notifEvent={toggle_notif_nest} notifCount={notifCount} pfp={_user !== undefined ? _user["pfp"] : ""}/>
-                </div>
-                <div ref={notifNest} className="notifNest" style={{display:"none"}}>
-
-                    {(notifs === undefined || notifs.length === 0) ?
-                        <NotificationChild msg="You have no notifications" info={{}}placeholder={true} onClick={toggle_notif_nest}/> :
-
-                        notifs.map((n) => {
-                            return <NotificationChild key={n.id} info={n} user={_user.user_id} onClick={toggle_notif_nest}/>
-                        })
-                    }
-                </div>
-            </div>
-    )
+			<div className="teaBar persistor">
+				<div className="welcomer" style={{ position: null }}>
+					<div
+						className="chattea"
+						style={{
+							transform: currentUser ? "translateX(0)" : "translateX(-50%)",
+							left: currentUser ? "0" : "50%",
+						}}
+					>
+						<p
+							className="teaPrefix"
+							style={{ maxWidth: currentUser ? "0" : "100%" }}
+						>
+							Get
+						</p>
+						<div style={{ gap: "10px" }}>
+							<div
+								onClick={tea_click}
+								style={{ backgroundImage: "url('/tea.png')" }}
+							></div>
+							<p>
+								Chat<span>tea</span>
+								{_user && ".me"}
+							</p>
+						</div>
+						<p style={{ opacity: currentUser ? "0" : "1" }}>with people!</p>
+					</div>
+					<UserPanel
+						notifEvent={toggle_notif_nest}
+						notifCount={notifCount}
+						pfp={_user !== undefined ? _user["pfp"] : ""}
+					/>
+				</div>
+				<div ref={notifNest} className="notifNest" style={{ display: "none" }}>
+					{notifs === undefined || notifs.length === 0 ? (
+						<NotificationChild
+							msg="You have no notifications"
+							info={{}}
+							placeholder={true}
+							onClick={toggle_notif_nest}
+						/>
+					) : (
+						notifs.map((n) => {
+							return (
+								<NotificationChild
+									key={n.id}
+									info={n}
+									user={_user.user_id}
+									onClick={toggle_notif_nest}
+								/>
+							);
+						})
+					)}
+				</div>
+			</div>
+		);
 }
 export default TeaBar;
