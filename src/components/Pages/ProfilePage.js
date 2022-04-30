@@ -96,7 +96,7 @@ function ProfilePage(props) {
 			setName(profile.username);
 			setUserPfp(profile.pfp);
 			setBio(profile.about);
-			if (profile["banner"] && profile["banner"] !== "") setBanner(profile.banner);
+			if (profile["banner"] !== undefined) setBanner(profile.banner);
 			console.log("Author's profile", profile);
 		}
 	}, [profile]);
