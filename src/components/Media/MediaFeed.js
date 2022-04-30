@@ -24,7 +24,7 @@ function MediaFeed(props) {
 
 	/*
     Iterates over every requested user, checks if their info is
-    already cached and fetches it from the database into if not.
+    already cached and fetches it from the database if not.
 
     Array behaves as a queue for who's data to ask for. it works.
     */
