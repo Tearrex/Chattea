@@ -196,6 +196,7 @@ function Signup(props) {
 			setTimeout(function () {
 				if (verified === true) dismiss_verification(true);
 				else {
+					setEmail(currentUser.email); // autofill link destination
 					emailWindow.current.style.zIndex = "11";
 					emailWindow.current.style.transform =
 						"scale(1) translate(-50%, -50%)";
