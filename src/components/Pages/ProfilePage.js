@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState, useRef } from "react";
 import { useParams } from "react-router";
-import { updateDoc, doc } from "firebase/firestore";
+import { updateDoc, doc, getDoc } from "@firebase/firestore";
 import { uploadBytesResumable, ref, getDownloadURL } from "firebase/storage";
 
 import MediaFeed from "../Media/MediaFeed";
@@ -25,28 +25,27 @@ function ProfilePage(props) {
 	const [bannerFile, setBannerFile] = useState(null);
 	const [origBanner, setOrigBanner] = useState("");
 	const [bannerSaved, setBannerSaved] = useState(false);
-	// name
+
+	const [profile, setProfile] = useState(null);
+
 	/*
     Instead of using states for original values, utilize
     the user's context and update on top of that instead
     */
 	const [inputName, setName] = useState("");
 	const [bioText, setBio] = useState("");
-	const [origBio, setOrigBio] = useState("");
-	const [joinDate, setJoinDate] = useState("");
 	const nameCharLimit = 20;
 	const bioCharLimit = 150;
 	const profileCard = useRef();
 	const bannerChanger = useRef();
 	const pfpChanger = useRef();
-	const [buddies, setBuddies] = useState([]);
 	useEffect(() => {
 		profile_cleanup();
 	}, [_user, _users, user_id]);
 
 	// used to rerender the main profile card
 	// every time the client jumps between profile pages
-	function profile_cleanup() {
+	async function profile_cleanup() {
 		/*
         If the user is viewing a profile other than their own,
         don't allow them to edit the input fields.
@@ -65,41 +64,42 @@ function ProfilePage(props) {
 			pfpChanger.current.style.display = "none";
 		}
 		// if it's the user's own profile, set their information
-		var __user;
 		if (_user !== undefined && user_id === _user.user_id) {
-			__user = _user;
-			setName(__user.username);
-			setUserPfp(__user.pfp);
-			setBuddies(__user.buddies);
-			setOrigPfp(__user.pfp);
-			setBio(__user.about);
-			setOrigBio(__user.about);
-			setJoinDate(__user.joined);
-			if (__user.banner !== "") {
-				setBanner(__user.banner);
-				setOrigBanner(__user.banner);
-			}
+			setProfile(_user);
 		}
-		// otherwise, grab info from the _users state
-		else if (user_id !== undefined && _users[user_id] !== undefined) {
-			__user = _users[user_id];
-			console.log("Author's profile", __user);
-			setName(__user.username);
-			setUserPfp(__user.pfp);
-			setBuddies(__user.buddies);
-			setOrigPfp(__user.pfp);
-			setBio(__user.about);
-			setOrigBio(__user.about);
-			setJoinDate(__user.joined);
-			if (__user.banner !== "") {
-				setBanner(__user.banner);
-				setOrigBanner(__user.banner);
-			} else {
-				setBanner("");
+		// otherwise, grab info from the _users state or fetch from firestore
+		else {
+			if (!_users[user_id]) {
+				var localUsers = localStorage.getItem("users");
+				if (localUsers) {
+					localUsers = JSON.parse(localUsers);
+					if (localUsers[user_id]) {
+						return console.log("waiting for cache to load...");;
+					}
+				}
+				console.log(`${user_id} != ${profile ? profile.user_id : "null"}`);
+				const userRef = doc(_dbRef, "users", user_id);
+				const _doc = await getDoc(userRef);
+				if (_doc.exists()) {
+					const _profile = { user_id: _doc.id, ..._doc.data() };
+					_setUsers({ ..._users, [_doc.id]: _profile });
+				}
 			}
+			else {
+				setProfile(_users[user_id]);
+			}
+			//console.log("Author's profile", _users[user_id]);
 		}
 	}
-
+	useEffect(() => {
+		if (profile) {
+			setName(profile.username);
+			setUserPfp(profile.pfp);
+			setBio(profile.about);
+			if (profile["banner"] && profile["banner"] !== "") setBanner(profile.banner);
+			console.log("Author's profile", profile);
+		}
+	}, [profile]);
 	// write firebase rules
 	function change_name(e) {
 		if (e.target.value.length > nameCharLimit) return;
@@ -127,11 +127,11 @@ function ProfilePage(props) {
 			if (inputName !== _user.username && user_id === _user.user_id)
 				setSave(true);
 			else {
-				if (userPfp === origPfp) setSave(false);
+				if (profile && userPfp === profile.pfp) setSave(false);
 			}
 		}
 	}, [inputName]);
-	useEffect(() => setSave(bioText !== origBio), [bioText]);
+	useEffect(() => setSave(profile && bioText !== profile.about), [bioText]);
 	function update_pfp(e) {
 		console.log(e.target.files[0]);
 		setSave(true);
@@ -145,13 +145,13 @@ function ProfilePage(props) {
 		setBanner(URL.createObjectURL(e.target.files[0]));
 	}
 	function revert_changes() {
-		setName(_user.username);
-		setUserPfp(origPfp);
+		setName(profile.username);
+		setUserPfp(profile.pfp);
 		setPfpFile(null);
-		setBanner(origBanner);
+		setBanner(profile.banner);
 		setBannerFile(null);
 		setSave(false);
-		setBio(origBio);
+		setBio(profile.about);
 		inputRef.current.value = null;
 		//closePopup();
 	}
@@ -235,9 +235,8 @@ function ProfilePage(props) {
 				setOrigBanner(userBanner);
 				changesRef["banner"] = userBanner;
 			}
-			if (bioText !== origBio) {
+			if (profile && bioText !== profile.about) {
 				var trimmedBio = String(bioText).trimStart();
-				setOrigBio(trimmedBio);
 				changesRef["about"] = trimmedBio;
 			}
 			const docRef = doc(_dbRef, "users", _user["user_id"]);
@@ -361,10 +360,10 @@ function ProfilePage(props) {
 					</div>
 					<div className="userInfo">
 						<p>
-							Joined <span>{joinDate}</span>
+							Joined <span>{profile && profile.joined}</span>
 						</p>
 						<div className="buddyInfo">
-							<UserList users={buddies} buddies />
+							<UserList users={profile ? profile.buddies : []} buddies />
 							{_user !== undefined && _user.user_id !== user_id && _users[user_id] ? (
 								<BuddyButton buddy={user_id} />
 							) : null}
