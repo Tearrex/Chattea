@@ -141,7 +141,7 @@ function MediaPost(props) {
 		);
 		await deleteDoc(smilesRef);
 		//console.log("deleted?");
-		const imgRef = ref(_storageRef, "images/" + props.postID);
+		const imgRef = ref(_storageRef, "images/" + user_id + "/" + props.postID);
 		try {
 			await deleteObject(imgRef);
 		} catch (e) {
