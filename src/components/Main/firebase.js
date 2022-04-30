@@ -29,7 +29,6 @@ export async function signup(email, password, username) {
     var newUser = await createUserWithEmailAndPassword(auth, email, password);
     console.log("made new user with ID " + newUser.user.uid + " and email " + newUser.user.email);
     const _user = {
-        email: email,
         about:"",
         banner:"",
         joined: today,
