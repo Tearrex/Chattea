@@ -186,7 +186,7 @@ function ProfilePage(props) {
 				}
 			);
 		} else setPfpSaved(true);
-		if (userBanner !== origBanner) {
+		if (profile && userBanner !== profile.banner) {
 			// upload new banner
 			console.log("uploading banner");
 			setUploading(true);
