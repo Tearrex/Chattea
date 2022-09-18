@@ -8,6 +8,7 @@ import { MembersContext, UserContext } from "../Main/Contexts";
 import { _storageRef, _dbRef } from "../Main/firebase";
 import BuddyButton from "../Buddies/BuddyButton";
 import UserList from "../Buddies/UserList";
+import { Link } from "react-router-dom";
 
 function ProfilePage(props) {
 	const { _user, _setUser } = useContext(UserContext);
@@ -43,6 +44,7 @@ function ProfilePage(props) {
 		profile_cleanup();
 	}, [_user, _users, user_id]);
 
+	const [relatedUsers, setRelatedUsers] = useState([]); // list of users relevant
 	// used to rerender the main profile card
 	// every time the client jumps between profile pages
 	async function profile_cleanup() {
@@ -74,7 +76,7 @@ function ProfilePage(props) {
 				if (localUsers) {
 					localUsers = JSON.parse(localUsers);
 					if (localUsers[user_id]) {
-						return console.log("waiting for cache to load...");;
+						return console.log("waiting for cache to load...");
 					}
 				}
 				console.log(`${user_id} != ${profile ? profile.user_id : "null"}`);
@@ -84,11 +86,22 @@ function ProfilePage(props) {
 					const _profile = { user_id: _doc.id, ..._doc.data() };
 					_setUsers({ ..._users, [_doc.id]: _profile });
 				}
-			}
-			else {
+			} else {
 				setProfile(_users[user_id]);
 			}
-			//console.log("Author's profile", _users[user_id]);
+			var suggs = [];
+			if (_user) {
+				const buddies = _user.buddies;
+				// let the user know if some of their buddies are "following"
+				// the profile they are currently looking at, potential relations
+				for (let i = 0; i < buddies.length; i++) {
+					const buddy = _users[buddies[i]]; // buddy as a User object (typescript soon)
+					if (buddy && _users[user_id] && buddy.buddies.includes(user_id)) {
+						suggs.push(buddy.user_id);
+					}
+				}
+				setRelatedUsers(suggs);
+			}
 		}
 	}
 	useEffect(() => {
@@ -359,18 +372,38 @@ function ProfilePage(props) {
 						</button>
 					</div>
 					<div className="userInfo">
-						<p>
+						<p style={{ margin: 0 }}>
 							Joined <span>{profile && profile.joined}</span>
 						</p>
 						<div className="buddyInfo">
 							<UserList users={profile ? profile.buddies : []} buddies />
-							{_user !== undefined && _user.user_id !== user_id && _users[user_id] ? (
+							{_user !== undefined &&
+							_user.user_id !== user_id &&
+							_users[user_id] ? (
 								<BuddyButton buddy={user_id} />
 							) : null}
 						</div>
 					</div>
+					<div
+						className="bRelation"
+						style={{
+							overflow: "unset",
+							display:
+								Object.entries(relatedUsers).length === 0 ? "none" : null,
+						}}
+					>
+						<p style={{ marginLeft: "10px" }}>Known by your buddies:</p>
+						{relatedUsers.map((x) => (
+							<Link to={"/profile/" + x} className="bTooltip">
+								<img src={_users[x].pfp} alt="user pic" width={30} />
+								<span className="toolText">{_users[x].username}</span>
+							</Link>
+						))}
+					</div>
 				</div>
-				{((_user && _user.user_id === user_id) || _users[user_id]) && <MediaFeed focus={user_id} />}
+				{((_user && _user.user_id === user_id) || _users[user_id]) && (
+					<MediaFeed focus={user_id} />
+				)}
 			</div>
 		</div>
 	);
