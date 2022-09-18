@@ -33,8 +33,19 @@ function NotificationChild (props)
     {
         if (props.onClick !== undefined) props.onClick();
         if (props.placeholder === true) return;
-        if(type === "comment") navigate("post/"+id);
-        else navigate("profile/"+id);
+        if (type === "comment") {
+					navigate("post/" + id);
+				} else {
+					// update user's state to reflect new addition to buddy list
+					if (!_users[id].buddies.includes(props.user)) {
+						var users = _users;
+						var newBud = users[id];
+						newBud.buddies.push(props.user);
+						users[id] = newBud;
+						_setUsers(users);
+					}
+					navigate("profile/" + id);
+				}
         document.body.style.overflow = null;
         delete_notif();
     }

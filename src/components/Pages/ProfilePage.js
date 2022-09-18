@@ -393,8 +393,8 @@ function ProfilePage(props) {
 						}}
 					>
 						<p style={{ marginLeft: "10px" }}>Known by your buddies:</p>
-						{relatedUsers.map((x) => (
-							<Link to={"/profile/" + x} className="bTooltip">
+						{relatedUsers.map((x, i) => (
+							<Link to={"/profile/" + x} className="bTooltip" key={i}>
 								<img src={_users[x].pfp} alt="user pic" width={30} />
 								<span className="toolText">{_users[x].username}</span>
 							</Link>
