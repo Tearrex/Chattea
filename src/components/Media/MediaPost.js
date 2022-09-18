@@ -8,6 +8,8 @@ import { MembersContext, UserContext } from "../Main/Contexts";
 import Comments, { post_comment } from "../Comments/Comments";
 import { useNavigate, useParams } from "react-router";
 import UserList from "../Buddies/UserList";
+
+import { Link } from "react-router-dom";
 function MediaPost(props) {
 	const navigate = useNavigate();
 	// didn't have time to finish, will commit feature later
@@ -227,7 +229,7 @@ function MediaPost(props) {
 				<div className="mediaContent">
 					<p style={{ marginBottom: 0, fontSize: "1.3rem" }}>{content}</p>
 				</div>
-				<div className="userAndPfp">
+				<Link to={"/profile/" + user_id} className="userAndPfp">
 					{isAuthor ? null : (
 						<p
 							className="username"
@@ -252,7 +254,7 @@ function MediaPost(props) {
 							className="profilePicture niceClip"
 						/>
 					</div>
-				</div>
+				</Link>
 			</div>
 			<div className="mediaSecondary">
 				<div
