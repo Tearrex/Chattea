@@ -566,6 +566,7 @@ body {
     flex-flow: column;
     z-index: 1;
     overflow: hidden;
+    border-radius: $boxRad;
 }
 
 .subWidget {
@@ -812,7 +813,7 @@ body {
     flex-wrap: wrap;
     width: 100%;
     /*padding: 15px; border-radius: 20px*/
-    background-color: #1e1e1e;
+    //background-color: #1e1e1e;
     min-width: 250px;
     transition: background-color 0.6s ease-out, box-shadow 0.4s ease-out
         /*, border-radius 0.5s ease*/
@@ -857,6 +858,7 @@ body {
     margin: 0; padding: 10px 0;
     z-index: 1;
     display: block;
+    border-radius: 0 0 $boxRad $boxRad;
 }
 
 .mediaPostImg {
@@ -932,6 +934,7 @@ body {
     text-align: center; background-color: #1e1e1e;
     // box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5); z-index: 1;
     display: flex; align-items: stretch; padding: 10px;
+    border-radius: $boxRad $boxRad 0 0;
 }
 
 .postUserInfo .username {
@@ -975,6 +978,7 @@ body {
     background-color: #151515;
 }
 .comment {
+    display: flex; flex-flow: row; align-items: center; gap: 5px;
     color: #9e9e9e; padding: 5px 10px;
     .cUser {
         color: $niceOrange; font-weight: bold;
@@ -983,10 +987,28 @@ body {
     .cDelete {
         font-weight: normal; margin: 0; cursor: pointer;
     }
+    &:hover .content {
+        white-space: break-spaces;
+        text-overflow: unset;
+        overflow: inherit !important;
+    }
     .content {
         color: $lightText;
         font-weight: normal;
         word-break: break-word;
+
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    img {
+        width: 32px; height: 32px; object-fit: cover; border-radius: 50%;
+    }
+    .ubadge  > * {
+        display: inline-block; vertical-align: middle;
+    }
+    .ubadge img {
+        margin-right: 5px;
     }
 }
 
