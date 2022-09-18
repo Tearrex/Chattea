@@ -46,8 +46,8 @@ function UserList(props) {
 		popupRef.current.style.display = "none";
 		document.body.style.overflow = null;
 	}, [user_id]);
-	useEffect(async () => {
-		if (cached) await check_cache();
+	useEffect(() => {
+		if (cached) check_cache();
 	}, [cached]);
 	const popupRef = useRef();
 	function toggle_list(toggle=null) {
