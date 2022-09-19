@@ -276,9 +276,40 @@ function ProfilePage(props) {
 	}, [uploading]);
 	const inputRef = useRef();
 	const bannerRef = useRef();
+
+	const [focusPost, setFocusPost] = useState(null);
+	useEffect(() => {
+		document.body.style.overflow = focusPost !== null ? "hidden" : null;
+	}, [focusPost]);
 	return (
 		<div className="homeWrapper">
+			{focusPost !== null && (
+				<MediaActions focusPost={focusPost} setFocusPost={setFocusPost} />
+			)}
 			<div id="home" className="clamper">
+				{shouldCompress && (
+					<div className="subWarning" style={{ display: "flex" }}>
+						<div className="compProgress"></div>
+						<div className="compText">
+							{compPfp && (
+								<p style={{ margin: 0 }}>
+									⚠️ Profile picture will be compressed{" "}
+									<span>
+										({pfpFile.size / 1000000}/{imgSizeLimit}.0MB)
+									</span>
+								</p>
+							)}
+							{compBanner && (
+								<p style={{ margin: 0 }}>
+									⚠️ Profile banner will be compressed{" "}
+									<span>
+										({bannerFile.size / 1000000}/{imgSizeLimit}.0MB)
+									</span>
+								</p>
+							)}
+						</div>
+					</div>
+				)}
 				<div
 					ref={profileCard}
 					className="mainProfile"
