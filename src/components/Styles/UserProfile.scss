@@ -232,7 +232,7 @@
     }
 }
 .buddiesFrame {
-    z-index: 4; padding: 10px; background-color: $mainFore;
+    z-index: 6; padding: 10px; background-color: $mainFore;
     width: clamp(200px, 90%, 600px); max-height: 50%; overflow-y: scroll;
     display: flex; flex-flow: column; gap: 10px;
     .buddyItem {
@@ -259,17 +259,17 @@
     background-color: #c6c6c6; gap: 10px;
     display: flex; flex-flow: row; justify-content: center;
     padding: 10px; align-items: center;
+    .banBtn {
+        background-color: $teaColor; color: #fff; font-size: 1.2rem; padding: 0 15px;
+    }
     .buddyInfo {
         display: flex; align-items: center; flex-flow: row; flex-shrink: 0;
-        justify-content: center; gap: 10px;
+        justify-content: center; gap: 10px; align-items: stretch;
         .buddies {
             display: flex; flex-flow: row; align-items: center;
-            background-color: #85C1E9; padding: 10px;
+            background-color: $richSmile; padding: 10px;
             p {
                 margin: 0;
-            }
-            &:hover {
-                background-color: #5DADE2;
             }
         }
     }

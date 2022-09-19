@@ -1,6 +1,12 @@
 import { useContext, useEffect, useState, useRef } from "react";
 import { useParams } from "react-router";
-import { updateDoc, doc, getDoc } from "@firebase/firestore";
+import {
+	updateDoc,
+	doc,
+	getDoc,
+	setDoc,
+	serverTimestamp,
+} from "@firebase/firestore";
 import { uploadBytesResumable, ref, getDownloadURL } from "firebase/storage";
 
 import MediaFeed from "../Media/MediaFeed";
@@ -281,6 +287,20 @@ function ProfilePage(props) {
 	useEffect(() => {
 		document.body.style.overflow = focusPost !== null ? "hidden" : null;
 	}, [focusPost]);
+	function ban_user() {
+		if (!window.confirm(`Ban ${_users[user_id].username}?`)) return;
+		const _doc = doc(_dbRef, "banned/" + user_id);
+		try {
+			setDoc(_doc, {
+				banBy: _user.user_id,
+				banDate: serverTimestamp(),
+			})
+				.then(console.log("user has been banned!"))
+				.catch((e) => console.log("failed to ban user"));
+		} catch (error) {
+			console.log("failed to ban user");
+		}
+	}
 	return (
 		<div className="homeWrapper">
 			{focusPost !== null && (
@@ -322,7 +342,8 @@ function ProfilePage(props) {
 									style={{
 										backgroundImage: "url('/cam_icon.svg')",
 										borderRadius: "0",
-										opacity: _user && _user.pfp === "/default_user.png" ? "1" : null,
+										opacity:
+											_user && _user.pfp === "/default_user.png" ? "1" : null,
 									}}
 								>
 									<input
@@ -385,6 +406,11 @@ function ProfilePage(props) {
 							Joined <span>{profile && profile.joined}</span>
 						</p>
 						<div className="buddyInfo">
+							{_user && _user.role === "admin" && user_id !== _user.user_id && (
+								<button className="banBtn stealthBtn" onClick={ban_user}>
+									BAN
+								</button>
+							)}
 							<UserList users={profile ? profile.buddies : []} buddies />
 							{_user !== undefined &&
 							_user.user_id !== user_id &&
