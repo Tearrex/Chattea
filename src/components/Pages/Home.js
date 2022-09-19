@@ -148,7 +148,7 @@ function Home() {
 						))}
 					</div>
 				</div>
-				{_user && <MediaFeed />}
+				{_user && <MediaFeed setFocusPost={setFocusPost} />}
 			</div>
 		</div>
 	);
