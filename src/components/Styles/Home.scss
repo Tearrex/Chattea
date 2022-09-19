@@ -936,7 +936,47 @@ body {
     display: flex; align-items: stretch; padding: 10px;
     border-radius: $boxRad $boxRad 0 0;
 }
-
+.postActionScreen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba($color: #000000, $alpha: 0.5); z-index: 5;
+}
+#postActionModal {
+    background-color: #e9e9ed;
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%); z-index: 6;
+    display: flex; flex-flow: column;
+    border-radius: 0.8rem; overflow: hidden;
+    width: clamp(120px, 90vw, 400px);
+    & > button {
+        padding: 15px 0;
+        border: none; outline: none; border-bottom: 1px solid #bebebe;
+    }
+    & > button.high {
+        color: $teaColor; font-weight: bold;
+    }
+    .hcenter {
+        margin-left: auto; margin-right: auto;
+    }
+    .reportSelect {
+        width: 90%;
+        padding: 15px 0; margin-top: 15px; margin-bottom: 15px;
+    }
+    .repHead {
+        padding: 10px; border-bottom: 1px solid #bebebe; margin: 0;
+    }
+    .reportBtn {
+        background-color: $niceOrange; width: 90%; color: #fff; border-radius: $boxRad;
+        margin-bottom: 15px; cursor: pointer;
+    }
+}
+.postUserInfo .pActions {
+    width: 50px; float: left;
+    background-color: rgba($color: #fff, $alpha: 0.0);
+    transition: background-color 0.2s ease-in;
+    &:hover {
+        background-color: rgba($color: #fff, $alpha: 0.1);
+    }
+}
 .postUserInfo .username {
     display: inline-block;
     vertical-align: middle;

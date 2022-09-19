@@ -9,6 +9,7 @@ import { _storageRef, _dbRef } from "../Main/firebase";
 import BuddyButton from "../Buddies/BuddyButton";
 import UserList from "../Buddies/UserList";
 import { Link } from "react-router-dom";
+import MediaActions from "../Media/MediaActions";
 
 function ProfilePage(props) {
 	const { _user, _setUser } = useContext(UserContext);
@@ -402,7 +403,7 @@ function ProfilePage(props) {
 					</div>
 				</div>
 				{((_user && _user.user_id === user_id) || _users[user_id]) && (
-					<MediaFeed focus={user_id} />
+					<MediaFeed focus={user_id} setFocusPost={setFocusPost} />
 				)}
 			</div>
 		</div>

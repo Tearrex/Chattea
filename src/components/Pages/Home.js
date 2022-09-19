@@ -14,6 +14,7 @@ import { useContext, useEffect, useState } from "react";
 import { MembersContext, showLogin, UserContext } from "../Main/Contexts";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import MediaActions from "../Media/MediaActions";
 function Home() {
 	const navigate = useNavigate();
 	const { _user, _setUser } = useContext(UserContext);
@@ -23,6 +24,10 @@ function Home() {
 
 	const [cache, setCache] = useState([]);
 
+	const [focusPost, setFocusPost] = useState(null);
+	useEffect(() => {
+		document.body.style.overflow = focusPost !== null ? "hidden" : null;
+	}, [focusPost]);
 	async function check_cache() {
 		var _toCache = {};
 		for (let i = 0; i < cache.length; i++) {
@@ -100,6 +105,9 @@ function Home() {
 	}
 	return (
 		<div className="homeWrapper">
+			{focusPost !== null && (
+				<MediaActions focusPost={focusPost} setFocusPost={setFocusPost} />
+			)}
 			<div id="home" className="clamper">
 				{_user ? (
 					<Submitter onMessageSend={postMessage} />

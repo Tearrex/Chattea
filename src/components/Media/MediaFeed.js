@@ -238,6 +238,7 @@ function MediaFeed(props) {
 				key={post[0]}
 				msg={post[1]}
 				postID={post[0]}
+				setFocusPost={() => props.setFocusPost(post)}
 				authorID={post[1].user_id}
 			/>
 		);

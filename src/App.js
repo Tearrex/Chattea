@@ -23,6 +23,23 @@ import "./components/Styles/Home.scss";
 import "./components/Styles/Splash.scss";
 import "./components/Styles/UserProfile.scss";
 
+export function copy_text(text, success) {
+	if (navigator.clipboard) {
+		return navigator.clipboard.writeText(text).then(success);
+	}
+	// old browser fallback
+	var temp = document.createElement("textarea");
+	temp.value = text;
+	temp.setAttribute("readonly", "");
+	temp.style = { display: "none" };
+	document.body.appendChild(temp);
+	temp.focus();
+	temp.select();
+	document.execCommand("copy");
+	document.body.removeChild(temp);
+	success();
+}
+
 function App() {
 	const currentUser = useAuth();
 
