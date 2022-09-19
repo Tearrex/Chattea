@@ -6,7 +6,7 @@ import { _dbRef } from "../Main/firebase";
 import { useParams } from "react-router";
 function UserList(props) {
 	//console.log("friends are",users);
-	const { users } = props;
+	const { users, open } = props;
 	const { user_id } = useParams();
 	const { _user, _setUser } = useContext(UserContext);
 	const { _users, _setUsers } = useContext(MembersContext);
@@ -15,7 +15,10 @@ function UserList(props) {
 		if (users && Object.entries(users).length > 0) {
 			var _toCache = {};
 			for (let i = 0; i < users.length; i++) {
-				if (_users[users[i]] === undefined && (!_user || users[i] !== _user.user_id)) {
+				if (
+					_users[users[i]] === undefined &&
+					(!_user || users[i] !== _user.user_id)
+				) {
 					if (_toCache[users[i]] !== undefined) continue;
 					/*{
                         if(i < users.length - 1) continue;
@@ -35,13 +38,12 @@ function UserList(props) {
 		}
 	}
 	useEffect(() => {
-		if(!props.buddies)
-		{
+		if (!props.buddies && open) {
 			setCached(true);
 		}
 	}, []);
 	useEffect(() => {
-		if(!props.buddies) return;
+		if (!props.buddies) return;
 		setCached(false);
 		popupRef.current.style.display = "none";
 		document.body.style.overflow = null;
@@ -50,15 +52,16 @@ function UserList(props) {
 		if (cached) check_cache();
 	}, [cached]);
 	const popupRef = useRef();
-	function toggle_list(toggle=null) {
-		//console.log("toggling");
+
+	const [isOpen, setOpen] = useState(open !== undefined);
+	useEffect(() => {
 		if (users.length === 0) return;
-		if(!props.buddies)
-		{
-			if(props.onClose) props.onClose();
+		if (!props.buddies && !open) {
+			console.log("bye beee");
+			if (props.onClose) props.onClose();
 			return;
-		};
-		if (toggle == true) {
+		}
+		if (isOpen) {
 			// show it
 			popupRef.current.style.display = "block";
 			document.body.style.overflow = "hidden";
@@ -67,12 +70,16 @@ function UserList(props) {
 			popupRef.current.style.display = "none";
 			document.body.style.overflow = null;
 		}
-		//if(props.onClose) props.onClose();
-	}
+	}, [isOpen]);
 	return (
-		<div>
+		<>
 			{props.buddies && (
-				<button className="buddies" onClick={() => toggle_list(true)}>
+				<button
+					className="buddies stealthBtn"
+					onClick={() => {
+						if (users.length > 0) setOpen(true);
+					}}
+				>
 					<p>{users.length} Buddies</p>
 				</button>
 			)}
@@ -80,19 +87,21 @@ function UserList(props) {
 				<div
 					className="overlay"
 					style={{ display: "block" }}
-					onClick={() => {toggle_list(false); if(props.onClose) props.onClose();}}
+					onClick={() => {
+						setOpen(false);
+						if (open) document.body.style.overflow = null; // if open by default, restore scroll
+						if (props.onClose) props.onClose();
+					}}
 				/>
 				<div className="buddiesFrame center">
 					{users &&
 						users.length > 0 &&
 						users.map((buddy, i) => {
-							return (
-								<UserListItem buddy={buddy} key={i} toggle={toggle_list} />
-							);
+							return <UserListItem buddy={buddy} key={i} toggle={setOpen} />;
 						})}
 				</div>
 			</div>
-		</div>
+		</>
 	);
 }
 export default UserList;

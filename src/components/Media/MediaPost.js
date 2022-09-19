@@ -345,7 +345,7 @@ function MediaPost(props) {
 							/>
 						</form>
 						{smilers && Object.entries(smilers).length > 0 && (
-							<UserList users={smilers} onClose={() => setSmilers(null)} />
+							<UserList users={smilers} onClose={() => setSmilers(null)} open />
 						)}
 						{_user && (
 							<Comments
