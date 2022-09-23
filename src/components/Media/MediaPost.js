@@ -235,7 +235,7 @@ function MediaPost(props) {
 					<p style={{ marginBottom: 0, fontSize: "1.3rem" }}>{content}</p>
 				</div>
 				<Link to={"/profile/" + user_id} className="userAndPfp">
-					{isAuthor ? null : (
+					{!isAuthor && (
 						<p
 							className="username"
 							style={{
@@ -252,7 +252,6 @@ function MediaPost(props) {
 					<div
 						onClick={() => {
 							window.scrollTo(0, 0);
-							navigate("/profile/" + props.authorID);
 						}}
 					>
 						<div
@@ -330,6 +329,7 @@ function MediaPost(props) {
 							className="commenter"
 							onSubmit={handle_comment}
 						>
+							<img src={_user ? _user.pfp : ""} alt="my pfp" />
 							<input
 								ref={textInput}
 								type="text"

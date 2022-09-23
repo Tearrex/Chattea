@@ -989,11 +989,14 @@ body {
     padding: 10px;
     justify-content: center; align-items: center;
 }
+.commenter img {
+    width: 32px; height: 32px; object-fit: cover; border-radius: 50%; margin-right: 5px;
+}
 .commenter:focus-within {
     display: flex;
 }
 .commenter input {
-    outline: none; border: none; padding: 15px 10px;
+    outline: none; border: none; padding: 10px;
     font-size: 1.2rem;
 }
 .commenter input[type="text"] {
