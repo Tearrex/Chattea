@@ -80,16 +80,18 @@ function UserPanel (props)
 						</button>
 					</div>
 				</div>
-				<div className="notifMain" onClick={props.notifEvent}>
-					<p>🔔</p>
-					<span
-						style={{
-							backgroundColor: props.notifCount === 0 ? "#8f8f8f" : "#E74C3C",
-						}}
-					>
-						{props.notifCount}
-					</span>
-				</div>
+				{props.notifCount > 0 && (
+					<div className="notifMain" onClick={props.notifEvent}>
+						<p>🔔</p>
+						<span
+							style={{
+								backgroundColor: props.notifCount === 0 ? "#8f8f8f" : "#E74C3C",
+							}}
+						>
+							{props.notifCount}
+						</span>
+					</div>
+				)}
 			</div>
 		);
 }
