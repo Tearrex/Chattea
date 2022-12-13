@@ -226,7 +226,7 @@ function MediaPost(props) {
 				className="postUserInfo"
 				style={{ boxShadow: image_url === "" ? "none" : null }}
 			>
-				{((_user && _user.user_id === user_id) || _users[user_id]) && (
+				{_user && (_user.user_id === user_id || _users[user_id]) && (
 					<button className="pActions" onClick={props.setFocusPost}>
 						<img src="/ellipsis.svg" width={20} alt="menu" />
 					</button>
