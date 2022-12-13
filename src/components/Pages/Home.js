@@ -148,7 +148,9 @@ function Home() {
 						))}
 					</div>
 				</div>
-				{_user && <MediaFeed setFocusPost={setFocusPost} />}
+				{(_user || localStorage.getItem("guest")) && (
+					<MediaFeed setFocusPost={setFocusPost} />
+				)}
 			</div>
 		</div>
 	);

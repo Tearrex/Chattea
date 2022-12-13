@@ -118,6 +118,11 @@ function SplashPage() {
 		else navigate("/main"); // show live feed
 	}
 	useEffect(() => {}, [emailInput]);
+
+	function guest_mode() {
+		localStorage.setItem("guest", "true");
+		navigate("/main");
+	}
 	return (
 		<div className="splashBody">
 			<div className="catch">
@@ -196,7 +201,7 @@ function SplashPage() {
 						<button
 							className="loginBtn guestBtn stealthBtn"
 							type="button"
-							onClick={() => navigate("/main")}
+							onClick={guest_mode}
 						>
 							👀 View as Guest
 						</button>
