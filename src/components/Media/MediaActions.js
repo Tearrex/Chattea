@@ -152,7 +152,7 @@ function MediaActions(props) {
 									>
 										<option>PICK A CATEGORY</option>
 										<option value="spam">Spamming / Repetitive</option>
-										<option value="sex">Nuditity / Sexualized Content</option>
+										<option value="sex">Nudity / Sexualized Content</option>
 										<option value="hate">Hate Speech / Discrimination</option>
 										<option value="danger">Violence / Dangerous Acts</option>
 										<option value="source">
