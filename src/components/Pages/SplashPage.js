@@ -229,8 +229,7 @@ function SplashPage() {
 					<p>
 						Our user submissions are vetted occasionally to get featured on the
 						face of Chattea. You can participate by posting your pets or sharing
-						memes to make others smile or share a thought-provoking{" "}
-						<a href="https://www.merriam-webster.com/dictionary/whim">whim</a>.
+						memes to make others smile.
 					</p>
 					<a href="#" className="img" onClick={feature_scroll}>
 						<img src="https://firebasestorage.googleapis.com/v0/b/reactback-1cf7d.appspot.com/o/images%2Fp4grb7YvQmXOpiWqGgQschzPqo02%2FM1d1Rb629Sb4lq2Dye5H?alt=media&token=57c8156a-62cf-4a65-9165-572cd35d05ce" />

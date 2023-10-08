@@ -21,9 +21,9 @@ function FAQPage(props) {
 				<FAQuestion question="What is Chattea?" emote="☕">
 					<p>
 						Chattea is a modest social media platform for making pocket-sized
-						memories as you go about your days. Meet new people as they come
-						along and vibe with those that share similar hobbies or interests.
-						Post glimpses of your activities and add some mystery ;)
+						memories as you go about your days. Meet new people and vibe with
+						those that share similar hobbies or interests. The idea is to post
+						glimpses of your activities while adding some mystery ;)
 						<br />
 					</p>
 					<p>
