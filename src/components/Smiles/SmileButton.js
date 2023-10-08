@@ -52,6 +52,7 @@ function SmileButton(props) {
 	}, [_user]);
 	function smile(e) {
 		if (!props.canSmile || !_user) {
+			localStorage.setItem("redirect", `/post/${_postID}`); // bring user back after auth
 			setLogin(true);
 			return e.preventDefault();
 		}

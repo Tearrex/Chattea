@@ -190,7 +190,10 @@ function MediaPost(props) {
 		setComment(e.target.value);
 	}
 	function toggle_textbox() {
-		if(!_user) return setLogin(true);
+		if (!_user) {
+			localStorage.setItem("redirect", `/post/${postID}`);
+			return setLogin(true);
+		}
 		setComment("");
 		commentBox.current.style.display = "flex";
 		textInput.current.focus();
@@ -289,7 +292,7 @@ function MediaPost(props) {
 								smiled={props.smiled}
 								postID={postID}
 								author={user_id}
-								smiles={_user && user_id === _user.user_id || 0}
+								smiles={(_user && user_id === _user.user_id) || 0}
 								setSmilers={show_smilers}
 							/>
 						</div>

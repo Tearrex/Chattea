@@ -223,7 +223,9 @@ function Signup(props) {
 	}, [currentUser]);
 	function dismiss_verification(wasEmailVerified) {
 		if (wasEmailVerified === false) saucerRef.current.style.display = "none";
-		navigate("/main");
+		let redirect = localStorage.getItem("redirect");
+		navigate(redirect || "/main");
+		localStorage.removeItem("redirect");
 		setTimeout(() => {
 			overlayBG.current.style.opacity = "0";
 			if (wasEmailVerified) {
