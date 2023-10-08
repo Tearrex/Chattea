@@ -73,11 +73,10 @@ function Home() {
 					buddyBuddy.user_id !== _user.user_id &&
 					buddy.buddies.includes(_user.user_id)
 				)
+					if (!suggs[buddyBuddy.user_id]) {
 					// suggs.push(buddyBuddy.user_id); // suggest user added by a mutual buddy
-					if (!suggs[buddyBuddy.user_id]) { 
 						suggs[buddyBuddy.user_id] = { count: 1, id: buddyBuddy.user_id };
-					}
-					else suggs[buddyBuddy.user_id].count += 1;
+					} else suggs[buddyBuddy.user_id].count += 1;
 			}
 			console.log("miraaAA", suggs);
 			setCache(toCache);
@@ -120,13 +119,9 @@ function Home() {
 				{_user ? (
 					<Submitter onMessageSend={postMessage} />
 				) : (
-					<div className="submission guestBanner">
-						<h2>Join the club to interact with posts and see comments</h2>
-						<div className="authBtns">
-							<button onClick={() => setLogin(true)}>Login</button>
-							<button onClick={() => navigate("/")}>Signup</button>
-						</div>
-					</div>
+					<h1 style={{ opacity: 0.5, color: "#fff" }}>
+						Hello stranger, get comfy <i class="fas fa-mug-hot"></i>
+					</h1>
 				)}
 				<div
 					className="exploreBuddies"
@@ -140,15 +135,15 @@ function Home() {
 							overflowX: "scroll",
 						}}
 					>
-						{suggestions && Object.values(suggestions).map((x, i) => (
-							<Link
-								to={"/profile/" + x.id}
-								className="bCard"
-								key={i}
-							>
+						{suggestions &&
+							Object.values(suggestions).map((x, i) => (
+								<Link to={"/profile/" + x.id} className="bCard" key={i}>
 								<img src={_users[x.id].pfp} alt="user pic" />
 								<p>{_users[x.id].username}</p>
-								<small><i class="fas fa-user-friends"></i> <b>+{x.count}</b> connections</small>
+									<small>
+										<i class="fas fa-user-friends"></i> <b>+{x.count}</b>{" "}
+										connections
+									</small>
 							</Link>
 						))}
 					</div>

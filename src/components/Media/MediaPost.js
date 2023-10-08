@@ -4,7 +4,7 @@ import { _dbRef, _storageRef } from "../Main/firebase";
 import SmileButton from "../Smiles/SmileButton";
 import { deleteObject, ref } from "firebase/storage";
 import React from "react";
-import { MembersContext, UserContext } from "../Main/Contexts";
+import { MembersContext, UserContext, showLogin } from "../Main/Contexts";
 import Comments, { post_comment } from "../Comments/Comments";
 import { useNavigate, useParams } from "react-router";
 import UserList from "../Buddies/UserList";
@@ -16,6 +16,7 @@ function MediaPost(props) {
 	//const {page_user_id} = useParams();
 	const { _user, _setUser } = useContext(UserContext);
 	const { _users, _setUsers } = useContext(MembersContext);
+	const { _showLogin, setLogin } = useContext(showLogin);
 	const { caption, content, date, image_url, user_id } = props.msg;
 	const [captionInput, setCaption] = useState("");
 	const [isAuthor, setAuthor] = useState(false);
@@ -167,8 +168,8 @@ function MediaPost(props) {
 		if (lastAction > 0 && cooldown >= Date.now() - lastAction) {
 			alert(
 				"Spam Protection: Please wait " +
-				((cooldown - (Date.now() - lastAction)) / 1000).toFixed(1) +
-				" seconds before commenting again."
+					((cooldown - (Date.now() - lastAction)) / 1000).toFixed(1) +
+					" seconds before commenting again."
 			);
 			return;
 		}
@@ -189,6 +190,7 @@ function MediaPost(props) {
 		setComment(e.target.value);
 	}
 	function toggle_textbox() {
+		if(!_user) return setLogin(true);
 		setComment("");
 		commentBox.current.style.display = "flex";
 		textInput.current.focus();
@@ -235,17 +237,21 @@ function MediaPost(props) {
 								color: "#fff",
 							}}
 						>
+							{!_user && <i class="fas fa-user"></i>}
 							{_users[props.authorID] !== undefined
 								? _users[props.authorID].username
 								: "User"}
 						</p>
 					)}
-					{_user && props.authorID !== _user.user_id && <div onClick={() => {
-						window.scrollTo(0, 0);
-					}}
-						style={{ backgroundImage: "url(" + pfp + ")" }}
-						className="profilePicture niceClip"
-					/>}
+					{_user && props.authorID !== _user.user_id && (
+						<div
+							onClick={() => {
+								window.scrollTo(0, 0);
+							}}
+							style={{ backgroundImage: "url(" + pfp + ")" }}
+							className="profilePicture niceClip"
+						/>
+					)}
 				</Link>
 			</div>
 			<div className="mediaSecondary">
@@ -271,28 +277,26 @@ function MediaPost(props) {
 					</div>
 				) : null}
 				<div>
-					{_user && (
-						<div className="postActions">
-							<div
-								ref={deleteOverlay}
-								className="deleteOverlay"
-								style={{ maxWidth: "0%" }}
+					<div className="postActions">
+						<div
+							ref={deleteOverlay}
+							className="deleteOverlay"
+							style={{ maxWidth: "0%" }}
+						/>
+						<div className="actionBundle">
+							<SmileButton
+								canSmile={true}
+								smiled={props.smiled}
+								postID={postID}
+								author={user_id}
+								smiles={_user && user_id === _user.user_id || 0}
+								setSmilers={show_smilers}
 							/>
-							<div className="actionBundle">
-								<SmileButton
-									canSmile={_user["user_id"] !== user_id}
-									smiled={props.smiled}
-									postID={postID}
-									author={user_id}
-									smiles={user_id === _user.user_id}
-									setSmilers={show_smilers}
-								/>
-							</div>
-							<button className="stealthBtn" onClick={toggle_textbox}>
-								💬 Comment
-							</button>
 						</div>
-					)}
+						<button className="stealthBtn" onClick={toggle_textbox}>
+							💬 Comment
+						</button>
+					</div>
 					<div
 						ref={deleteOptions}
 						className="actions"

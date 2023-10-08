@@ -2,7 +2,7 @@
 //import cam from './cam_icon.png'
 import { useContext, useEffect, useRef, useState } from "react";
 import { signup, useAuth, login } from "./firebase";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MembersContext, UserContext, showLogin } from "./Contexts";
 import { updateEmail, sendEmailVerification, getAuth } from "@firebase/auth";
 import { is_email } from "../Pages/SplashPage";
@@ -22,8 +22,10 @@ function Signup(props) {
 	function closePopup() {
 		if (!focus && showLogin) return;
 		overlayBG.current.style.opacity = "0";
-		if (_user === undefined)
-			saucerRef.current.style.transform = "translate(50vw, -50%)";
+		if (_user === undefined) {
+			saucerRef.current.style.transform = "translate(-50%, -50%) scale(0)";
+			saucerRef.current.style.opacity = "0";
+		}
 		console.log("Cancelled log in process...");
 	}
 	/*
@@ -179,6 +181,7 @@ function Signup(props) {
 		switcheroo(false);
 		disable_inputs(false);
 		saucerRef.current.style.transform = "translate(-50%,-50%)";
+		saucerRef.current.style.opacity = "1";
 		saucerRef.current.style.display = "block";
 		overlayBG.current.style.display = "block";
 		emailRef.current.focus();
@@ -200,6 +203,7 @@ function Signup(props) {
 					emailWindow.current.style.zIndex = "11";
 					emailWindow.current.style.transform =
 						"scale(1) translate(-50%, -50%)";
+					emailWindow.current.style.opacity = "1";
 				}
 			}, 3000);
 		} else {
@@ -328,6 +332,10 @@ function Signup(props) {
 			else overlayBG.current.style.display = "none";
 		}
 	}, [focus, skip]);
+	function signup_redirect() {
+		setLogin(false);
+		setTimeout(() => document.getElementById("nameInput").focus(), 400);
+	}
 	return (
 		<div className="teaDescendant">
 			<div
@@ -347,7 +355,7 @@ function Signup(props) {
 			<div
 				ref={saucerRef}
 				className="flyingSaucer centered"
-				style={{ transform: "translate(50vw, -50%)" }}
+				style={{ transform: "translate(-50%, -50%) scale(0)", opacity: "0" }}
 				onTransitionEnd={(e) => {
 					setFocus(_showLogin);
 				}}
@@ -410,7 +418,12 @@ function Signup(props) {
 							</div>
 						</div>
 					</div>
-					<div className="psa">👋 Hello, more updates coming soon!</div>
+					<div className="psa">
+						<i class="fas fa-walking"></i> New here?{" "}
+						<Link to="/" onClick={signup_redirect}>
+							Gossip awaits you!
+						</Link>
+					</div>
 				</div>
 			</div>
 			<div
@@ -423,8 +436,8 @@ function Signup(props) {
 					<div>
 						<h1>Email Verification</h1>
 						<p>
-							This is required for password resets and
-							uploading images to our community.
+							This is required for password resets and uploading images to our
+							community.
 						</p>
 					</div>
 				) : (

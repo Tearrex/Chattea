@@ -1,7 +1,7 @@
 @import "utils.scss";
 // this is the login form that slides into view
 .flyingSaucer {
-    z-index: 6; transition: transform 1s ease;
+    z-index: 6; transition: transform 1s ease, opacity 0.5s ease-in;
     position: fixed; overflow: hidden;
     width: clamp(200px, 90%, 350px);
     background-color: rgb(246, 246, 246);
