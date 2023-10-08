@@ -88,7 +88,7 @@ function BriefPost()
     }
     return (
         //clamp(400px, 100%, 600px)
-        <div className="postPage">
+        <div className="postPage" style={{marginTop: 80, paddingTop: "1rem"}}>
             {(post === null) ?
             <div className="postNotFound">
                 <h1 style={{color:"#fff", fontWeight:"normal"}}>🤔 That post does not exist!</h1>
