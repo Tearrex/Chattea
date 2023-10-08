@@ -67,10 +67,11 @@
 			// object-fit: cover;
 			aspect-ratio: 1/1;
 			border: 5px solid #fff;
-			position: absolute;
 			bottom: 30%;
 			right: 5%;
 			line-height: 0;
+            flex-shrink: 0;
+            position: relative;
 		}
 		img {
 			width: 100%;
@@ -95,7 +96,7 @@
 			align-items: center;
 			justify-content: center;
 			position: relative;
-			gap: 1rem;
+			gap: 3rem;
 			max-width: 1200px;
 			position: relative;
 			margin: 0 auto;
@@ -114,6 +115,9 @@
 	}
 	@media screen and (min-width: 800px) {
 		gap: 0;
+        a.img {
+            position: absolute !important;
+        }
 		.banner {
 			margin-bottom: 0 !important;
 			justify-content: flex-start !important;
