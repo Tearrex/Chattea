@@ -201,7 +201,7 @@ function Submitter(props) {
 							style={{ borderRadius: "20px 0 0 20px" }}
 							type="text"
 							id="subTxt"
-							placeholder={`Share something ${_user && _user.username || ""}...`}
+							placeholder={`What's up ${_user && _user.username || ""}?`}
 							autoComplete="off"
 						></input>
 						<input
