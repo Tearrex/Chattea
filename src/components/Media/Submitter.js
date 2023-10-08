@@ -15,9 +15,9 @@ function Submitter(props) {
 	const [localFile, setLocalFile] = useState(null);
 
 	/*
-    used to prevent the user from spamming, it starts to get expensive!
-    this is only checked on the clientside, so it is still vulnerable.
-    */
+	used to prevent the user from spamming, it starts to get expensive!
+	this is only checked on the clientside, so it is still vulnerable.
+	*/
 	const [lastAction, setLastAction] = useState(0);
 	const [cooldown, setCooldown] = useState(0);
 	const cooldownIncrement = 10000;
@@ -96,8 +96,8 @@ function Submitter(props) {
 		if (lastAction > 0 && cooldown >= Date.now() - lastAction) {
 			alert(
 				"Spam Protection: Please wait " +
-					((cooldown - (Date.now() - lastAction)) / 1000).toFixed(1) +
-					" seconds before posting again."
+				((cooldown - (Date.now() - lastAction)) / 1000).toFixed(1) +
+				" seconds before posting again."
 			);
 			return;
 		}
@@ -192,8 +192,31 @@ function Submitter(props) {
 	return (
 		<div className="subPop" id="subPop">
 			<form className="submission" onSubmit={postMessage}>
-				{currentUser && currentUser.emailVerified ? (
-					<label className="subWidget" style={{ borderRadius: "50%" }}>
+				<div className="top">
+					<div className="subVerbose">
+						<input
+							ref={_textInput}
+							value={_text}
+							onChange={(e) => change_text(e)}
+							style={{ borderRadius: "20px 0 0 20px" }}
+							type="text"
+							id="subTxt"
+							placeholder={`Share something ${_user && _user.username || ""}...`}
+							autoComplete="off"
+						></input>
+						<input
+							ref={subButton}
+							type="submit"
+							id="subBtn"
+							className="subWidget"
+							value=""
+						/>
+					</div>
+				</div>
+				<div className="bottom">
+					<label className="subWidget photo" style={{ borderRadius: "50%" }} active={file !== null 
+					? "true" : "false"}>
+						<i class="fas fa-image"></i> {!file ? "Attach" : "Change"} Image
 						<input
 							ref={imageField}
 							type="file"
@@ -202,39 +225,7 @@ function Submitter(props) {
 							onChange={(e) => onFileChange(e)}
 						/>
 					</label>
-				) : (
-					<label
-						className="subWidget"
-						style={{ borderRadius: "50%", opacity: 0.5 }}
-					>
-						<input
-							ref={imageField}
-							type="file"
-							accept=".png, .jpg"
-							style={{ display: "none" }}
-							onClick={verify_error}
-						/>
-					</label>
-				)}
-
-				<div className="subVerbose">
-					<input
-						ref={_textInput}
-						value={_text}
-						onChange={(e) => change_text(e)}
-						style={{ borderRadius: "20px 0 0 20px" }}
-						type="text"
-						id="subTxt"
-						placeholder="Share something..."
-						autoComplete="off"
-					></input>
-					<input
-						ref={subButton}
-						type="submit"
-						id="subBtn"
-						className="subWidget"
-						value=""
-					/>
+					<button disabled><i class="fab fa-spotify"></i> Share Song</button>
 				</div>
 			</form>
 			<div ref={subWarning} className="subWarning">

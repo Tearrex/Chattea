@@ -1,9 +1,14 @@
 @import "utils.scss";
 .infinite-scroll-component {
-    display: flex; justify-content: center;
-    align-items: center; flex-wrap: wrap;
-    flex-flow: column; gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    gap: 10px;
     overflow: inherit;
+}
+@media screen and (max-width: 550px) {
+    .infinite-scroll-component {
+        grid-template-columns: 1fr;
+    }
 }
 .teaDescendant {
     padding: 10px 0; background-color: $mainOdd;

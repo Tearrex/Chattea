@@ -54,7 +54,7 @@ function Home() {
 		if (!_user) return;
 		const buddies = _user.buddies;
 
-		var suggs = [];
+		var suggs = {};
 
 		var toCache = [];
 		for (let i = 0; i < buddies.length; i++) {
@@ -73,8 +73,13 @@ function Home() {
 					buddyBuddy.user_id !== _user.user_id &&
 					buddy.buddies.includes(_user.user_id)
 				)
-					suggs.push(buddyBuddy.user_id); // suggest user added by a mutual buddy
+					// suggs.push(buddyBuddy.user_id); // suggest user added by a mutual buddy
+					if (!suggs[buddyBuddy.user_id]) { 
+						suggs[buddyBuddy.user_id] = { count: 1, id: buddyBuddy.user_id };
+					}
+					else suggs[buddyBuddy.user_id].count += 1;
 			}
+			console.log("miraaAA", suggs);
 			setCache(toCache);
 			setSuggestions(suggs);
 		}
@@ -126,24 +131,21 @@ function Home() {
 						display: Object.entries(suggestions).length > 0 ? null : "none",
 					}}
 				>
-					<p style={{ margin: 0 }} className="head">
-						You might know:
-					</p>
 					<div
 						className="bRelation"
 						style={{
 							overflowX: "scroll",
-							margin: "0 20px",
 						}}
 					>
-						{suggestions.map((x, i) => (
+						{suggestions && Object.values(suggestions).map((x, i) => (
 							<Link
-								to={"/profile/" + _users[x].user_id}
+								to={"/profile/" + x.id}
 								className="bCard"
 								key={i}
 							>
-								<img src={_users[x].pfp} alt="user pic" />
-								<p>{_users[x].username}</p>
+								<img src={_users[x.id].pfp} alt="user pic" />
+								<p>{_users[x.id].username}</p>
+								<small><i class="fas fa-user-friends"></i> <b>+{x.count}</b> connections</small>
 							</Link>
 						))}
 					</div>

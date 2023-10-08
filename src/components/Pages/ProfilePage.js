@@ -407,8 +407,8 @@ function ProfilePage(props) {
 						</p>
 						<div className="buddyInfo">
 							{_user && _user.role === "admin" && user_id !== _user.user_id && (
-								<button className="banBtn stealthBtn" onClick={ban_user}>
-									BAN
+								<button className="banBtn" onClick={ban_user}>
+									<i class="fas fa-bolt"></i> BAN
 								</button>
 							)}
 							<UserList users={profile ? profile.buddies : []} buddies />

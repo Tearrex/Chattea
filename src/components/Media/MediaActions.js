@@ -109,17 +109,31 @@ function MediaActions(props) {
 								(_user.role === "admin" ||
 									_user.user_id === focusPost[1].user_id) && (
 									<button className="high" onClick={delete_post}>
+										{_user && _user.user_id !== focusPost[1].user_id && (
+											<i class="fas fa-bolt"></i>
+										)}
 										Delete Post
 									</button>
 								)}
 							<button className="high" onClick={() => setReport(true)}>
-								Report
+								<i class="fas fa-flag"></i> Report
 							</button>
+							{_user && _user.user_id === focusPost[1].user_id && (
+								<button>
+									<i class="fas fa-thumbtack"></i> Pin post
+								</button>
+							)}
 							{focusPost[1].user_id !== _user.user_id && (
 								<button onClick={buddify}>
-									{!_user.buddies.includes(focusPost[1].user_id)
-										? "Add"
-										: "Remove"}{" "}
+									{!_user.buddies.includes(focusPost[1].user_id) ? (
+										<>
+											<i class="fas fa-user-plus"></i> Add
+										</>
+									) : (
+										<>
+											<i class="fas fa-user-minus"></i> Remove
+										</>
+									)}{" "}
 									Buddy
 								</button>
 							)}
@@ -131,7 +145,7 @@ function MediaActions(props) {
 									)
 								}
 							>
-								Copy Link
+								<i class="fas fa-link"></i> Copy Link
 							</button>
 							<button onClick={closeModal}>Cancel</button>
 						</div>

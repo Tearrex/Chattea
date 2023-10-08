@@ -13,12 +13,15 @@ function Comment(props) {
 	const [pfp, setPfp] = useState("/default_user.png");
 	const [username, setUsername] = useState("LOADING");
 	useEffect(() => {
+		let suffix = "";
 		if (user_id === _user["user_id"]) {
 			setPfp(_user.pfp);
-			setUsername(_user.username);
+			if (_user.role === "admin") suffix = " ";
+			setUsername(_user.username + suffix);
 		} else if (_users[user_id] !== undefined) {
 			setPfp(_users[user_id].pfp);
-			setUsername(_users[user_id].username);
+			if (_users[user_id].role === "admin") suffix = " ";
+			setUsername(_users[user_id].username + suffix);
 		}
 	}, [_users, _user]);
 	async function delete_comment() {

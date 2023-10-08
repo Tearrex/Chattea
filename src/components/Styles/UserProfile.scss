@@ -106,7 +106,7 @@
 }
 .mainProfile {
     .primaryInfo {
-        justify-content: left; padding-top: 35%;
+        justify-content: left;
     }
     .nameField {
         input {
@@ -261,13 +261,14 @@
     padding: 10px; align-items: center;
     .banBtn {
         background-color: $teaColor; color: #fff; font-size: 1.2rem; padding: 0 15px;
+        border-radius: 100vh;
     }
     .buddyInfo {
         display: flex; align-items: center; flex-flow: row; flex-shrink: 0;
         justify-content: center; gap: 10px; align-items: stretch;
         .buddies {
             display: flex; flex-flow: row; align-items: center;
-            background-color: $richSmile; padding: 10px;
+            background-color: $richSmile; padding: 1rem; border-radius: 100vh;
             p {
                 margin: 0;
             }
@@ -285,23 +286,18 @@
     }
 }
 .exploreBuddies {
-    background-color: #1e1e1e; margin-left: auto; margin-right: auto;
     width: 100%; border-radius: 0.6rem;
     .head {
         color: $mainFore;
     }
 }
 .bRelation {
-    padding: 10px 0; overflow: hidden;
+    overflow: hidden;
     p {
         color: #fff; margin: 0;
     }
-    display: flex; flex-flow: row; gap: 5px; align-items: center;
-    img {
-        object-fit: cover;
-        width: 30px; height: 30px;
-        border-radius: 50%;
-    }
+    display: grid; grid-auto-flow: row; grid-template-columns: repeat(3, 1fr);
+    gap: 10px; align-items: center; justify-content: center;
     .bTooltip {
         height: 30px;
     }
@@ -309,11 +305,19 @@
 .bCard {
     display: flex; flex-flow: row; align-items: center; gap: 5px;
     background-color: $mainEven; padding: 10px; text-decoration: none;
+    border-radius: 100vh;
     img {
-        width: 50px; height: 50px; object-fit: cover;
+        width: 60px; aspect-ratio: 1/1; object-fit: cover; flex-shrink: 0;
+        border-radius: 100vh;
     }
     p {
         color: $alttext;
+        flex-shrink: 0;
+    }
+    small {
+        color: $niceOrange;
+        font-weight: bold;
+        flex: 100%;
     }
 }
 .bTooltip {
@@ -338,11 +342,8 @@
         display: none;
     }
     p {
-        color: #fff; background-color: #E67E22; padding: 10px 15px;
+        color: #fff; background-color: #414141; padding: 10px 15px;
         font-size: 1.2rem; margin: 0;
-    }
-    input:checked + p {
-        background-color: #414141;
     }
 }
 .actions {
@@ -363,7 +364,6 @@
 }
 .profileMod {
     display: flex; flex-direction: row;
-    margin-left: 10px; margin-bottom: 10px;
     gap: 10px; flex-wrap: nowrap;
     white-space: nowrap; justify-content: center;
     .nameField {
@@ -402,7 +402,7 @@
 }
 .niceClip {
     background-repeat: no-repeat; background-size: cover;
-    background-position: center;
+    background-position: center; padding: 1rem;
 }
 .postOptions {
     display: flex; align-items: center;

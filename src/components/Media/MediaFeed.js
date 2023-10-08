@@ -23,11 +23,11 @@ function MediaFeed(props) {
 	const { _users, _setUsers } = useContext(MembersContext);
 
 	/*
-    Iterates over every requested user, checks if their info is
-    already cached and fetches it from the database if not.
+	Iterates over every requested user, checks if their info is
+	already cached and fetches it from the database if not.
 
-    Array behaves as a queue for who's data to ask for. it works.
-    */
+	Array behaves as a queue for who's data to ask for. it works.
+	*/
 	const [cache, setCache] = useState([]);
 	useEffect(() => {
 		const checkCache = async () => {
@@ -50,7 +50,7 @@ function MediaFeed(props) {
 		};
 		checkCache();
 	}, [cache]);
-	const _limit = 4; // batch size, amount of documents to fetch at once
+	const _limit = 5; // batch size, amount of documents to fetch at once
 
 	const postsRef = collection(_dbRef, "posts");
 
@@ -252,7 +252,7 @@ function MediaFeed(props) {
 			loader={<div className="loader" />}
 			endMessage={
 				<h2
-					style={{ textAlign: "center", color: "#FFF", fontWeight: "normal" }}
+					style={{ textAlign: "center", color: "#FFF", fontWeight: "normal", gridColumn: "1/-1" }}
 				>
 					☕ There is no more tea down here...
 				</h2>

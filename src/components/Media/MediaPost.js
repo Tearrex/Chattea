@@ -29,8 +29,8 @@ function MediaPost(props) {
 		setCaption(caption);
 	}, [caption]);
 	/*
-    Formats the timestamp value of the post for a nice looking date.
-    */
+	Formats the timestamp value of the post for a nice looking date.
+	*/
 	useEffect(() => {
 		if (date !== null && date !== undefined && postDate === "") {
 			setPostDate(
@@ -44,10 +44,10 @@ function MediaPost(props) {
 		}
 	}, [date]);
 	/*
-    This effect is called when there are new additions to the
-    client's user cache. It will set the appropriate username and profile picture
-    as soon as it is pulled from the database.
-    */
+	This effect is called when there are new additions to the
+	client's user cache. It will set the appropriate username and profile picture
+	as soon as it is pulled from the database.
+	*/
 	useEffect(() => {
 		if (user_id !== undefined) {
 			//if(_users[user_id] !== undefined) return;
@@ -70,9 +70,9 @@ function MediaPost(props) {
 	}, [_users, _user]);
 	const imageNest = useRef();
 	/*
-    If the post has an image url, it will be loaded into a new image element.
-    I prefer this method as I can add loading animations later on to make it smoother.
-    */
+	If the post has an image url, it will be loaded into a new image element.
+	I prefer this method as I can add loading animations later on to make it smoother.
+	*/
 	const warningRef = useRef();
 	useEffect(() => {
 		const abort = new AbortController();
@@ -83,12 +83,12 @@ function MediaPost(props) {
 				)
 			) {
 				/*
-                Since the document writes are done in the clientside, it is possible for users
-                to tinker with the JSON values.
-                An alternative would be a proxy server that serves the API on the backend.
+				Since the document writes are done in the clientside, it is possible for users
+				to tinker with the JSON values.
+				An alternative would be a proxy server that serves the API on the backend.
 
-                Don't fetch the image link if it's not coming from Firebase, it might be malicious!
-                */
+				Don't fetch the image link if it's not coming from Firebase, it might be malicious!
+				*/
 				warningRef.current.style.display = "flex";
 				return;
 			}
@@ -153,13 +153,12 @@ function MediaPost(props) {
 		console.log("Removed post " + props.postID);
 	}
 	const commentBox = useRef();
-	const commentSub = useRef();
 	const textInput = useRef();
 	const [comment, setComment] = useState("");
 	/*
-    used to prevent the user from spamming, it starts to get expensive!
-    this is only checked on the clientside, so it is still vulnerable.
-    */
+	used to prevent the user from spamming, it starts to get expensive!
+	this is only checked on the clientside, so it is still vulnerable.
+	*/
 	const [lastAction, setLastAction] = useState(0);
 	const [cooldown, setCooldown] = useState(0);
 	const cooldownIncrement = 10000;
@@ -168,8 +167,8 @@ function MediaPost(props) {
 		if (lastAction > 0 && cooldown >= Date.now() - lastAction) {
 			alert(
 				"Spam Protection: Please wait " +
-					((cooldown - (Date.now() - lastAction)) / 1000).toFixed(1) +
-					" seconds before commenting again."
+				((cooldown - (Date.now() - lastAction)) / 1000).toFixed(1) +
+				" seconds before commenting again."
 			);
 			return;
 		}
@@ -189,15 +188,6 @@ function MediaPost(props) {
 		if (e.target.value.length > 100) return;
 		setComment(e.target.value);
 	}
-	useEffect(() => {
-		if (comment.trim() === "") {
-			commentSub.current.style.opacity = "0.5";
-			commentSub.current.style.boxShadow = "none";
-		} else {
-			commentSub.current.style.opacity = "1";
-			commentSub.current.style.boxShadow = null;
-		}
-	}, [comment]);
 	function toggle_textbox() {
 		setComment("");
 		commentBox.current.style.display = "flex";
@@ -221,6 +211,7 @@ function MediaPost(props) {
 			onClick={() =>
 				console.log({ post: props.postID, author: props.authorID })
 			}
+			style={{ gridColumn: !image_url ? "1/-1" : null }}
 		>
 			<div
 				className="postUserInfo"
@@ -249,16 +240,12 @@ function MediaPost(props) {
 								: "User"}
 						</p>
 					)}
-					<div
-						onClick={() => {
-							window.scrollTo(0, 0);
-						}}
-					>
-						<div
-							style={{ backgroundImage: "url(" + pfp + ")" }}
-							className="profilePicture niceClip"
-						/>
-					</div>
+					{_user && props.authorID !== _user.user_id && <div onClick={() => {
+						window.scrollTo(0, 0);
+					}}
+						style={{ backgroundImage: "url(" + pfp + ")" }}
+						className="profilePicture niceClip"
+					/>}
 				</Link>
 			</div>
 			<div className="mediaSecondary">
@@ -283,7 +270,7 @@ function MediaPost(props) {
 						{/**<div style={{backgroundImage:"url("+image_url+")"}} /> */}
 					</div>
 				) : null}
-				<div style={{ zIndex: "1" }}>
+				<div>
 					{_user && (
 						<div className="postActions">
 							<div
@@ -292,15 +279,6 @@ function MediaPost(props) {
 								style={{ maxWidth: "0%" }}
 							/>
 							<div className="actionBundle">
-								{_user["user_id"] === user_id || _user["role"] === "admin" ? (
-									<button
-										className="deletePost stealthBtn"
-										onClick={(e) => toggle_options(true)}
-									>
-										🗑️
-									</button>
-								) : null}
-
 								<SmileButton
 									canSmile={_user["user_id"] !== user_id}
 									smiled={props.smiled}
@@ -329,19 +307,12 @@ function MediaPost(props) {
 							className="commenter"
 							onSubmit={handle_comment}
 						>
-							<img src={_user ? _user.pfp : ""} alt="my pfp" />
 							<input
 								ref={textInput}
 								type="text"
 								value={comment}
 								onChange={(e) => change_comment(e)}
 								placeholder="Type your comment..."
-							/>
-							<input
-								ref={commentSub}
-								className="stealthBtn"
-								type="submit"
-								value=""
 							/>
 						</form>
 						{smilers && Object.entries(smilers).length > 0 && (
