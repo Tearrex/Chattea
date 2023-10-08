@@ -108,6 +108,9 @@ function Home() {
 			console.log(e);
 		}
 	}
+	useEffect(() => {
+		document.getElementById("welcomer").style.display = "block";
+	}, []);
 	return (
 		<div className="homeWrapper">
 			{focusPost !== null && (

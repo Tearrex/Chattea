@@ -103,11 +103,13 @@ function TeaBar ()
             // scroll to the top on the main page
             document.getElementById("subPop").scrollIntoView({behavior:"smooth", block:"end"});
         }
-        document.body.style.overflow = null; navigate(currentUser ? "/main" : "/")
+        document.body.style.overflow = null; 
+        window.scrollTo(0, 0);
+        navigate(currentUser ? "/main" : "/")
     }
     return (
 			<div className="teaBar persistor">
-				<div className="welcomer" style={{ position: null }}>
+				<div className="welcomer" style={{ position: null }} id="welcomer">
 					<div
 						className="chattea"
 						style={{

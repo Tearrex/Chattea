@@ -4,6 +4,7 @@ import { signup } from "../Main/firebase";
 import { useNavigate } from "react-router";
 import { UserContext, showLogin } from "../Main/Contexts";
 import GithubButton from "../GithubButton";
+import FAQPage from "./FAQ/FAQPage";
 export function is_email(text) {
 	if (text.includes("@")) {
 		var at = text.split("@");
@@ -118,107 +119,120 @@ function SplashPage() {
 		else navigate("/main"); // show live feed
 	}
 	useEffect(() => {}, [emailInput]);
-
-	function guest_mode() {
-		localStorage.setItem("guest", "true");
-		navigate("/main");
+	useEffect(() => {
+		document.getElementById("welcomer").style.display = "none";
+	}, []);
+	function feature_scroll() {
+		const jump = document.getElementById("featjump");
+		window.scrollTo(0, jump.getBoundingClientRect().top - window.innerHeight);
 	}
 	return (
 		<div className="splashBody">
-			<div className="catch">
-				<h1>
-					<span>Share</span> snippets of your life
-				</h1>
-				<p>Downtime? Have a glance at what other humans are up to.</p>
-			</div>
-			<div className="splashNet">
-				<div
-					className="splash"
-					style={{ backgroundImage: "url('network.png')" }}
-				></div>
-				<div
-					className="splashRegister flashForm"
-					style={{ display: _user === undefined ? "block" : "none" }}
-				>
-					{/* <h2 className="splashSub">Quick Start</h2> */}
-					<p className="desc">
-						Join <span className="chat">Chat</span>
-						<span className="tea">tea</span> in a matter of seconds,
-						<br />
-						setup a quick account here:
-						<br />
-					</p>
-					<form onSubmit={(e) => advance_form(e)} className="niceInputs">
-						<div ref={expandForm}>
-							<input
-								ref={nameField}
-								type="text"
-								placeholder="Display Name"
-								value={nameInput}
-								onChange={(e) => name_input(e)}
-							/>
-							<label>Make it friendly, like a nickname.</label>
-							<input
-								ref={emailField}
-								type="email"
-								placeholder="Email Address"
-								value={emailInput}
-								onChange={(e) => setEmail(e.target.value)}
-							/>
-							<label
-								style={{ display: emailInput === prevEmail ? "block" : null }}
-							>
-								{emailInput !== prevEmail
-									? "You'll have to verify this email."
-									: "This email is already in use."}
-							</label>
-							<input
-								ref={passField}
-								type="password"
-								placeholder="Create Password"
-								value={passInput}
-								onChange={(e) => setPass(e.target.value)}
-							/>
-
-							<input
-								ref={cpassField}
-								type="password"
-								placeholder="Repeat Password"
-								value={cpassInput}
-								onChange={(e) => setCpass(e.target.value)}
-							/>
-							{!loading && emailInput !== prevEmail && (
-								<input type="submit" value="Complete" />
-							)}
+			<section>
+				<div className="catch">
+					<div className="chattea">
+						<p className="teaPrefix">Get</p>
+						<div style={{ gap: "10px" }}>
+							<div style={{ backgroundImage: "url('/tea.png')" }}></div>
+							<p>
+								Chat<span>tea</span>
+							</p>
 						</div>
-						<button
-							className="loginBtn darkBlueBtn stealthBtn"
-							type="button"
-							onClick={members_action}
-						>
-							Already a member?
-						</button>
-						<button
-							className="loginBtn guestBtn stealthBtn"
-							type="button"
-							onClick={guest_mode}
-						>
-							👀 View as Guest
-						</button>
-					</form>
+						<p>with people!</p>
+					</div>
+					<p>Downtime? Have a glance at what other humans are up to.</p>
 				</div>
-			</div>
-			<div className="faqMessage">
-				<p>
-					Before diving in, check out the{" "}
-					<span onClick={() => navigate("/faq")}>
-						<b>FAQ</b>
-					</span>
-				</p>
-			</div>
-			<footer>
-				<GithubButton />
-			</footer>
+				<div className="splashNet">
+					<div
+						className="splash"
+						style={{ backgroundImage: "url('network.png')" }}
+					></div>
+					<div
+						className="splashRegister flashForm"
+						style={{ display: _user === undefined ? null : "none" }}
+					>
+						{/* <h2 className="splashSub">Quick Start</h2> */}
+						<p className="desc">
+							Join in a matter of seconds,
+							<br />
+							setup a quick account here:
+							<br />
+						</p>
+						<form onSubmit={(e) => advance_form(e)} className="niceInputs">
+							<div ref={expandForm}>
+								<input
+									ref={nameField}
+									type="text"
+									placeholder="Display Name"
+									value={nameInput}
+									id="nameInput"
+									onChange={(e) => name_input(e)}
+								/>
+								<label>Make it friendly, like a nickname.</label>
+								<input
+									ref={emailField}
+									type="email"
+									placeholder="Email Address"
+									value={emailInput}
+									onChange={(e) => setEmail(e.target.value)}
+								/>
+								<label
+									style={{ display: emailInput === prevEmail ? "block" : null }}
+								>
+									{emailInput !== prevEmail
+										? "You'll have to verify this email."
+										: "This email is already in use."}
+								</label>
+								<input
+									ref={passField}
+									type="password"
+									placeholder="Create Password"
+									value={passInput}
+									onChange={(e) => setPass(e.target.value)}
+								/>
+
+								<input
+									ref={cpassField}
+									type="password"
+									placeholder="Repeat Password"
+									value={cpassInput}
+									onChange={(e) => setCpass(e.target.value)}
+								/>
+								{!loading && emailInput !== prevEmail && (
+									<input type="submit" value="Complete" />
+								)}
+							</div>
+							<button
+								className="loginBtn stealthBtn"
+								type="button"
+								onClick={members_action}
+							>
+								<i class="fas fa-sign-in-alt"></i> Member Login
+							</button>
+						</form>
+					</div>
+				</div>
+			</section>
+			<section className="features">
+				<h1 onClick={feature_scroll}>
+					<i class="fas fa-star"></i> Feature your cat{" "}
+					<i class="fas fa-chevron-down down"></i>
+				</h1>
+				<div className="banner">
+					<p>
+						Our user submissions are vetted occasionally to get featured on the
+						face of Chattea. You can participate in posting gags and memes to
+						make others smile or share a thought-provoking{" "}
+						<a href="https://www.merriam-webster.com/dictionary/whim">whim</a>.
+					</p>
+					<img
+						onClick={feature_scroll}
+						src="https://firebasestorage.googleapis.com/v0/b/reactback-1cf7d.appspot.com/o/images%2Fp4grb7YvQmXOpiWqGgQschzPqo02%2FM1d1Rb629Sb4lq2Dye5H?alt=media&token=57c8156a-62cf-4a65-9165-572cd35d05ce"
+					/>
+				</div>
+				<hr id="featjump" />
+			</section>
+			<FAQPage />
 		</div>
 	);
 }

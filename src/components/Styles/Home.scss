@@ -4,7 +4,7 @@
 }
 // this file getting out of hand...
 #home {
-    margin-bottom: 30px;
+    margin-bottom: 30px; margin-top: 80px; // top margin for navbar
     display: flex; flex-flow: column; gap: 10px;
     padding: 1rem;
     button {
@@ -12,8 +12,8 @@
     }
 }
 footer {
-    display: flex; flex-flow: column; width: 100%;
-    background-color: #2b3137; bottom: 0; padding: 10px 0;
+    display: flex; flex-flow: column;
+    background-color: #2b3137; bottom: 0; padding: 1rem;
 }
 .centered {
     top: 50%; left: 50%;
@@ -51,13 +51,22 @@ footer {
 
 // FAQ SECTION
 .faqNest {
-    display: flex; gap: 10px; flex-flow: column; align-items: center;
+    display: flex; gap: 1rem; flex-flow: column; align-items: center;
+    max-width: 1000px; margin: 0 auto;
     h2 {
         margin: 0;
     }
+    .faqactions {
+        display: flex; flex-flow: row;
+        gap: 1rem; width: 100%;
+        button {
+            font-size: 1.2rem; border: none; outline: none;
+            flex: 50%;
+        }
+    }
     .faqSignUp {
-        border: none; outline: none; width: 100%; padding:  15px 10px; cursor: pointer;
-        background-color: $richSmile; color: $lightText; font-size: 1.2rem;
+        width: 100%; padding:  15px 10px; cursor: pointer;
+        background-color: $niceOrange; color: $lightText;
     }
     .faQuestion {
         width: 100%;
@@ -129,7 +138,7 @@ body {
     }
     .dark {
         //background-image: linear-gradient(#6b6b6b 35%, #3a3a3a 70%);
-        background-color: $niceOrange;
+        background-color: #111111;
     }
     .light {
         // background-image: linear-gradient(#f7941d, #F5B041);
@@ -147,6 +156,9 @@ body {
     p {
         transition: opacity 1s ease, max-width 1s ease;
     }
+    .chattea {
+        z-index: 2;
+    }
 }
 
 .welcome {
@@ -161,7 +173,7 @@ body {
     align-items: center;
 }
 .persistor {
-    position: sticky; top: 0; z-index: 2;
+    position: fixed; width: 100%; top: 0; z-index: 2;
 }
 .teaBar {
     z-index: 5; top: 0;
@@ -432,6 +444,10 @@ body {
     display: block; outline: none; background: none;
     padding: 15px 10px; border: none;
     border-bottom: 5px solid rgba($color: #fefefe, $alpha: 0.5);
+    transition: border-bottom 0.4s ease-out;
+    &:focus, &:active {
+        border-bottom: 5px solid rgba($color: $niceOrange, $alpha: 0.5);
+    }
     &:focus + label, &:active + label {
         display: block;
     }
