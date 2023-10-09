@@ -76,7 +76,7 @@ function App() {
 		let swears = localStorage.getItem("swears");
 		if (!swears)
 			fetch(
-				"https://raw.githubusercontent.com/coffee-and-fun/google-profanity-words/main/data/en.txt"
+				"https://raw.githubusercontent.com/Tearrex/Chattea/main/swears.txt"
 			)
 				.then((res) => res.text())
 				.then((data) => {
