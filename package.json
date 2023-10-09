@@ -7,6 +7,7 @@
     "browser-image-compression": "^1.0.17",
     "firebase": "^9.5.0",
     "node-sass": "^6.0.1",
+    "profanity-filter": "^0.2.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-firebase-hooks": "^4.0.1",

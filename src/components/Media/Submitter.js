@@ -7,6 +7,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { UserContext } from "../Main/Contexts";
 import { Timestamp, addDoc, setDoc, collection } from "firebase/firestore";
 import imageCompression from "browser-image-compression";
+import * as filter from "profanity-filter";
 //import axios from 'axios';
 function Submitter(props) {
 	const { _user, _setUser } = useContext(UserContext);
@@ -96,11 +97,13 @@ function Submitter(props) {
 		if (lastAction > 0 && cooldown >= Date.now() - lastAction) {
 			alert(
 				"Spam Protection: Please wait " +
-				((cooldown - (Date.now() - lastAction)) / 1000).toFixed(1) +
-				" seconds before posting again."
+					((cooldown - (Date.now() - lastAction)) / 1000).toFixed(1) +
+					" seconds before posting again."
 			);
 			return;
 		}
+		if (filter.clean(_text) !== _text)
+			return alert("Please refrain from using provokative language.");
 		const newPost = doc(collection(_dbRef, "posts"));
 		var _content = _text;
 		var _author = _user.user_id;
@@ -201,7 +204,7 @@ function Submitter(props) {
 							style={{ borderRadius: "20px 0 0 20px" }}
 							type="text"
 							id="subTxt"
-							placeholder={`What's up ${_user && _user.username || ""}?`}
+							placeholder={`What's up ${(_user && _user.username) || ""}?`}
 							autoComplete="off"
 						></input>
 						<input
@@ -214,8 +217,11 @@ function Submitter(props) {
 					</div>
 				</div>
 				<div className="bottom">
-					<label className="subWidget photo" style={{ borderRadius: "50%" }} active={file !== null 
-					? "true" : "false"}>
+					<label
+						className="subWidget photo"
+						style={{ borderRadius: "50%" }}
+						active={file !== null ? "true" : "false"}
+					>
 						<i class="fas fa-image"></i> {!file ? "Attach" : "Change"} Image
 						<input
 							ref={imageField}
@@ -225,7 +231,9 @@ function Submitter(props) {
 							onChange={(e) => onFileChange(e)}
 						/>
 					</label>
-					<button disabled><i class="fab fa-spotify"></i> Share Song</button>
+					<button disabled>
+						<i class="fab fa-spotify"></i> Share Song
+					</button>
 				</div>
 			</form>
 			<div ref={subWarning} className="subWarning">
@@ -247,7 +255,9 @@ function Submitter(props) {
 				style={{ maxHeight: "0", position: "relative" }}
 			>
 				<div className="imgOverlay" style={{ opacity: "1" }}>
-					<button onClick={remove_image}>🗑️</button>
+					<button onClick={remove_image}>
+						<i class="fas fa-times"></i>
+					</button>
 					<input
 						type="text"
 						value={caption}

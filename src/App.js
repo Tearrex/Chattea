@@ -23,6 +23,8 @@ import "./components/Styles/Home.scss";
 import "./components/Styles/Splash.scss";
 import "./components/Styles/UserProfile.scss";
 
+import * as filter from "profanity-filter";
+
 export function copy_text(text, success) {
 	if (navigator.clipboard) {
 		return navigator.clipboard.writeText(text).then(success);
@@ -68,6 +70,31 @@ function App() {
       }
     )
   }, [])*/
+
+  	// load profanity list from localstorage or fetch from github
+	useEffect(() => {
+		let swears = localStorage.getItem("swears");
+		if (!swears)
+			fetch(
+				"https://raw.githubusercontent.com/coffee-and-fun/google-profanity-words/main/data/en.txt"
+			)
+				.then((res) => res.text())
+				.then((data) => {
+					let words = data.split("\n");
+					localStorage.setItem("swears", data);
+					console.log("swears", words);
+					for (let i = 0; i < words.length; i++) {
+						filter.addWord(words[i]);
+					}
+				});
+		else {
+			let words = swears.split("\n");
+			console.log("local swears", words);
+			for (let i = 0; i < words.length; i++) {
+				filter.addWord(words[i]);
+			}
+		}
+	}, []);
 
 	// as soon as the user authenticates, we request their
 	// account info to personalize their experience.

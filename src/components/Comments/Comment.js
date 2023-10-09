@@ -4,6 +4,7 @@ import { deleteDoc, doc } from "@firebase/firestore";
 import { _dbRef } from "../Main/firebase";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+import * as filter from "profanity-filter";
 function Comment(props) {
 	const navigate = useNavigate();
 	const { _user, _setUser } = useContext(UserContext);
@@ -49,7 +50,7 @@ function Comment(props) {
 					{username}
 				</span>
 			</Link>
-			<span className="content">{content}</span>
+			<span className="content">{filter.clean(content)}</span>
 		</div>
 	);
 }
