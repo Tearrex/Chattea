@@ -16,7 +16,7 @@ import BuddyButton from "../Buddies/BuddyButton";
 import UserList from "../Buddies/UserList";
 import { Link } from "react-router-dom";
 import MediaActions from "../Media/MediaActions";
-
+import * as filter from "profanity-filter";
 function ProfilePage(props) {
 	const { _user, _setUser } = useContext(UserContext);
 	const { _users, _setUsers } = useContext(MembersContext);
@@ -243,6 +243,10 @@ function ProfilePage(props) {
 	useEffect(() => {
 		if (bannerSaved === true && pfpSaved === true) {
 			var changesRef = {};
+			if (filter.clean(inputName) != inputName) {
+				usernameField.current.style.border = "3px solid #f00";
+				return;
+			}
 			if (inputName !== _user.username && inputName !== "") {
 				changesRef["username"] = inputName;
 			}

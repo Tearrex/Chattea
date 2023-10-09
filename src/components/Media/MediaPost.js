@@ -10,6 +10,7 @@ import { useNavigate, useParams } from "react-router";
 import UserList from "../Buddies/UserList";
 
 import { Link } from "react-router-dom";
+import * as filter from "profanity-filter";
 function MediaPost(props) {
 	const navigate = useNavigate();
 	// didn't have time to finish, will commit feature later
@@ -274,7 +275,7 @@ function MediaPost(props) {
 							className="imgOverlay"
 							style={{ opacity: captionInput !== "" ? null : "0" }}
 						>
-							<p>{captionInput}</p>
+							<p>{filter.clean(captionInput)}</p>
 						</div>
 						{/**<div style={{backgroundImage:"url("+image_url+")"}} /> */}
 					</div>

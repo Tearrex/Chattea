@@ -81,14 +81,14 @@ function App() {
 				.then((res) => res.text())
 				.then((data) => {
 					let words = data.split("\n");
-					localStorage.setItem("swears", data);
+					localStorage.setItem("swears", JSON.stringify(words));
 					console.log("swears", words);
 					for (let i = 0; i < words.length; i++) {
 						filter.addWord(words[i]);
 					}
 				});
 		else {
-			let words = swears.split("\n");
+			let words = (JSON.parse(swears));
 			console.log("local swears", words);
 			for (let i = 0; i < words.length; i++) {
 				filter.addWord(words[i]);
