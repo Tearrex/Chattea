@@ -288,7 +288,7 @@ function MediaPost(props) {
 						/>
 						<div className="actionBundle">
 							<SmileButton
-								canSmile={true}
+								canSmile={(_user && _user.user_id != user_id) || !_user}
 								smiled={props.smiled}
 								postID={postID}
 								author={user_id}
