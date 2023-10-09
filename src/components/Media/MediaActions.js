@@ -118,6 +118,11 @@ function MediaActions(props) {
 							<button className="high" onClick={() => setReport(true)}>
 								<i class="fas fa-flag"></i> Report
 							</button>
+							{_user && _user.role === "admin" && (
+								<button className="feature">
+									<i className="fas fa-star" /> Feature Post
+								</button>
+							)}
 							{_user && _user.user_id === focusPost[1].user_id && (
 								<button>
 									<i class="fas fa-thumbtack"></i> Pin post

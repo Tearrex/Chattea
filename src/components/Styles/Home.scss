@@ -1009,6 +1009,9 @@ body {
     & > button.high {
         color: $teaColor; font-weight: bold;
     }
+    button.feature {
+        color: $niceOrange;
+    }
     .hcenter {
         margin-left: auto; margin-right: auto;
     }
