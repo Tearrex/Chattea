@@ -116,8 +116,7 @@ function Home() {
 				<MediaActions focusPost={focusPost} setFocusPost={setFocusPost} />
 			)}
 			<div id="home" className="clamper">
-				<div id="audionest">
-				</div>
+				<div id="audionest"></div>
 				{_user ? (
 					<Submitter onMessageSend={postMessage} />
 				) : (

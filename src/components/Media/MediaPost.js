@@ -18,7 +18,7 @@ function MediaPost(props) {
 	const { _user, _setUser } = useContext(UserContext);
 	const { _users, _setUsers } = useContext(MembersContext);
 	const { _showLogin, setLogin } = useContext(showLogin);
-	const { caption, content, date, image_url, user_id } = props.msg;
+	const { caption, content, date, image_url, user_id, track } = props.msg;
 	const [captionInput, setCaption] = useState("");
 	const [isAuthor, setAuthor] = useState(false);
 	const [postDate, setPostDate] = useState("");
@@ -211,6 +211,68 @@ function MediaPost(props) {
 	function show_smilers(_smilers) {
 		setSmilers(_smilers);
 	}
+
+	// music controls
+	const [playing, setPlaying] = useState(false);
+	function clear_audios() {
+		const nest = document.querySelector("#audionest");
+		if (!nest) return;
+
+		const remains = nest.querySelectorAll("audio");
+		for (let r = 0; r < remains.length; r++) {
+			const _audio = remains[r];
+			if (_audio.getAttribute("src") == track.preview_url) continue;
+			_audio.pause();
+			_audio.remove();
+		}
+	}
+	function toggle_playback() {
+		const audio = document.querySelector("audio");
+		if (audio.readyState === 4) {
+			if (audio.paused) audio.play();
+			else audio.pause();
+			setPlaying(!audio.paused);
+		}
+		return;
+	}
+	function switch_song(url) {
+		const nest = document.querySelector("#audionest");
+		if (!nest) return;
+
+		let audios = document.querySelectorAll("audio");
+		for (let i = 0; i < audios.length; i++) {
+			const audio = audios[i];
+			if (audio.getAttribute("src") != url) {
+				audio.pause();
+				audio.remove();
+			}
+		}
+
+		let audio = document.querySelector("audio");
+		if (audio) return toggle_playback();
+
+		clear_audios();
+
+		audio = new Audio(url);
+		nest.appendChild(audio);
+		try {
+			setTimeout(() => {
+				if (document.querySelector("audio").readyState === 2) {
+					audio.play();
+					setPlaying(true);
+				} else {
+					console.warn("player was not ready!!!", audio);
+					audio.currentTime = 0;
+					audio.play(); // try again, buffer issue?
+					setPlaying(true);
+				}
+			}, 1000);
+		} catch (e) {
+			console.log("error playing");
+			clear_audios();
+			setPlaying(false);
+		}
+	}
 	return (
 		<div
 			className="mediaCard"
@@ -223,13 +285,31 @@ function MediaPost(props) {
 				className="postUserInfo"
 				style={{ boxShadow: image_url === "" ? "none" : null }}
 			>
-				{_user && (_user.user_id === user_id || _users[user_id]) && (
-					<button className="pActions" onClick={props.setFocusPost}>
-						<img src="/ellipsis.svg" width={20} alt="menu" />
-					</button>
-				)}
 				<div className="mediaContent">
 					<p style={{ marginBottom: 0, fontSize: "1.3rem" }}>{content}</p>
+					{track && (
+						<>
+							<div
+								className="track media"
+								active={"true"}
+								paused={playing ? "false" : "true"}
+								id="mainTrack"
+								onClick={() => switch_song(track.preview_url)}
+							>
+								<div className="info">
+									<div className="art">
+										<img src={track.album_art} />
+									</div>
+									<p>
+										{track.name} • {track.artist}
+									</p>
+								</div>
+								<a href={track.url} target="_blank" rel="nonreferrer">
+									<i class="fas fa-external-link-alt"></i>
+								</a>
+							</div>
+						</>
+					)}
 				</div>
 				<Link to={"/profile/" + user_id} className="userAndPfp">
 					{!isAuthor && (
@@ -274,6 +354,9 @@ function MediaPost(props) {
 						<div
 							className="imgOverlay"
 							style={{ opacity: captionInput !== "" ? null : "0" }}
+							onClick={() => {
+								if (track) switch_song(track.preview_url);
+							}}
 						>
 							<p>{filter.clean(captionInput)}</p>
 						</div>
@@ -334,7 +417,14 @@ function MediaPost(props) {
 							/>
 						)}
 					</div>
-					<span className="timestamp">Posted {postDate}</span>
+					<div className="timestamp">
+						{_user && (_user.user_id === user_id || _users[user_id]) && (
+							<div className="pActions" onClick={props.setFocusPost}>
+								<img src="/ellipsis.svg" width={20} alt="menu" />
+							</div>
+						)}
+						<p>Posted {postDate}</p>
+					</div>
 				</div>
 			</div>
 		</div>

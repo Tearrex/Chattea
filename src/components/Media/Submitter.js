@@ -143,9 +143,21 @@ function Submitter(props) {
 			return search_song();
 		}
 		const newPost = doc(collection(_dbRef, "posts"));
-		var _content = _text;
-		var _author = _user.user_id;
-		var _caption = caption;
+		let _content = _text;
+		let _author = _user.user_id;
+		let _caption = caption;
+		let _track = null;
+		if (pickedTrack) {
+			// add track metadata to document
+			_track = {
+				name: pickedTrack.name,
+				artist: pickedTrack.artists[0].name,
+				url: pickedTrack.external_urls.spotify,
+				preview_url: pickedTrack.preview_url,
+				album_art:
+					pickedTrack.album.images[pickedTrack.album.images.length - 1].url,
+			};
+		}
 		if (file !== null) {
 			setUploading(true);
 			console.log("starting upload for PID: " + newPost.id);
@@ -173,6 +185,7 @@ function Submitter(props) {
 						console.log(downloadURL);
 						setDoc(newPost, {
 							content: _content,
+							track: _track,
 							date: Timestamp.now(),
 							image_url: downloadURL,
 							user_id: _author,
@@ -240,12 +253,14 @@ function Submitter(props) {
 				}, 1000);
 			}
 		}
-	}, [pickingTrack]);
+	}, [pickingTrack, spotifyToken]);
 	function verify_error(e) {
-		e.preventDefault();
-		return window.alert(
-			"You must verify your email to upload images to Chattea.\n\nLogin again for the prompt."
-		);
+		if (_user && !_user.verified) {
+			e.preventDefault();
+			return window.alert(
+				"You must verify your email to upload images to Chattea.\n\nLogin again for the prompt."
+			);
+		}
 	}
 	function clear_audios() {
 		const nest = document.querySelector("#audionest");
@@ -254,15 +269,21 @@ function Submitter(props) {
 		const remains = nest.querySelectorAll("audio");
 		for (let r = 0; r < remains.length; r++) {
 			const _audio = remains[r];
+			if (pickedTrack && _audio.getAttribute("src") == pickedTrack.preview_url)
+				continue;
 			_audio.pause();
 			_audio.remove();
 		}
 	}
-	var lastInterval = null;
-	function play_attempt() {
-		const nest = document.querySelector("audio");
-		if (nest.readyState === 2) {
+	function toggle_playback() {
+		const audio = document.querySelector("audio");
+		const track = document.querySelector("#mainTrack");
+		if (audio.readyState === 4) {
+			if (audio.paused) audio.play();
+			else audio.pause();
+			if (track) track.setAttribute("paused", !audio.paused);
 		}
+		return;
 	}
 	function switch_song(track) {
 		// const audio = document.getElementById("audio");
@@ -272,15 +293,8 @@ function Submitter(props) {
 		const nest = document.querySelector("#audionest");
 		if (!nest) return;
 
-		if (pickedTrack && pickedTrack.preview_url === track.preview_url) {
-			// toggle playback
-			const audio = document.querySelector("audio");
-			if (audio.readyState === 4) {
-				if(audio.paused) audio.play();
-				else audio.pause();
-			}
-			return;
-		}
+		if (pickedTrack && pickedTrack.preview_url === track.preview_url)
+			return toggle_playback();
 		clear_audios();
 
 		let audio = new Audio(track.preview_url);
@@ -302,14 +316,22 @@ function Submitter(props) {
 			clear_audios();
 		}
 	}
-	function cancel_pick() {
+	function toggle_music_view(e) {
+		e.preventDefault();
+		_setText(""); // clear search query
+		setPickingTrack(!pickingTrack);
+	}
+	function cancel_pick(e) {
+		e.preventDefault();
 		clear_audios();
+		_setText(""); // clear search query
 		setPickedTrack(null);
 		setPickingTrack(false);
 	}
 	function confirm_pick(e) {
 		e.preventDefault();
 		clear_audios();
+		_setText(""); // clear search query
 		setPickingTrack(false);
 	}
 	return (
@@ -362,26 +384,34 @@ function Submitter(props) {
 												? "true"
 												: "false"
 										}
-										onClick={() => switch_song(track[1])}
 									>
-										<div className="art">
-											<img
-												src={
-													track[1].album.images[
-														track[1].album.images.length - 1
-													].url
-												}
-											/>
+										<div onClick={() => switch_song(track[1])} className="info">
+											<div className="art">
+												<img
+													src={
+														track[1].album.images[
+															track[1].album.images.length - 1
+														].url
+													}
+												/>
+											</div>
+											<p>
+												{track[1].name} • {track[1].artists[0].name}
+											</p>
 										</div>
-										<p>
-											{track[1].name} • {track[1].artists[0].name}
-										</p>
+										<a
+											href={track[1].external_urls.spotify}
+											target="_blank"
+											rel="nonreferrer"
+										>
+											<i class="fas fa-external-link-alt"></i>
+										</a>
 									</div>
 								);
 							})}
 							{pickedTrack && (
 								<>
-									<button className="cancel">
+									<button className="cancel" onClick={cancel_pick}>
 										<i class="fas fa-times"></i> Cancel
 									</button>
 									<button className="confirm" onClick={confirm_pick}>
@@ -389,6 +419,40 @@ function Submitter(props) {
 									</button>
 								</>
 							)}
+						</div>
+					</>
+				)}
+				{!pickingTrack && pickedTrack && (
+					<>
+						<div className="trackList">
+							<div
+								className="track"
+								active={"true"}
+								paused="false"
+								id="mainTrack"
+							>
+								<div onClick={toggle_playback} className="info">
+									<div className="art">
+										<img
+											src={
+												pickedTrack.album.images[
+													pickedTrack.album.images.length - 1
+												].url
+											}
+										/>
+									</div>
+									<p>
+										{pickedTrack.name} • {pickedTrack.artists[0].name}
+									</p>
+								</div>
+								<a
+									href={pickedTrack.external_urls.spotify}
+									target="_blank"
+									rel="nonreferrer"
+								>
+									<i class="fas fa-external-link-alt"></i>
+								</a>
+							</div>
 						</div>
 					</>
 				)}
@@ -409,7 +473,7 @@ function Submitter(props) {
 					</label>
 					<button
 						active={pickedTrack || pickingTrack ? "true" : "false"}
-						onClick={() => setPickingTrack(!pickingTrack)}
+						onClick={toggle_music_view}
 					>
 						<i class="fab fa-spotify"></i> Share Song
 					</button>
@@ -434,13 +498,25 @@ function Submitter(props) {
 				style={{ maxHeight: "0", position: "relative" }}
 			>
 				<div className="imgOverlay" style={{ opacity: "1" }}>
-					<button onClick={remove_image}>
-						<i class="fas fa-times"></i>
-					</button>
+					<div className="imgMenu">
+						<button onClick={remove_image} className="remove">
+							<i class="fas fa-times"></i>
+						</button>
+						<button className="music" onClick={toggle_music_view}>
+							<i class="fas fa-music"></i>
+						</button>
+						<button onClick={() => document.querySelector("#caption").focus()}>
+							<h2>T</h2>
+						</button>
+						<button className="crop" disabled>
+							<i class="fas fa-crop-alt"></i>
+						</button>
+					</div>
 					<input
 						type="text"
 						value={caption}
 						onChange={(e) => change_caption(e)}
+						id="caption"
 						placeholder="Add a caption..."
 					/>
 				</div>
