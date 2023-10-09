@@ -52,6 +52,11 @@
 	section.features {
 		position: relative;
 		background-color: #000;
+        padding: 2rem 0;
+        hr {
+            position: absolute;
+            bottom: 0;
+        }
 		h1 {
 			font-weight: 700;
 			font-size: 3rem;
@@ -113,6 +118,12 @@
 			opacity: 0;
 		}
 	}
+    section.musictaste {
+        padding: 5rem; background-color: #1DB954; padding-top: 10rem;
+        p {
+            width: 100%; text-align: right;
+        }
+    }
 	@media screen and (min-width: 800px) {
 		gap: 0;
         a.img {

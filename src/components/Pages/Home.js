@@ -74,7 +74,7 @@ function Home() {
 					buddy.buddies.includes(_user.user_id)
 				)
 					if (!suggs[buddyBuddy.user_id]) {
-					// suggs.push(buddyBuddy.user_id); // suggest user added by a mutual buddy
+						// suggs.push(buddyBuddy.user_id); // suggest user added by a mutual buddy
 						suggs[buddyBuddy.user_id] = { count: 1, id: buddyBuddy.user_id };
 					} else suggs[buddyBuddy.user_id].count += 1;
 			}
@@ -116,6 +116,8 @@ function Home() {
 				<MediaActions focusPost={focusPost} setFocusPost={setFocusPost} />
 			)}
 			<div id="home" className="clamper">
+				<div id="audionest">
+				</div>
 				{_user ? (
 					<Submitter onMessageSend={postMessage} />
 				) : (
@@ -138,14 +140,14 @@ function Home() {
 						{suggestions &&
 							Object.values(suggestions).map((x, i) => (
 								<Link to={"/profile/" + x.id} className="bCard" key={i}>
-								<img src={_users[x.id].pfp} alt="user pic" />
-								<p>{_users[x.id].username}</p>
+									<img src={_users[x.id].pfp} alt="user pic" />
+									<p>{_users[x.id].username}</p>
 									<small>
 										<i class="fas fa-user-friends"></i> <b>+{x.count}</b>{" "}
 										connections
 									</small>
-							</Link>
-						))}
+								</Link>
+							))}
 					</div>
 				</div>
 				{(_user || localStorage.getItem("guest")) && (

@@ -15,6 +15,11 @@ function Submitter(props) {
 	const [file, setFile] = useState(null);
 	const [localFile, setLocalFile] = useState(null);
 
+	const [spotifyToken, setSpotifyToken] = useState("");
+	const [pickingTrack, setPickingTrack] = useState(false);
+	const [pickedTrack, setPickedTrack] = useState(null);
+	const [trackResults, setTrackResults] = useState([]);
+
 	/*
 	used to prevent the user from spamming, it starts to get expensive!
 	this is only checked on the clientside, so it is still vulnerable.
@@ -89,6 +94,36 @@ function Submitter(props) {
 			return false;
 		}
 	}
+	function search_song() {
+		if (!spotifyToken || spotifyToken === "") return;
+		let query = encodeURIComponent(_text.trim());
+		console.log("Searching:", query);
+		fetch(
+			`https://api.spotify.com/v1/search?q=${query}&limit=5&market=US&type=track`,
+			{
+				headers: { Authorization: spotifyToken },
+			}
+		)
+			.then((res) => res.json())
+			.then((res) => {
+				if (res.error) {
+					if (String(res.error.message).includes("expired")) {
+						// renew x token
+						localStorage.removeItem("spotify_token");
+						alert("Please try that again...");
+						setSpotifyToken("");
+					}
+					return;
+				}
+				clear_audios();
+				let results = res.tracks.items;
+				results = Object.entries(results).filter((a) =>
+					String(a[1].preview_url).startsWith("https://")
+				);
+				console.log("results", results);
+				setTrackResults(results);
+			});
+	}
 	async function postMessage(e) {
 		e.preventDefault();
 		if (!currentUser || canSave === false) return;
@@ -102,8 +137,11 @@ function Submitter(props) {
 			);
 			return;
 		}
-		if (filter.clean(_text) !== _text)
+		if (!pickingTrack && filter.clean(_text) !== _text)
 			return alert("Please refrain from using provokative language.");
+		if (pickingTrack) {
+			return search_song();
+		}
 		const newPost = doc(collection(_dbRef, "posts"));
 		var _content = _text;
 		var _author = _user.user_id;
@@ -186,17 +224,102 @@ function Submitter(props) {
 			subButton.current.style.cursor = "pointer";
 		}
 	}, [canSave]);
+	useEffect(() => {
+		if (pickingTrack && !spotifyToken) {
+			let token = localStorage.getItem("spotify_token");
+			if (token) return setSpotifyToken(token);
+			else {
+				// query cloud function for x token
+				setTimeout(() => {
+					fetch("https://helloworld-oj5fff4opa-uc.a.run.app/")
+						.then((res) => res.text())
+						.then((access_token) => {
+							localStorage.setItem("spotify_token", access_token);
+							setSpotifyToken(access_token);
+						});
+				}, 1000);
+			}
+		}
+	}, [pickingTrack]);
 	function verify_error(e) {
 		e.preventDefault();
 		return window.alert(
 			"You must verify your email to upload images to Chattea.\n\nLogin again for the prompt."
 		);
 	}
+	function clear_audios() {
+		const nest = document.querySelector("#audionest");
+		if (!nest) return;
+
+		const remains = nest.querySelectorAll("audio");
+		for (let r = 0; r < remains.length; r++) {
+			const _audio = remains[r];
+			_audio.pause();
+			_audio.remove();
+		}
+	}
+	var lastInterval = null;
+	function play_attempt() {
+		const nest = document.querySelector("audio");
+		if (nest.readyState === 2) {
+		}
+	}
+	function switch_song(track) {
+		// const audio = document.getElementById("audio");
+		// audio.pause();
+		// if (audio.getAttribute("src") === url) return;
+		// audio.setAttribute("src", url);
+		const nest = document.querySelector("#audionest");
+		if (!nest) return;
+
+		if (pickedTrack && pickedTrack.preview_url === track.preview_url) {
+			// toggle playback
+			const audio = document.querySelector("audio");
+			if (audio.readyState === 4) {
+				if(audio.paused) audio.play();
+				else audio.pause();
+			}
+			return;
+		}
+		clear_audios();
+
+		let audio = new Audio(track.preview_url);
+		nest.appendChild(audio);
+		try {
+			setTimeout(() => {
+				if (document.querySelector("audio").readyState === 2) {
+					audio.play();
+					setPickedTrack(track);
+				} else {
+					console.warn("player was not ready!!!", audio);
+					audio.currentTime = 0;
+					audio.play(); // try again, buffer issue?
+					setPickedTrack(track);
+				}
+			}, 1000);
+		} catch (e) {
+			console.log("error playing");
+			clear_audios();
+		}
+	}
+	function cancel_pick() {
+		clear_audios();
+		setPickedTrack(null);
+		setPickingTrack(false);
+	}
+	function confirm_pick(e) {
+		e.preventDefault();
+		clear_audios();
+		setPickingTrack(false);
+	}
 	return (
 		<div className="subPop" id="subPop">
 			<form className="submission" onSubmit={postMessage}>
 				<div className="top">
-					<div className="subVerbose">
+					<div
+						className="subVerbose"
+						searching={pickingTrack ? "true" : "false"}
+					>
 						<input
 							ref={_textInput}
 							value={_text}
@@ -204,7 +327,11 @@ function Submitter(props) {
 							style={{ borderRadius: "20px 0 0 20px" }}
 							type="text"
 							id="subTxt"
-							placeholder={`What's up ${(_user && _user.username) || ""}?`}
+							placeholder={
+								!pickingTrack
+									? `What's up ${(_user && _user.username) || ""}?`
+									: "Search for a song name..."
+							}
 							autoComplete="off"
 						></input>
 						<input
@@ -216,6 +343,55 @@ function Submitter(props) {
 						/>
 					</div>
 				</div>
+				{pickingTrack && !spotifyToken && <p>Please wait...</p>}
+				{pickingTrack && trackResults && (
+					<>
+						<p>
+							<i class="fas fa-music"></i> We found <b>{trackResults.length}</b>{" "}
+							songs you can play.
+						</p>
+						<div className="trackList">
+							{trackResults.map((track, i) => {
+								return (
+									<div
+										key={i}
+										className="track"
+										active={
+											pickedTrack &&
+											pickedTrack.preview_url === track[1].preview_url
+												? "true"
+												: "false"
+										}
+										onClick={() => switch_song(track[1])}
+									>
+										<div className="art">
+											<img
+												src={
+													track[1].album.images[
+														track[1].album.images.length - 1
+													].url
+												}
+											/>
+										</div>
+										<p>
+											{track[1].name} • {track[1].artists[0].name}
+										</p>
+									</div>
+								);
+							})}
+							{pickedTrack && (
+								<>
+									<button className="cancel">
+										<i class="fas fa-times"></i> Cancel
+									</button>
+									<button className="confirm" onClick={confirm_pick}>
+										<i class="fas fa-check"></i> Confirm Pick
+									</button>
+								</>
+							)}
+						</div>
+					</>
+				)}
 				<div className="bottom">
 					<label
 						className="subWidget photo"
@@ -231,7 +407,10 @@ function Submitter(props) {
 							onChange={(e) => onFileChange(e)}
 						/>
 					</label>
-					<button disabled>
+					<button
+						active={pickedTrack || pickingTrack ? "true" : "false"}
+						onClick={() => setPickingTrack(!pickingTrack)}
+					>
 						<i class="fab fa-spotify"></i> Share Song
 					</button>
 				</div>
