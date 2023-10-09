@@ -654,9 +654,10 @@ p {
 				grid-column: 2 / span 1;
 			}
 		}
-        button.confirm {
-            background-color: #27ae60; color: #fff;
-        }
+		button.confirm {
+			background-color: #27ae60;
+			color: #fff;
+		}
 	}
 	.trackList .track {
 		display: flex;
@@ -664,6 +665,23 @@ p {
 		align-items: center;
 		background-color: $secondFore;
 		position: relative;
+
+		a {
+			height: 100%;
+			aspect-ratio: 1/1;
+			background-color: #aaa;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			color: #fff;
+			text-decoration: none;
+		}
+		.info {
+			display: flex;
+			flex-flow: row;
+			flex: 100%;
+			align-items: center;
+		}
 		.art {
 			max-height: 50px;
 			aspect-ratio: 1/1;
@@ -678,7 +696,7 @@ p {
 		}
 		p {
 			margin: 0;
-			flex: 100%;
+			width: 100%;
 			color: #fff;
 			padding: 0 1rem;
 		}
@@ -693,6 +711,9 @@ p {
 			top: 50%;
 			left: 50%;
 			transform: translate(-50%, -50%);
+		}
+		&[active="true"][paused="true"] .art::after {
+			content: "\f04c" !important;
 		}
 		&[active="true"] img {
 			opacity: 0.5;
@@ -1043,22 +1064,33 @@ p {
 	&:hover {
 		opacity: 0;
 	}
-	button {
+	.imgMenu {
 		position: absolute;
 		left: 0;
 		top: 0;
-		background-color: #e74c3c;
-		box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-		font-size: 1.3rem;
-		outline: none;
-		border: none;
-		width: 60px;
-		height: 60px;
-		border-radius: 50%;
-		margin-left: 10px;
-		margin-top: 10px;
-		&:hover {
-			font-size: 1.5rem;
+		padding: 1rem;
+		display: flex;
+		flex-flow: column;
+		gap: 0.5rem;
+		button {
+			box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+			font-size: 1.3rem;
+			outline: none;
+			border: none;
+			width: 60px;
+			height: 60px;
+			border-radius: 50%;
+			&:not([disabled]):hover {
+				font-size: 1.5rem;
+			}
+			h2 {
+				margin: 0;
+				position: relative;
+				text-decoration: underline;
+			}
+		}
+		.remove {
+			background-color: #e74c3c;
 		}
 	}
 	input,
@@ -1154,10 +1186,27 @@ p {
 	color: rgb(98, 98, 98);
 	background-color: #e5e5e5;
 	margin: 0;
-	padding: 10px 0;
 	z-index: 1;
-	display: block;
+	display: flex;
+	align-items: stretch;
+	flex-flow: row;
 	border-radius: 0 0 $boxRad $boxRad;
+	position: relative;
+	p {
+		margin: 0;
+		flex: 100%;
+		padding: 1rem;
+	}
+	img {
+		margin: 0 auto;
+	}
+	.pActions {
+		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		padding: 0 1rem;
+		color: $secondFore !important;
+	}
 }
 
 .mediaPostImg {
@@ -1177,6 +1226,54 @@ p {
 	flex: 100%;
 	flex-direction: column;
 	justify-content: center;
+	width: 100%;
+	.track {
+		display: flex;
+		flex-flow: row;
+		align-items: center;
+		position: relative;
+		.info {
+			display: flex;
+			flex-flow: row;
+			flex: 100%;
+			height: 100%;
+			align-items: center;
+			background-color: $secondFore;
+			overflow: hidden;
+			p {
+				flex: 100%;
+				white-space: pre;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+		}
+
+		.info .art {
+			line-height: 0;
+			position: relative;
+		}
+		&[active="true"] .art::after {
+			content: "\f04b";
+			color: #fff;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
+		&[active="true"][paused="true"] .art::after {
+			content: "\f04c" !important;
+		}
+		a {
+			height: 100%;
+			aspect-ratio: 1/1;
+			background-color: #aaa;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			color: #fff;
+			text-decoration: none;
+		}
+	}
 }
 .mediaContent p {
 	margin: 0;

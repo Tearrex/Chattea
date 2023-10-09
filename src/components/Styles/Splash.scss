@@ -52,11 +52,11 @@
 	section.features {
 		position: relative;
 		background-color: #000;
-        padding: 2rem 0;
-        hr {
-            position: absolute;
-            bottom: 0;
-        }
+		padding: 2rem 0;
+		hr {
+			position: absolute;
+			bottom: 0;
+		}
 		h1 {
 			font-weight: 700;
 			font-size: 3rem;
@@ -75,8 +75,8 @@
 			bottom: 30%;
 			right: 5%;
 			line-height: 0;
-            flex-shrink: 0;
-            position: relative;
+			flex-shrink: 0;
+			position: relative;
 		}
 		img {
 			width: 100%;
@@ -118,17 +118,72 @@
 			opacity: 0;
 		}
 	}
-    section.musictaste {
-        padding: 5rem; background-color: #1DB954; padding-top: 10rem;
-        p {
-            width: 100%; text-align: right;
-        }
-    }
+	section.musictaste {
+		padding: 5rem;
+		background-color: #1db954;
+		padding-top: 10rem;
+		position: relative;
+		h1,
+		p {
+			z-index: 1;
+			position: relative;
+		}
+		p {
+			width: 100%;
+			text-align: right;
+		}
+		&::before {
+			content: "";
+			position: absolute;
+			left: 50%;
+			transform: translateX(-50%);
+			bottom: 0;
+			width: clamp(200px, 80%, 600px);
+			background: radial-gradient(
+				#fff 15%,
+				rgba(255, 255, 255, 0.7) 40%,
+				#1db954 60%
+			);
+			background-position-x: right;
+			// clip-path: polygon(20% 0, 30% 80%, 100% 80%, 90% 0%);
+			aspect-ratio: 4/1;
+			z-index: 0;
+		}
+		header {
+			max-width: 650px;
+			margin: 0 auto;
+		}
+		.spotify {
+			width: clamp(150px, 50%, 300px);
+			position: absolute;
+			left: 60%;
+			transform: translateX(-50%);
+			top: 10%;
+		}
+		.humanoid {
+			position: absolute;
+			width: clamp(100px, 50%, 250px);
+			// max-width: 300px;
+			left: 50%;
+			transform: translateX(-30%);
+			bottom: 12%;
+			mask-image: linear-gradient(
+				to top,
+				rgba(0, 0, 0, 0),
+				rgba(0, 0, 0, 1) 10%
+			);
+		}
+	}
+	@media screen and (max-width: 600px) {
+		.features h1 {
+			font-size: 2rem !important;
+		}
+	}
 	@media screen and (min-width: 800px) {
 		gap: 0;
-        a.img {
-            position: absolute !important;
-        }
+		a.img {
+			position: absolute !important;
+		}
 		.banner {
 			margin-bottom: 0 !important;
 			justify-content: flex-start !important;
@@ -143,6 +198,10 @@
 			i.fa-star {
 				display: none;
 			}
+		}
+		.features {
+			padding-left: 2rem !important;
+			padding-right: 2rem !important;
 		}
 		.features h1 {
 			position: absolute;

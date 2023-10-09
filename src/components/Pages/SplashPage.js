@@ -237,16 +237,20 @@ function SplashPage() {
 						<img src="https://firebasestorage.googleapis.com/v0/b/reactback-1cf7d.appspot.com/o/images%2Fp4grb7YvQmXOpiWqGgQschzPqo02%2FM1d1Rb629Sb4lq2Dye5H?alt=media&token=57c8156a-62cf-4a65-9165-572cd35d05ce" />
 					</a>
 				</div>
-				<hr  id="featjump" />
+				<hr id="featjump" />
 			</section>
 			<section className="musictaste">
-				<h1 style={{ textAlign: "left" }}>
-					<i className="fas fa-music" /> Add some sound
-				</h1>
-				<p>
-					Pair a snapshot with your favorite music from Spotify to set the
-					mood.
-				</p>
+				<img src="/spotify.svg" className="spotify" />
+				<img src="/waver.png" className="humanoid" />
+				<header>
+					<h1 style={{ textAlign: "left" }}>
+						<i className="fas fa-music" /> Add some sound
+					</h1>
+					<p>
+						Pair a snapshot with your favorite music from Spotify to set the
+						mood.
+					</p>
+				</header>
 			</section>
 			<FAQPage />
 		</div>
