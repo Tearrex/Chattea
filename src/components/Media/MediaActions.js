@@ -12,11 +12,12 @@ import {
 import { deleteObject, ref } from "firebase/storage";
 import { useContext, useEffect, useState } from "react";
 import { copy_text } from "../../App";
-import { UserContext } from "../Main/Contexts";
+import { MembersContext, UserContext } from "../Main/Contexts";
 import { _dbRef, _storageRef } from "../Main/firebase";
 
 function MediaActions(props) {
 	const { _user, _setUser } = useContext(UserContext);
+	const { _users, _setUsers } = useContext(MembersContext);
 	const { focusPost, setFocusPost } = props;
 	function closeModal() {
 		setFocusPost(null);
@@ -139,7 +140,8 @@ function MediaActions(props) {
 											<i class="fas fa-user-minus"></i> Remove
 										</>
 									)}{" "}
-									Buddy
+									{_users[focusPost[1].user_id] &&
+										_users[focusPost[1].user_id].username}
 								</button>
 							)}
 							<button
