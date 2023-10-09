@@ -75,7 +75,7 @@ function UserPanel (props)
 						<button className="logout stealthBtn" onClick={logout_user}>
 							log out
 						</button>
-						<button className="stealthBtn" onClick={() => navigate("/faq")}>
+						<button className="stealthBtn" onClick={() => navigate("/#faq")}>
 							FAQ
 						</button>
 					</div>

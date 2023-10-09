@@ -16,7 +16,7 @@ function FAQPage(props) {
 		navigate("/main");
 	}
 	return (
-		<footer>
+		<footer id="faq">
 			<div className="faqNest">
 				<FAQuestion question="What is Chattea?" emote="☕">
 					<p>

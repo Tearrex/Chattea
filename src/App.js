@@ -162,7 +162,6 @@ function App() {
 									element={<ProfilePage />}
 								/>
 								<Route exact path="/post/:post_id" element={<BriefPost />} />
-								<Route path="/faq" element={<FAQ />} />
 							</Routes>
 						</div>
 					</showLogin.Provider>
