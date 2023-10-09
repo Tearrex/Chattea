@@ -52,7 +52,7 @@ async function post_comment(text, postID, user_id, author_id) {
 export { post_comment };
 function Comments(props) {
 	const _col = collection(_dbRef, "posts/" + props.postID + "/comments");
-	const _query = query(_col, orderBy("date", "desc"), limit(5));
+	const _query = query(_col, orderBy("date", "asc"), limit(5));
 	const [_comments] = useCollectionData(_query, { idField: "id" });
 	const { _user, _setUser } = useContext(UserContext);
 	const { _users, _setUsers } = useContext(MembersContext);
