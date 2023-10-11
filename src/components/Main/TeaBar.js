@@ -122,9 +122,8 @@ function TeaBar ()
 								onClick={tea_click}
 								style={{ backgroundImage: "url('/tea.png')" }}
 							></div>
-							<p>
+							<p className="tea">
 								Chat<span>tea</span>
-								{_user && ".me"}
 							</p>
 						</div>
 					</div>

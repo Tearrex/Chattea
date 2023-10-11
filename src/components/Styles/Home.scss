@@ -280,6 +280,10 @@ body {
 	justify-content: revert;
 	align-items: center;
 	gap: 10px;
+	.tea::after {
+		content: '.me';
+		font-size: 1rem;
+	}
 	p {
 		margin: 0;
 	}
