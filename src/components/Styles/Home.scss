@@ -220,9 +220,8 @@ body {
 	justify-content: right;
 	flex-shrink: 0;
 	top: 0;
-	padding: 10px 0;
+	padding: 10px;
 	display: flex;
-	width: 100%;
 	height: 60px;
 	background-color: $mainFore;
 	color: rgb(98, 98, 98);
@@ -236,8 +235,7 @@ body {
 }
 
 .welcome {
-	z-index: 6;
-	position: relative;
+	flex-shrink: 0;
 	gap: 10px;
 	/*width: 100%; position: absolute;*/
 	color: #fff;
@@ -274,9 +272,7 @@ body {
 .chattea {
 	white-space: nowrap;
 	display: flex;
-	position: absolute;
-	left: 50%;
-	transform: translateX(-50%);
+	flex: 100%;
 	/*width: 100%;*/
 	transition: transform 2s ease, left 2s ease-in-out;
 	color: $darkText;

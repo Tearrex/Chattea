@@ -108,7 +108,7 @@ function Home() {
 		}
 	}
 	useEffect(() => {
-		document.getElementById("welcomer").style.display = "block";
+		document.getElementById("welcomer").style.display = null;
 	}, []);
 	return (
 		<div className="homeWrapper">

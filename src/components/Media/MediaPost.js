@@ -192,7 +192,8 @@ function MediaPost(props) {
 			const uid = mentions[i];
 			const user = Object.values(_users).find((u) => u.user_id === uid);
 			console.log(uid, user);
-			if (user) labeled_mentions[user.username] = uid;
+			if (user)
+				labeled_mentions[String(user.username).replace(/\s/g, "")] = uid; // regex removes all spaces
 		}
 		var result = await post_comment(
 			_comment,

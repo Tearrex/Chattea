@@ -52,7 +52,7 @@ function UserPanel(props) {
 			ref={selfRef}
 			className="welcome"
 			id="welcome"
-			style={{ zIndex: "-5", opacity: "0", marginRight: "10px" }}
+			style={{ zIndex: "-5", opacity: "0"}}
 			onTransitionEnd={hide}
 		>
 			<div className="profile">

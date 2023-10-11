@@ -117,12 +117,6 @@ function TeaBar ()
 							left: currentUser ? "0" : "50%",
 						}}
 					>
-						<p
-							className="teaPrefix"
-							style={{ maxWidth: currentUser ? "0" : "100%" }}
-						>
-							Get
-						</p>
 						<div style={{ gap: "10px" }}>
 							<div
 								onClick={tea_click}
@@ -133,7 +127,6 @@ function TeaBar ()
 								{_user && ".me"}
 							</p>
 						</div>
-						<p style={{ opacity: currentUser ? "0" : "1" }}>with people!</p>
 					</div>
 					<UserPanel
 						notifEvent={toggle_notif_nest}
