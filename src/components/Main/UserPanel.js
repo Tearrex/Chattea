@@ -55,26 +55,27 @@ function UserPanel(props) {
 			style={{ zIndex: "-5", opacity: "0", marginRight: "10px" }}
 			onTransitionEnd={hide}
 		>
-			<img
-				className="pfp"
-				style={{ objectFit: "cover", cursor: "pointer" }}
-				src={pfp}
-				onLoad={(e) => setShow(true)}
-				onClick={(e) => navigate("/profile/" + user_id)}
-				alt="profile pic"
-			/>
-			<div className="userOptions">
-				<p>▼</p>
-				<div className="mpContent">
-					{/**verified === false ?
+			<div className="profile">
+				<img
+					className="pfp"
+					style={{ objectFit: "cover", cursor: "pointer" }}
+					src={pfp}
+					onLoad={(e) => setShow(true)}
+					onClick={(e) => navigate("/profile/" + user_id)}
+					alt="profile pic"
+				/>
+				<div className="userOptions">
+					<div className="mpContent">
+						{/**verified === false ?
                         <button className="verifyEmail"><span>📧</span>Verify</button>
                     : null */}
-					<button className="logout stealthBtn" onClick={logout_user}>
-						<i className="fas fa-sign-out-alt"></i> log out
-					</button>
-					<button className="stealthBtn" onClick={() => navigate("/#faq")}>
-						<i className="fas fa-question"></i> FAQ
-					</button>
+						<button className="logout stealthBtn" onClick={logout_user}>
+							<i className="fas fa-sign-out-alt"></i> log out
+						</button>
+						<button className="stealthBtn" onClick={() => navigate("/#faq")}>
+							<i className="fas fa-question"></i> FAQ
+						</button>
+					</div>
 				</div>
 			</div>
 			{props.notifCount > 0 && (

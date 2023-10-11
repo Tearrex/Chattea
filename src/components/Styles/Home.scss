@@ -236,7 +236,8 @@ body {
 }
 
 .welcome {
-	z-index: 5;
+	z-index: 6;
+	position: relative;
 	gap: 10px;
 	/*width: 100%; position: absolute;*/
 	color: #fff;
@@ -246,7 +247,17 @@ body {
 	display: flex;
 	transition: opacity 0.4s ease-in;
 	-webkit-transition: opacity 0.4s ease-in;
-	align-items: center;
+	align-items: stretch;
+	.profile {
+		display: flex;
+		flex-flow: row-reverse;
+		align-items: stretch;
+		background-color: rgba(0, 0, 0, 0.7);
+		border-radius: 100vh;
+		span {
+			margin: auto 0;
+		}
+	}
 }
 .persistor {
 	position: fixed;
@@ -344,8 +355,15 @@ body {
 }
 
 .userOptions {
-	align-items: center;
 	position: relative;
+	padding-right: 2rem;
+	padding-left: 1rem;
+	&::before {
+		content: "\f078";
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+	}
 	p {
 		margin: 0;
 		width: 100%;
