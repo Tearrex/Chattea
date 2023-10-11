@@ -112,10 +112,6 @@ function TeaBar ()
 				<div className="welcomer" style={{ position: null }} id="welcomer">
 					<div
 						className="chattea"
-						style={{
-							transform: currentUser ? "translateX(0)" : "translateX(-50%)",
-							left: currentUser ? "0" : "50%",
-						}}
 					>
 						<div style={{ gap: "10px" }}>
 							<div
