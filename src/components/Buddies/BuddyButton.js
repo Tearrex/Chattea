@@ -89,11 +89,11 @@ function BuddyButton(props) {
 			<p className="stealthBtn">
 				{!added ? (
 					<>
-						<i class="fas fa-user-plus"></i> Add
+						<i className="fas fa-user-plus"></i> Add
 					</>
 				) : (
 					<>
-						<i class="fas fa-user-minus"></i> Remove
+						<i className="fas fa-user-minus"></i> Remove
 					</>
 				)}
 			</p>

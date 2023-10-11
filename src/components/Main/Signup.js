@@ -421,7 +421,7 @@ function Signup(props) {
 						</div>
 					</div>
 					<div className="psa">
-						<i class="fas fa-walking"></i> New here?{" "}
+						<i className="fas fa-walking"></i> New here?{" "}
 						<Link to="/" onClick={signup_redirect}>
 							Gossip awaits you!
 						</Link>

@@ -243,12 +243,11 @@ function SplashPage() {
 				<img src="/spotify.svg" className="spotify" />
 				<img src="/waver.png" className="humanoid" />
 				<header>
-					<h1 style={{ textAlign: "left" }}>
+					<h1 style={{ textAlign: "right" }}>
 						<i className="fas fa-music" /> Add some sound
 					</h1>
 					<p>
-						Pair a snapshot with your favorite music from Spotify to set the
-						mood.
+						Pair a snapshot with your favorite music from Spotify.
 					</p>
 				</header>
 			</section>

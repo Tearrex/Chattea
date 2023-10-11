@@ -307,6 +307,7 @@ function ProfilePage(props) {
 	}
 	return (
 		<div className="homeWrapper">
+			<div id="audionest"></div>
 			{focusPost !== null && (
 				<MediaActions focusPost={focusPost} setFocusPost={setFocusPost} />
 			)}
@@ -412,7 +413,7 @@ function ProfilePage(props) {
 						<div className="buddyInfo">
 							{_user && _user.role === "admin" && user_id !== _user.user_id && (
 								<button className="banBtn" onClick={ban_user}>
-									<i class="fas fa-bolt"></i> BAN
+									<i className="fas fa-bolt"></i> BAN
 								</button>
 							)}
 							<UserList users={profile ? profile.buddies : []} buddies />

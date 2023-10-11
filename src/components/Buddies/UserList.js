@@ -80,7 +80,7 @@ function UserList(props) {
 						if (users.length > 0) setOpen(true);
 					}}
 				>
-					<p>{users.length} <i class="fas fa-user-friends"></i></p>
+					<p>{users.length} <i className="fas fa-user-friends"></i></p>
 				</button>
 			)}
 			<div ref={popupRef}>

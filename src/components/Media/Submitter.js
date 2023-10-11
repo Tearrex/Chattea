@@ -319,6 +319,7 @@ function Submitter(props) {
 	function toggle_music_view(e) {
 		e.preventDefault();
 		_setText(""); // clear search query
+		if (!pickingTrack === true) document.getElementById("subTxt").focus();
 		setPickingTrack(!pickingTrack);
 	}
 	function cancel_pick(e) {
@@ -396,7 +397,8 @@ function Submitter(props) {
 												/>
 											</div>
 											<p>
-												{track[1].name} • {track[1].artists[0].name}
+												{track[1].name} •{" "}
+												<span>{track[1].artists[0].name}</span>
 											</p>
 										</div>
 										<a
@@ -424,7 +426,7 @@ function Submitter(props) {
 				)}
 				{!pickingTrack && pickedTrack && (
 					<>
-						<div className="trackList">
+						<div className="trackList preview">
 							<div
 								className="track"
 								active={"true"}
@@ -442,7 +444,8 @@ function Submitter(props) {
 										/>
 									</div>
 									<p>
-										{pickedTrack.name} • {pickedTrack.artists[0].name}
+										{pickedTrack.name} •{" "}
+										<span>{pickedTrack.artists[0].name}</span>
 									</p>
 								</div>
 								<a

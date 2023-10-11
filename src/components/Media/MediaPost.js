@@ -365,7 +365,7 @@ function MediaPost(props) {
 										<img src={track.album_art} />
 									</div>
 									<p>
-										{track.name} • {track.artist}
+										{track.name} • <span>{track.artist}</span>
 									</p>
 								</div>
 								{String(track.url).startsWith("https://open.spotify.com") && (

@@ -70,10 +70,10 @@ function UserPanel(props) {
                         <button className="verifyEmail"><span>📧</span>Verify</button>
                     : null */}
 					<button className="logout stealthBtn" onClick={logout_user}>
-						<i class="fas fa-sign-out-alt"></i> log out
+						<i className="fas fa-sign-out-alt"></i> log out
 					</button>
 					<button className="stealthBtn" onClick={() => navigate("/#faq")}>
-						<i class="fas fa-question"></i> FAQ
+						<i className="fas fa-question"></i> FAQ
 					</button>
 				</div>
 			</div>

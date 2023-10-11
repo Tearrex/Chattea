@@ -149,7 +149,7 @@ function TeaBar ()
 								<NotificationChild
 									key={n.id}
 									info={n}
-									user={_user.user_id}
+									user={_user && _user.user_id || ""}
 									onClick={toggle_notif_nest}
 								/>
 							);
