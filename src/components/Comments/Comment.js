@@ -67,7 +67,8 @@ function Comment(props) {
 						</Link>
 					);
 			}
-			result.push(<span key={result.length}>{_text.join(" ")}</span>);
+			if (_text.join(" ") !== "")
+				result.push(<span key={result.length}>{" " + _text.join(" ")}</span>);
 			// @"username"@"username"
 		}
 		// console.log("mentions", names);

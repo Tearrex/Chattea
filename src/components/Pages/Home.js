@@ -121,7 +121,7 @@ function Home() {
 					<Submitter onMessageSend={postMessage} />
 				) : (
 					<h1 style={{ opacity: 0.5, color: "#fff" }}>
-						Hello stranger, get comfy <i class="fas fa-mug-hot"></i>
+						Hello stranger, get comfy <i className="fas fa-mug-hot"></i>
 					</h1>
 				)}
 				<div

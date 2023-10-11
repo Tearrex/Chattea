@@ -1502,6 +1502,9 @@ p {
 	span {
 		display: none;
 	}
+	.mention {
+		cursor: pointer;
+	}
 }
 .commenter {
 	display: flex;
@@ -1578,6 +1581,7 @@ p {
 		border: none;
 		background: none;
 		color: #fff;
+		cursor: pointer;
 	}
 	.ubadge {
 		background-color: #1e1e1e;

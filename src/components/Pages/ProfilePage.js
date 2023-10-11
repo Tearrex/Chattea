@@ -305,6 +305,9 @@ function ProfilePage(props) {
 			console.log("failed to ban user");
 		}
 	}
+	useEffect(() => {
+		document.getElementById("welcomer").style.display = null;
+	}, []);
 	return (
 		<div className="homeWrapper">
 			<div id="audionest"></div>

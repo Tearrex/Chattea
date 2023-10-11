@@ -421,7 +421,11 @@ function MediaPost(props) {
 					<p>This image appears to have been abducted by aliens...</p>
 				</div>
 				{image_url !== "" ? (
-					<div ref={imageNest} className="mediaPostImg">
+					<div
+						ref={imageNest}
+						className="mediaPostImg"
+						style={{ minHeight: image_url !== "" ? 250 : null }}
+					>
 						<div
 							className="imgOverlay"
 							style={{ opacity: captionInput !== "" ? null : "0" }}
