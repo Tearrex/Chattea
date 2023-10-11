@@ -24,6 +24,7 @@ function SmileCounter(props) {
 		<div className="managePost">
 			<div
 				className="smileButton"
+				post={props.postID}
 				onClick={() => {
 					if (_user) props.setSmilers(_smiles[1]);
 					else setLogin(true); // prompt for auth

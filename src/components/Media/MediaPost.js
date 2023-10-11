@@ -435,6 +435,7 @@ function MediaPost(props) {
 						ref={imageNest}
 						className="mediaPostImg"
 						style={{ minHeight: image_url !== "" ? 250 : null }}
+						onDoubleClick={find_smilebutton}
 					>
 						<div
 							className="imgOverlay"

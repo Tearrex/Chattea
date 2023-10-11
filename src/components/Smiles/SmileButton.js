@@ -71,7 +71,11 @@ function SmileButton(props) {
 	}, [smiled]);
 	if (props.canSmile) {
 		return (
-			<label className="smileButton" style={{ flex: smiled ? "10%" : "50%" }}>
+			<label
+				className="smileButton"
+				style={{ flex: smiled ? "10%" : "50%" }}
+				post={_postID}
+			>
 				<input ref={check} type="checkbox" onClick={smile} />
 				<span className="smile stealthBtn">{smiled ? "" : " Smile"}</span>
 				{/*<span>{smiled ? "😊" : "🙂"}</span>*/}
