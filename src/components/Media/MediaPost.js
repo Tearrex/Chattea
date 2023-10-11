@@ -328,16 +328,26 @@ function MediaPost(props) {
 		setComment(c);
 		let input = document.querySelector("input[caret]");
 		if (input) input.focus();
+		else if (force) textInput.current.focus();
 		setMentioning(false);
 		if (!mentions.includes(user.user_id))
 			setMentions([...mentions, user.user_id]);
 		// document
+	}
+	function add_emoji(event, emoji) {
+		event.preventDefault();
+		setComment(comment + emoji);
 	}
 	function prompt_tab(event, external_url) {
 		const confirm = window.confirm("Open spotify link?");
 		if (!confirm) return event.preventDefault();
 		clear_audios();
 	}
+	function find_smilebutton() {
+		const button = document.querySelector(`.smileButton[post='${postID}']`);
+		if (button) button.click();
+	}
+	const emojis = ["😂", "❤️", "🔥", "😭", "😵‍💫", "😮", "😱", "😵", "👍", "☕"];
 	return (
 		<div
 			className="mediaCard"
@@ -448,7 +458,6 @@ function MediaPost(props) {
 						<div className="actionBundle">
 							<SmileButton
 								canSmile={(_user && _user.user_id != user_id) || !_user}
-								smiled={props.smiled}
 								postID={postID}
 								author={user_id}
 								smiles={(_user && user_id === _user.user_id) || 0}
@@ -508,6 +517,11 @@ function MediaPost(props) {
 								caret={mentioning ? "true" : null}
 								placeholder="Mention buddies with @"
 							/>
+							<div className="emojis">
+								{emojis.map((emoji, i) => {
+									return <button onClick={(e) => add_emoji(e, emoji)}>{emoji}</button>;
+								})}
+							</div>
 						</form>
 						{smilers && Object.entries(smilers).length > 0 && (
 							<UserList users={smilers} onClose={() => setSmilers(null)} open />
