@@ -13,7 +13,7 @@ import { _dbRef } from "../Main/firebase";
 import { addDoc, serverTimestamp } from "@firebase/firestore";
 import { useContext, useEffect, useState } from "react";
 import { MembersContext, UserContext } from "../Main/Contexts";
-async function post_comment(text, postID, user_id, author_id) {
+async function post_comment(text, postID, user_id, author_id, mentions = null) {
 	if (text.trim() === "") return;
 	try {
 		// now post!
@@ -23,6 +23,7 @@ async function post_comment(text, postID, user_id, author_id) {
 				content: text,
 				date: serverTimestamp(),
 				user_id: user_id,
+				mentions
 			}
 		);
 		console.log("Added comment " + docRef.id);
@@ -73,10 +74,18 @@ function Comments(props) {
 					props.toCache(_cache);
 				});
 			}
+			if (props.updateComments) props.updateComments(_comments.length);
 		}
 	}, [_comments]);
 	function display_comment(comment) {
-		return <Comment key={comment.id} comment={comment} postID={props.postID} />;
+		return (
+			<Comment
+				key={comment.id}
+				comment={comment}
+				postID={props.postID}
+				mentionUser={props.mentionUser}
+			/>
+		);
 	}
 	return (
 		<div className="commentSection">

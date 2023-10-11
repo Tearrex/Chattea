@@ -659,13 +659,18 @@ p {
 			color: #fff;
 		}
 	}
+	.trackList.preview {
+		display: flex !important;
+		.track {
+			flex: 50%;
+		}
+	}
 	.trackList .track {
 		display: flex;
 		flex-flow: row;
 		align-items: center;
 		background-color: $secondFore;
 		position: relative;
-
 		a {
 			height: 100%;
 			aspect-ratio: 1/1;
@@ -681,6 +686,9 @@ p {
 			flex-flow: row;
 			flex: 100%;
 			align-items: center;
+			p span {
+				opacity: 0.7;
+			}
 		}
 		.art {
 			max-height: 50px;
@@ -1050,7 +1058,6 @@ p {
 	z-index: 1;
 	position: absolute;
 	overflow: hidden;
-	transition: opacity 0.4s ease-out;
 	opacity: 1;
 	display: flex;
 	justify-content: center;
@@ -1061,9 +1068,6 @@ p {
 		rgba(0, 0, 0, 0.6) 5%,
 		rgba(0, 0, 0, 0) 20%
 	);
-	&:hover {
-		opacity: 0;
-	}
 	.imgMenu {
 		position: absolute;
 		left: 0;
@@ -1215,6 +1219,7 @@ p {
 	overflow: hidden;
 	display: flex;
 	position: relative;
+	aspect-ratio: 1/1;
 }
 .mediaPost:hover {
 	/*border-radius: 10px;*/
@@ -1227,10 +1232,11 @@ p {
 	flex-direction: column;
 	justify-content: center;
 	width: 100%;
+	overflow: hidden;
 	.track {
 		display: flex;
 		flex-flow: row;
-		align-items: center;
+		align-items: stretch;
 		position: relative;
 		.info {
 			display: flex;
@@ -1245,6 +1251,9 @@ p {
 				white-space: pre;
 				overflow: hidden;
 				text-overflow: ellipsis;
+				span {
+					opacity: 0.7;
+				}
 			}
 		}
 
@@ -1264,7 +1273,6 @@ p {
 			content: "\f04c" !important;
 		}
 		a {
-			height: 100%;
 			aspect-ratio: 1/1;
 			background-color: #aaa;
 			display: flex;
@@ -1285,9 +1293,6 @@ p {
 	flex: 100%;
 	display: flex;
 	flex-flow: column;
-	.mediaPostImg {
-		flex: 100%;
-	}
 	div:last-of-type {
 		flex-shrink: 0;
 	}
@@ -1450,13 +1455,48 @@ p {
 	font-size: 1.2rem;
 	color: $niceOrange;
 }
+.tooltip,
+.commentNest {
+	position: relative;
+}
+.tooltip {
+	line-height: 0;
+	.tooltext {
+		background-color: #000;
+		border-radius: 100vh;
+		color: #fff;
+		padding: 1rem;
+		bottom: 105%;
+		left: 50%;
+		transform: translateX(-50%);
+		position: absolute;
+	}
+}
+.tooltip:hover span.tooltext {
+	display: block;
+}
+.commentNest .mentionList {
+	display: flex;
+	gap: 0.5rem;
+	width: 100%;
+	justify-content: center;
+	span {
+		display: none;
+	}
+}
 .commenter {
-	display: none;
+	display: flex;
+	flex-flow: column;
 	position: relative;
 	background-color: #212121;
 	padding: 10px;
-	justify-content: center;
-	align-items: center;
+	gap: 10px;
+	justify-content: stretch;
+	align-items: stretch;
+	opacity: 0.7;
+	h2 {
+		margin: 0;
+	}
 }
 .commenter img {
 	width: 32px;
@@ -1465,8 +1505,9 @@ p {
 	border-radius: 50%;
 	margin-right: 5px;
 }
-.commenter:focus-within {
-	display: flex;
+.commenter:focus-within,
+.commenter:hover {
+	opacity: 1;
 }
 .commenter input {
 	outline: none;
@@ -1506,6 +1547,19 @@ p {
 	gap: 5px;
 	color: #9e9e9e;
 	padding: 5px 10px;
+	position: relative;
+	.mention {
+		color: $niceOrange;
+	}
+	.reply {
+		position: absolute;
+		right: 0;
+		height: 100%;
+		padding: 0 1rem;
+		border: none;
+		background: none;
+		color: #fff;
+	}
 	.ubadge {
 		background-color: #1e1e1e;
 		border-radius: 100vh;

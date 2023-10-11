@@ -25,6 +25,25 @@ import "./components/Styles/UserProfile.scss";
 
 import * as filter from "profanity-filter";
 
+export function setCaretPosition(caretPos) {
+	// caret attribute should be set by function caller prior
+    var elem = document.querySelector("input[caret]");
+
+    if(elem != null) {
+        if(elem.createTextRange) {
+            var range = elem.createTextRange();
+            range.move('character', caretPos);
+            range.select();
+        } else {
+            if(elem.selectionStart) {
+                elem.focus();
+                elem.setSelectionRange(caretPos, caretPos);
+            }
+            else
+                elem.focus();
+        }
+    }
+}
 export function copy_text(text, success) {
 	if (navigator.clipboard) {
 		return navigator.clipboard.writeText(text).then(success);

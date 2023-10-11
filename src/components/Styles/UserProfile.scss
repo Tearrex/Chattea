@@ -131,6 +131,9 @@
         white-space: nowrap;
         margin: 0;
     }
+    &:hover .profilePicture {
+        border-radius: 0 !important;
+    }
 }
 .primaryInfo .pUsername {
     margin: 0 0 0 15px;

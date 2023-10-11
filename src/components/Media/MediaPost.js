@@ -11,18 +11,20 @@ import UserList from "../Buddies/UserList";
 
 import { Link } from "react-router-dom";
 import * as filter from "profanity-filter";
+import { setCaretPosition } from "../../App";
 function MediaPost(props) {
 	const navigate = useNavigate();
 	// didn't have time to finish, will commit feature later
 	//const {page_user_id} = useParams();
 	const { _user, _setUser } = useContext(UserContext);
-	const { _users, _setUsers } = useContext(MembersContext);
 	const { _showLogin, setLogin } = useContext(showLogin);
+	const { _users, _setUsers } = useContext(MembersContext);
 	const { caption, content, date, image_url, user_id, track } = props.msg;
 	const [captionInput, setCaption] = useState("");
 	const [isAuthor, setAuthor] = useState(false);
 	const [postDate, setPostDate] = useState("");
 	const postID = props.postID;
+	const [commentCount, setCommentCount] = useState(0);
 
 	const [pfp, setPfp] = useState("/default_user.png");
 
@@ -156,6 +158,9 @@ function MediaPost(props) {
 	}
 	const commentBox = useRef();
 	const textInput = useRef();
+	const [mentioning, setMentioning] = useState(false);
+	const [mentionQuery, setMentionQuery] = useState("");
+	const [mentions, setMentions] = useState([]);
 	const [comment, setComment] = useState("");
 	/*
 	used to prevent the user from spamming, it starts to get expensive!
@@ -166,6 +171,7 @@ function MediaPost(props) {
 	const cooldownIncrement = 10000;
 	async function handle_comment(e) {
 		e.preventDefault();
+		if (!_user) return;
 		if (lastAction > 0 && cooldown >= Date.now() - lastAction) {
 			alert(
 				"Spam Protection: Please wait " +
@@ -178,17 +184,48 @@ function MediaPost(props) {
 		setComment("");
 		setLastAction(Date.now());
 		setCooldown(cooldown + cooldownIncrement);
+
+		// tie a display name (as key) to each user id (as value)
+		let labeled_mentions = {};
+		console.log("total mentions", mentions);
+		for (let i = 0; i < mentions.length; i++) {
+			const uid = mentions[i];
+			const user = Object.values(_users).find((u) => u.user_id === uid);
+			console.log(uid, user);
+			if (user) labeled_mentions[user.username] = uid;
+		}
 		var result = await post_comment(
 			_comment,
 			postID,
 			_user["user_id"],
-			user_id
-		);
+			user_id,
+			mentions.length > 0 ? labeled_mentions : null
+		).then(() => {
+			setMentioning(false);
+			setMentionQuery("");
+			setMentions([]);
+		});
 		//if(result === true) textInput.current.value = "";
 	}
 	function change_comment(e) {
 		if (e.target.value.length > 100) return;
-		setComment(e.target.value);
+		let val = String(e.target.value);
+		if (val.trim() === "") {
+			setMentioning(false);
+			setMentions([]);
+		}
+		if (val.endsWith("@")) setMentioning(true);
+		else if (!val.includes("@")) {
+			setMentioning(false);
+			setMentionQuery("");
+		} else if (mentioning) setMentionQuery(mentionQuery + val[val.length - 1]);
+		setComment(val);
+	}
+	// keep input fields updated
+	function watch_comment(e) {
+		if (mentioning && e.keyCode === 8 && mentionQuery.length > 0) {
+			setMentionQuery(mentionQuery.slice(0, mentionQuery.length - 2));
+		}
 	}
 	function toggle_textbox() {
 		if (!_user) {
@@ -196,6 +233,7 @@ function MediaPost(props) {
 			return setLogin(true);
 		}
 		setComment("");
+		setMentioning(false);
 		commentBox.current.style.display = "flex";
 		textInput.current.focus();
 		commentBox.current.style.display = null;
@@ -273,6 +311,32 @@ function MediaPost(props) {
 			setPlaying(false);
 		}
 	}
+	function mention_user(user, force = false) {
+		let index = !force ? comment.lastIndexOf("@" + mentionQuery) : -1;
+		if (index === -1) {
+			if (!force) return;
+			else index = comment.length - 1;
+		}
+		if (typeof user === "string") user = _users[user];
+		// if (mentions.includes(user.user_id)) return; // only mention once
+		setMentionQuery("");
+		let c = String(comment);
+		if (index != -1)
+			c = c.slice(0, index + (force ? 1 : 0)) + "@" + user.username + " ";
+		else if (c.trim() === "") c = "@" + user.username + " ";
+		setComment(c);
+		let input = document.querySelector("input[caret]");
+		if (input) input.focus();
+		setMentioning(false);
+		if (!mentions.includes(user.user_id))
+			setMentions([...mentions, user.user_id]);
+		// document
+	}
+	function prompt_tab(event, external_url) {
+		const confirm = window.confirm("Open spotify link?");
+		if (!confirm) return event.preventDefault();
+		clear_audios();
+	}
 	return (
 		<div
 			className="mediaCard"
@@ -304,9 +368,17 @@ function MediaPost(props) {
 										{track.name} • {track.artist}
 									</p>
 								</div>
-								<a href={track.url} target="_blank" rel="nonreferrer">
-									<i class="fas fa-external-link-alt"></i>
-								</a>
+								{String(track.url).startsWith("https://open.spotify.com") && (
+									<a
+										href={track.url}
+										target="_blank"
+										rel="nonreferrer"
+										style={{ fontSize: "1.5rem" }}
+										onClick={(e) => prompt_tab(e, track.url)}
+									>
+										<i className="fab fa-spotify"></i>
+									</a>
+								)}
 							</div>
 						</>
 					)}
@@ -321,21 +393,19 @@ function MediaPost(props) {
 								color: "#fff",
 							}}
 						>
-							{!_user && <i class="fas fa-user"></i>}
+							{!_user && <i className="fas fa-user"></i>}
 							{_users[props.authorID] !== undefined
 								? _users[props.authorID].username
 								: "User"}
 						</p>
 					)}
-					{_user && props.authorID !== _user.user_id && (
-						<div
-							onClick={() => {
-								window.scrollTo(0, 0);
-							}}
-							style={{ backgroundImage: "url(" + pfp + ")" }}
-							className="profilePicture niceClip"
-						/>
-					)}
+					<div
+						onClick={() => {
+							window.scrollTo(0, 0);
+						}}
+						style={{ backgroundImage: "url(" + pfp + ")" }}
+						className="profilePicture niceClip"
+					/>
 				</Link>
 			</div>
 			<div className="mediaSecondary">
@@ -381,7 +451,7 @@ function MediaPost(props) {
 							/>
 						</div>
 						<button className="stealthBtn" onClick={toggle_textbox}>
-							💬 Comment
+							💬 {commentCount === 0 ? "Comment" : commentCount}
 						</button>
 					</div>
 					<div
@@ -392,18 +462,46 @@ function MediaPost(props) {
 						<button onClick={delete_post}>Delete</button>
 						<button onClick={(e) => toggle_options(false)}>Cancel</button>
 					</div>
-					<div>
+					<div className="commentNest">
 						<form
 							ref={commentBox}
 							className="commenter"
 							onSubmit={handle_comment}
 						>
+							{mentioning && (
+								<>
+									<div className="mentionList">
+										{_user &&
+											Object.values(_users)
+												.filter((u) => _user.buddies.indexOf(u.user_id) !== -1)
+												.filter((u) =>
+													String(u.username)
+														.toLowerCase()
+														.startsWith(mentionQuery.toLowerCase())
+												)
+												.map((u) => {
+													return (
+														<div
+															className="tooltip mention"
+															onClick={() => mention_user(u)}
+														>
+															<img src={u.pfp} />
+															<span className="tooltext">{u.username}</span>
+														</div>
+													);
+												})}
+									</div>
+								</>
+							)}
 							<input
 								ref={textInput}
 								type="text"
 								value={comment}
-								onChange={(e) => change_comment(e)}
-								placeholder="Type your comment..."
+								disabled={!_user}
+								onChange={change_comment}
+								onKeyDown={(e) => watch_comment(e)}
+								caret={mentioning ? "true" : null}
+								placeholder="Mention buddies with @"
 							/>
 						</form>
 						{smilers && Object.entries(smilers).length > 0 && (
@@ -413,6 +511,8 @@ function MediaPost(props) {
 							<Comments
 								postID={postID}
 								authorID={postID}
+								updateComments={setCommentCount}
+								mentionUser={(user_id) => mention_user(user_id, true)}
 								toCache={(e) => send_commenters_to_cache(e)}
 							/>
 						)}
