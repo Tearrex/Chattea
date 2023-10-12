@@ -10,6 +10,8 @@
 const { onRequest } = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 const { defineSecret } = require("firebase-functions/params");
+const busboy = require("busboy");
+const jimp = require("jimp");
 
 // Create and deploy your first functions
 // https://firebase.google.com/docs/functions/get-started
@@ -36,5 +38,91 @@ exports.helloWorld = onRequest(
 				logger.info("Hello logs!", data);
 				response.send("Bearer " + data.access_token);
 			});
+	}
+);
+
+exports.cropImage = onRequest(
+	{
+		cors: ["https://chattea.me"],
+	},
+	(request, response) => {
+		if (request.method !== "POST") {
+			return response.status(405).end();
+		}
+
+		let formData = {};
+		let bb = busboy({
+			headers: request.headers,
+			defCharset: "utf8",
+			limits: {
+				files: 1,
+			},
+		});
+		let result = null;
+		bb.on("field", (key, val) => {
+			try {
+				val = parseInt(val);
+			} catch (e) {
+				// ignore
+			}
+			formData[key] = val;
+		});
+		bb.on("file", (fieldname, fileStream, filename, enc, mimetype) => {
+			logger.info("got file", filename);
+			let originalName = Buffer.from(filename.filename, "latin1").toString(
+				"utf8"
+			);
+
+			let extension = originalName
+				.toLowerCase()
+				.slice(originalName.lastIndexOf(".") + 1);
+			if (!["jpg", "png", "jpeg", "blob"].includes(extension.toLowerCase())) {
+				logger.info("Skipping unsafe file " + originalName);
+				fileStream.resume(); // equivalent to 'continue' on a loop
+			} else {
+				var buffers = [];
+				fileStream.on("data", async (chunk) => {
+					logger.info(`reading ${chunk.length} bytes...`);
+					if (chunk.length > 0) buffers.push(chunk);
+				});
+				fileStream.on("close", () => {
+					result = Buffer.concat(buffers);
+					logger.info("total read", result.length);
+				});
+			}
+		});
+		bb.on("finish", () => {
+			if (!formData["width"])
+				return response.status(400).send("Bad request!!!");
+			logger.info("busboy done");
+			jimp.read(result, (err, image) => {
+				let proportion;
+				if (image.getWidth() > image.getHeight())
+					proportion = image.getHeight() / formData["height"];
+				else proportion = image.getWidth() / formData["width"];
+				logger.info("img dimensions", [image.getWidth(), image.getHeight()]);
+				logger.info("proportion", proportion);
+				logger.info("res dims", formData["width"] * proportion);
+				image.crop(
+					formData["x"] * proportion,
+					formData["y"] * proportion,
+					formData["width"] * proportion,
+					formData["height"] * proportion
+				);
+				image.getBuffer(jimp.MIME_JPEG, (err, buffer) => {
+					logger.info("complete");
+					response.writeHead(200, {
+						"content-disposition": 'attachment; filename="image.jpeg',
+						"content-type": "image/jpeg",
+					});
+					response.end(Buffer.from(buffer, "base64"));
+				});
+				// .write("crops/image.jpeg", () => {
+				// 	logger.info("res", formData.get("y") * proportion);
+				// 	res.status(200).send("process done");
+				// });
+			});
+		});
+		bb.end(request.rawBody);
 	}
 );

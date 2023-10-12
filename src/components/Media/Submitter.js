@@ -8,12 +8,13 @@ import { UserContext } from "../Main/Contexts";
 import { Timestamp, addDoc, setDoc, collection } from "firebase/firestore";
 import imageCompression from "browser-image-compression";
 import * as filter from "profanity-filter";
-//import axios from 'axios';
 function Submitter(props) {
 	const { _user, _setUser } = useContext(UserContext);
 	const currentUser = useAuth();
-	const [file, setFile] = useState(null);
 	const [localFile, setLocalFile] = useState(null);
+	const [cropMode, setCropMode] = useState(false);
+	const [cropped, setCropped] = useState(false);
+	const [cropSet, setCropSet] = useState(false);
 
 	const [spotifyToken, setSpotifyToken] = useState("");
 	const [pickingTrack, setPickingTrack] = useState(false);
@@ -31,23 +32,35 @@ function Submitter(props) {
 	const subWarning = useRef();
 	function onFileChange(e) {
 		fileNest.current.style.maxHeight = "100%";
-		setFile(e.target.files[0]);
+		console.log(e.target.files[0]);
 		setLocalFile(e.target.files[0]);
 	}
 	const [imageSize, setImageSize] = useState(0);
 	useEffect(() => {
-		if (localFile !== null && localFile.size >= 2000000) {
-			subWarning.current.style.display = "flex";
-			setImageSize((localFile.size / 1000000).toFixed(1));
+		if (localFile !== null) {
+			if (localFile.size >= 1000000) {
+				subWarning.current.style.display = "flex";
+				setImageSize((localFile.size / 1000000).toFixed(1));
+			}
 		} else {
+			setCropMode(false);
+			setCropSet(false);
 			subWarning.current.style.display = "none";
 			setImageSize(0);
+			let gridBox = document.querySelector(".gridBox");
+			if (gridBox) {
+				gridBox.style.width = null;
+				gridBox.style.height = null;
+			}
 		}
 	}, [localFile]);
 	function remove_image() {
+		if (cropMode) {
+			setCropSet(false);
+			return setCropMode(false);
+		}
 		setCaption("");
 		imageField.current.value = null;
-		setFile(null);
 		setLocalFile(null);
 		fileNest.current.style.maxHeight = "0";
 	}
@@ -87,6 +100,7 @@ function Submitter(props) {
 			const compressed = await imageCompression(_file, _options);
 			console.log(`compressedFile size ${compressed.size / 1024 / 1024} MB`);
 			setImageSize((compressed.size / 1000000).toFixed(1));
+			setCompressing(false);
 			return compressed;
 		} catch (e) {
 			console.log(e);
@@ -128,7 +142,7 @@ function Submitter(props) {
 		e.preventDefault();
 		if (!currentUser || canSave === false) return;
 		if (uploading || compressing) return;
-		if (_text.trim() === "" && file === null) return;
+		if (_text.trim() === "" && localFile === null) return;
 		if (lastAction > 0 && cooldown >= Date.now() - lastAction) {
 			alert(
 				"Spam Protection: Please wait " +
@@ -158,12 +172,12 @@ function Submitter(props) {
 					pickedTrack.album.images[pickedTrack.album.images.length - 1].url,
 			};
 		}
-		if (file !== null) {
+		if (localFile !== null) {
 			setUploading(true);
 			console.log("starting upload for PID: " + newPost.id);
 			var _file = null;
-			if (file.size > 2000000) _file = await compress_image(file);
-			else _file = file;
+			if (localFile.size >= 1000000) _file = await compress_image(localFile);
+			else _file = localFile;
 			const _ref = ref(_storageRef, "images/" + _author + "/" + newPost.id);
 			if (_file === false) {
 				// need to improve my error handles...
@@ -208,6 +222,7 @@ function Submitter(props) {
 					content: _content,
 					date: Timestamp.now(),
 					image_url: "",
+					track: _track,
 					caption: "",
 					user_id: _user.user_id,
 				});
@@ -334,6 +349,85 @@ function Submitter(props) {
 		clear_audios();
 		_setText(""); // clear search query
 		setPickingTrack(false);
+	}
+	function resize_grid() {
+		if (!localFile || !cropMode) return;
+		let scape = document.querySelector("#imageScape");
+		let gridBox = document.querySelector(".gridBox");
+		console.log("buggin", gridBox);
+		if (!gridBox) return;
+
+		let cropBtn = document.querySelector("#cropTool");
+		if (cropBtn)
+			cropBtn.style.display =
+				scape.clientWidth == scape.clientHeight ? "none" : "block";
+		console.log("cropbtn", cropBtn);
+
+		if (scape.clientWidth < scape.clientHeight) gridBox.style.width = "100%";
+		else gridBox.style.height = "100%";
+	}
+	function distance(a, b) {
+		return -(a - b);
+	}
+	function move_grid(e) {
+		if (!cropMode || cropSet) return;
+		let canvas = document.querySelector("#imageScape");
+		let canvasPos = canvas.getBoundingClientRect();
+
+		let matrix = document.querySelector("#gridBox");
+		let x = e.clientX,
+			y = e.clientY;
+
+		let middleX = canvasPos.x + canvasPos.width / 4;
+		let middleY = canvasPos.height / 4 + canvasPos.y;
+
+		console.log([x, y]);
+		x = Math.min(
+			Math.max(distance(middleX, x), 0),
+			canvasPos.width - matrix.clientWidth
+		);
+		y = Math.min(
+			Math.max(distance(middleY, y), 0),
+			canvasPos.height - matrix.clientHeight
+		);
+
+		matrix.style.left = String(x) + "px";
+		matrix.style.top = String(y) + "px";
+	}
+	async function do_crop() {
+		if (cropMode && cropSet && localFile) {
+			let matrix = document.querySelector("#gridBox");
+			// image crop process
+			let x = matrix.style.left,
+				y = matrix.style.top;
+			let w = matrix.clientWidth,
+				h = matrix.clientHeight;
+
+			// compress image locally before shipping out to cloudfunc
+			// hopefully this eases memory consumption...
+			var _file = null;
+			if (localFile.size >= 1000000) _file = await compress_image(localFile);
+			else _file = localFile;
+
+			let data = new FormData();
+			data.append("x", x);
+			data.append("y", y);
+			data.append("width", w);
+			data.append("height", h);
+			data.append("files[]", _file);
+			fetch("https://cropimage-oj5fff4opa-uc.a.run.app/", {
+				method: "POST",
+				body: data,
+			})
+				.then((res) => res.blob())
+				.then((blob) => {
+					setLocalFile(blob);
+					setCropped(true);
+					subWarning.current.style.display = "none";
+				});
+		}
+		setCropMode(!cropMode);
+		setCropSet(false);
 	}
 	return (
 		<div className="subPop" id="subPop">
@@ -463,13 +557,13 @@ function Submitter(props) {
 					<label
 						className="subWidget photo"
 						style={{ borderRadius: "50%" }}
-						active={file !== null ? "true" : "false"}
+						active={localFile !== null ? "true" : "false"}
 					>
-						<i class="fas fa-image"></i> {!file ? "Attach" : "Change"} Image
+						<i class="fas fa-image"></i> {!localFile ? "Attach" : "Change"} Image
 						<input
 							ref={imageField}
 							type="file"
-							accept=".png, .jpg"
+							accept=".png, .jpg, .jpeg"
 							style={{ display: "none" }}
 							onChange={(e) => onFileChange(e)}
 						/>
@@ -485,8 +579,8 @@ function Submitter(props) {
 			<div ref={subWarning} className="subWarning">
 				<div ref={compProgress} className="compProgress"></div>
 				<div className="compText">
-					⚠️ Upload exceeds 2MB, your image will be compressed!{" "}
-					<span>({imageSize}/2.0MB)</span>
+					⚠️ Upload exceeds 1MB, your image will be compressed!{" "}
+					<span>({imageSize}/1.0MB)</span>
 				</div>
 			</div>
 			<div
@@ -500,19 +594,40 @@ function Submitter(props) {
 				ref={fileNest}
 				style={{ maxHeight: "0", position: "relative" }}
 			>
-				<div className="imgOverlay" style={{ opacity: "1" }}>
+				<div
+					className="imgOverlay"
+					style={{ opacity: "1" }}
+					onMouseMove={move_grid}
+					onClick={() => {
+						if (cropMode) setCropSet(true);
+					}}
+				>
 					<div className="imgMenu">
-						<button onClick={remove_image} className="remove">
+						<button
+							onClick={remove_image}
+							className="remove"
+							cropping={cropMode ? "true" : "false"}
+						>
 							<i class="fas fa-times"></i>
+						</button>
+						{!cropped && (
+							<button
+								className="crop"
+								id="cropTool"
+								cropping={cropSet ? "true" : "false"}
+								onClick={do_crop}
+							>
+								<i class="fas fa-crop-alt"></i>
+							</button>
+						)}
+						<button
+							onClick={() => document.querySelector("#caption").focus()}
+							className="caption"
+						>
+							<i class="fas fa-font"></i>
 						</button>
 						<button className="music" onClick={toggle_music_view}>
 							<i class="fas fa-music"></i>
-						</button>
-						<button onClick={() => document.querySelector("#caption").focus()}>
-							<h2>T</h2>
-						</button>
-						<button className="crop" disabled>
-							<i class="fas fa-crop-alt"></i>
 						</button>
 					</div>
 					<input
@@ -520,14 +635,18 @@ function Submitter(props) {
 						value={caption}
 						onChange={(e) => change_caption(e)}
 						id="caption"
-						placeholder="Add a caption..."
+						placeholder="..."
 					/>
 				</div>
-				<img
-					ref={image}
-					src={localFile ? URL.createObjectURL(localFile) : null}
-					alt={file ? file.name : null}
-				/>
+				<div className="imageScape" id="imageScape">
+					{cropMode && <div className="gridBox" id="gridBox" />}
+					<img
+						ref={image}
+						src={localFile ? URL.createObjectURL(localFile) : null}
+						alt={localFile ? localFile.name : null}
+						onLoad={resize_grid}
+					/>
+				</div>
 				{/*<div className="fileCaption">Add a caption</div>*/}
 			</div>
 		</div>

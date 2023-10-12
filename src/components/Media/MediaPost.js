@@ -337,6 +337,7 @@ function MediaPost(props) {
 	function add_emoji(event, emoji) {
 		event.preventDefault();
 		setComment(comment + emoji);
+		textInput.current.focus();
 	}
 	function prompt_tab(event, external_url) {
 		const confirm = window.confirm("Open spotify link?");
