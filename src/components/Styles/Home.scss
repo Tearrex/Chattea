@@ -1084,6 +1084,23 @@ p {
 }
 #fileNest {
 	background-color: #000;
+	.load {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		margin: 0;
+		color: #fff;
+		i {
+			animation: spinny 1s linear infinite;
+			color: $niceOrange;
+		}
+	}
+	&[waiting="true"] .imgOverlay {
+		background: rgba(0,0,0,0.7) !important;
+		.imgMenu {
+			display: none;
+		}
+	}
 }
 #fileNest img {
 	max-width: 100%;

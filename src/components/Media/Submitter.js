@@ -15,6 +15,7 @@ function Submitter(props) {
 	const [cropMode, setCropMode] = useState(false);
 	const [cropped, setCropped] = useState(false);
 	const [cropSet, setCropSet] = useState(false);
+	const [waiting, setWaiting] = useState(false); // waiting for firebase response?
 	const [mobileCrop, setMobileCrop] = useState(false); // mouseover doesn't work on mobile
 
 	const [spotifyToken, setSpotifyToken] = useState("");
@@ -60,6 +61,7 @@ function Submitter(props) {
 			setCropSet(false);
 			return setCropMode(false);
 		}
+		setCropped(false);
 		setCaption("");
 		imageField.current.value = null;
 		setLocalFile(null);
@@ -206,6 +208,7 @@ function Submitter(props) {
 							user_id: _author,
 							caption: _caption,
 						});
+						setCropped(false);
 						setDoc(
 							doc(_dbRef, "users/" + _user.user_id + "/smiles/" + newPost.id),
 							{ smiles: [] }
@@ -396,7 +399,7 @@ function Submitter(props) {
 		matrix.style.top = String(y) + "px";
 	}
 	async function do_crop() {
-		if (cropMode && cropSet && localFile) {
+		if (cropMode && (cropSet || mobileCrop) && localFile) {
 			let matrix = document.querySelector("#gridBox");
 			// image crop process
 			let x = matrix.style.left,
@@ -410,22 +413,31 @@ function Submitter(props) {
 			if (localFile.size >= 1000000) _file = await compress_image(localFile);
 			else _file = localFile;
 
+			setWaiting(true);
 			let data = new FormData();
 			data.append("x", x);
 			data.append("y", y);
 			data.append("width", w);
 			data.append("height", h);
 			data.append("files[]", _file);
-			fetch("https://cropimage-oj5fff4opa-uc.a.run.app/", {
-				method: "POST",
-				body: data,
-			})
-				.then((res) => res.blob())
-				.then((blob) => {
-					setLocalFile(blob);
-					setCropped(true);
-					subWarning.current.style.display = "none";
-				});
+			setTimeout(() => {
+				fetch("https://cropimage-oj5fff4opa-uc.a.run.app/", {
+					method: "POST",
+					body: data,
+				})
+					.then((res) => res.blob())
+					.then((blob) => {
+						setLocalFile(blob);
+						setCropped(true);
+						subWarning.current.style.display = "none";
+						setWaiting(false);
+					})
+					.catch((e) => {
+						setWaiting(false);
+						setCropMode(false);
+						setCropSet(false);
+					});
+			}, 1000);
 		}
 		setCropMode(!cropMode);
 		setCropSet(false);
@@ -471,7 +483,7 @@ function Submitter(props) {
 						/>
 					</div>
 				</div>
-				{pickingTrack && !spotifyToken && <p>Please wait...</p>}
+				{pickingTrack && !spotifyToken && <p>Waiting for server...</p>}
 				{pickingTrack && trackResults && (
 					<>
 						<p>
@@ -605,6 +617,7 @@ function Submitter(props) {
 				id="fileNest"
 				ref={fileNest}
 				style={{ maxHeight: "0", position: "relative" }}
+				waiting={waiting ? "true" : null}
 			>
 				<div
 					className="imgOverlay"
@@ -617,6 +630,11 @@ function Submitter(props) {
 						else if (cropMode && mobileCrop) move_grid(e);
 					}}
 				>
+					{waiting && (
+						<h1 className="load">
+							<i class="fas fa-cog"></i> Processing request...
+						</h1>
+					)}
 					<div className="imgMenu">
 						<button
 							onClick={remove_image}
