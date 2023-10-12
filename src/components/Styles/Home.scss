@@ -651,6 +651,19 @@ p {
 	flex: 1 0;
 	background-color: #fff;
 	padding: 10px;
+	.musicLoad {
+		margin: 0;
+		width: 100%;
+		text-align: left;
+		margin-left: 2rem;
+		i {
+			animation: spinny 1s linear infinite;
+			color: $niceOrange;
+		}
+	}
+	.musicResults i {
+		color: #1db954;
+	}
 	.top {
 		display: flex;
 		flex-flow: row;
@@ -1096,7 +1109,7 @@ p {
 		}
 	}
 	&[waiting="true"] .imgOverlay {
-		background: rgba(0,0,0,0.7) !important;
+		background: rgba(0, 0, 0, 0.7) !important;
 		.imgMenu {
 			display: none;
 		}

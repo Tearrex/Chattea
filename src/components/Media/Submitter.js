@@ -483,13 +483,19 @@ function Submitter(props) {
 						/>
 					</div>
 				</div>
-				{pickingTrack && !spotifyToken && <p>Waiting for server...</p>}
+				{pickingTrack && !spotifyToken && (
+					<p className="musicLoad">
+						<i className="fas fa-cog"></i> Waiting for server...
+					</p>
+				)}
 				{pickingTrack && trackResults && (
 					<>
-						<p>
-							<i class="fas fa-music"></i> We found <b>{trackResults.length}</b>{" "}
-							songs you can play.
-						</p>
+						{spotifyToken && (
+							<p className="musicResults">
+								<i class="fas fa-music"></i> We found{" "}
+								<b>{trackResults.length}</b> songs you can play.
+							</p>
+						)}
 						<div className="trackList">
 							{trackResults.map((track, i) => {
 								return (
@@ -595,6 +601,7 @@ function Submitter(props) {
 					<button
 						active={pickedTrack || pickingTrack ? "true" : "false"}
 						onClick={toggle_music_view}
+						className="spotify"
 					>
 						<i class="fab fa-spotify"></i> Share Song
 					</button>
@@ -655,15 +662,19 @@ function Submitter(props) {
 						)}
 						{!cropMode && (
 							<>
-								<button
-									onClick={() => document.querySelector("#caption").focus()}
-									className="caption"
-								>
-									<i class="fas fa-font"></i>
-								</button>
-								<button className="music" onClick={toggle_music_view}>
-									<i class="fas fa-music"></i>
-								</button>
+								{caption === "" && (
+									<button
+										onClick={() => document.querySelector("#caption").focus()}
+										className="caption"
+									>
+										<i class="fas fa-font"></i>
+									</button>
+								)}
+								{!pickedTrack && (
+									<button className="music" onClick={toggle_music_view}>
+										<i class="fas fa-music"></i>
+									</button>
+								)}
 							</>
 						)}
 					</div>
