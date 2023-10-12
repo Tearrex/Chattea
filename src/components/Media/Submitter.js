@@ -15,6 +15,7 @@ function Submitter(props) {
 	const [cropMode, setCropMode] = useState(false);
 	const [cropped, setCropped] = useState(false);
 	const [cropSet, setCropSet] = useState(false);
+	const [mobileCrop, setMobileCrop] = useState(false); // mouseover doesn't work on mobile
 
 	const [spotifyToken, setSpotifyToken] = useState("");
 	const [pickingTrack, setPickingTrack] = useState(false);
@@ -429,6 +430,16 @@ function Submitter(props) {
 		setCropMode(!cropMode);
 		setCropSet(false);
 	}
+	useEffect(() => {
+		// unreliable mobile device check, user-agent is manipulatable by client
+		if (
+			/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+				navigator.userAgent
+			)
+		) {
+			setMobileCrop(true);
+		}
+	}, []);
 	return (
 		<div className="subPop" id="subPop">
 			<form className="submission" onSubmit={postMessage}>
@@ -559,7 +570,8 @@ function Submitter(props) {
 						style={{ borderRadius: "50%" }}
 						active={localFile !== null ? "true" : "false"}
 					>
-						<i class="fas fa-image"></i> {!localFile ? "Attach" : "Change"} Image
+						<i class="fas fa-image"></i> {!localFile ? "Attach" : "Change"}{" "}
+						Image
 						<input
 							ref={imageField}
 							type="file"
@@ -597,9 +609,12 @@ function Submitter(props) {
 				<div
 					className="imgOverlay"
 					style={{ opacity: "1" }}
-					onMouseMove={move_grid}
-					onClick={() => {
-						if (cropMode) setCropSet(true);
+					onMouseMove={(e) => {
+						if (!mobileCrop) move_grid(e);
+					}}
+					onClick={(e) => {
+						if (cropMode && !mobileCrop) setCropSet(true);
+						else if (cropMode && mobileCrop) move_grid(e);
 					}}
 				>
 					<div className="imgMenu">
@@ -614,29 +629,35 @@ function Submitter(props) {
 							<button
 								className="crop"
 								id="cropTool"
-								cropping={cropSet ? "true" : "false"}
+								cropping={cropMode ? "true" : "false"}
 								onClick={do_crop}
 							>
 								<i class="fas fa-crop-alt"></i>
 							</button>
 						)}
-						<button
-							onClick={() => document.querySelector("#caption").focus()}
-							className="caption"
-						>
-							<i class="fas fa-font"></i>
-						</button>
-						<button className="music" onClick={toggle_music_view}>
-							<i class="fas fa-music"></i>
-						</button>
+						{!cropMode && (
+							<>
+								<button
+									onClick={() => document.querySelector("#caption").focus()}
+									className="caption"
+								>
+									<i class="fas fa-font"></i>
+								</button>
+								<button className="music" onClick={toggle_music_view}>
+									<i class="fas fa-music"></i>
+								</button>
+							</>
+						)}
 					</div>
-					<input
-						type="text"
-						value={caption}
-						onChange={(e) => change_caption(e)}
-						id="caption"
-						placeholder="..."
-					/>
+					{!cropMode && (
+						<input
+							type="text"
+							value={caption}
+							onChange={(e) => change_caption(e)}
+							id="caption"
+							placeholder="..."
+						/>
+					)}
 				</div>
 				<div className="imageScape" id="imageScape">
 					{cropMode && <div className="gridBox" id="gridBox" />}

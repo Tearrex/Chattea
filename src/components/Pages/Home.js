@@ -140,10 +140,10 @@ function Home() {
 							Object.values(suggestions).map((x, i) => (
 								<Link to={"/profile/" + x.id} className="bCard" key={i}>
 									<img src={_users[x.id].pfp} alt="user pic" />
-									<p>{_users[x.id].username}</p>
+									{/* <p>{_users[x.id].username}</p> */}
 									<small>
 										<i class="fas fa-user-friends"></i> <b>+{x.count}</b>{" "}
-										connections
+										relatives
 									</small>
 								</Link>
 							))}

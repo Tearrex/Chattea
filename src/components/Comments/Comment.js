@@ -88,7 +88,10 @@ function Comment(props) {
 				style={{ flexShrink: 0 }}
 			>
 				<img src={pfp} alt="pfp" />
-				<span className="cUser" onClick={visit_user}>
+				<span
+					className="cUser"
+					onClick={visit_user}
+				>
 					{username}
 				</span>
 			</Link>
