@@ -4,7 +4,12 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { signup, useAuth, login } from "./firebase";
 import { Link, useNavigate } from "react-router-dom";
 import { MembersContext, UserContext, showLogin } from "./Contexts";
-import { updateEmail, sendEmailVerification, getAuth } from "@firebase/auth";
+import {
+	updateEmail,
+	sendEmailVerification,
+	getAuth,
+	sendPasswordResetEmail,
+} from "@firebase/auth";
 import { is_email } from "../Pages/SplashPage";
 function Signup(props) {
 	const navigate = useNavigate();
@@ -21,6 +26,8 @@ function Signup(props) {
 	const [canLogin, setCanLogin] = useState(false);
 	function closePopup() {
 		if (!focus && showLogin) return;
+		setResetPassword(false);
+		setMessage("Welcome back!");
 		overlayBG.current.style.opacity = "0";
 		if (_user === undefined) {
 			saucerRef.current.style.transform = "translate(-50%, -50%) scale(0)";
@@ -38,6 +45,10 @@ function Signup(props) {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
+	const auth = getAuth();
+	const [resetPassword, setResetPassword] = useState(false);
+	const [acknowledged, setAcknowledged] = useState(false);
+
 	// Clear any error messages when the user adjusts their input
 	useEffect(() => {
 		setError(null);
@@ -45,12 +56,12 @@ function Signup(props) {
 		if (
 			is_email(email) &&
 			email !== prevEmail &&
-			String(password).length >= 6 &&
-			password !== prevPassword
+			(resetPassword ||
+				(String(password).length >= 6 && password !== prevPassword))
 		)
 			setCanLogin(true);
 		else setCanLogin(false);
-	}, [email, password]);
+	}, [email, password, resetPassword]);
 
 	// reference the email of their previous attempt
 	// to check if they made any corrections,
@@ -138,10 +149,18 @@ function Signup(props) {
 			setEmail("");
 			return emailRef.current.focus();
 		}
-		if (password == prevPassword) {
+		if (password == prevPassword && !resetPassword) {
 			// prompt the user to change their password input
 			setPassword("");
 			return passwordRef.current.focus();
+		} else if (resetPassword) {
+			try {
+				await sendPasswordResetEmail(auth, email);
+			} catch (e) {
+				return window.alert("Action failed: " + e.message);
+			}
+			setLinkSent(true);
+			return;
 		}
 		var failed = false;
 		try /*to authenticate the user with their given credentials*/ {
@@ -338,6 +357,18 @@ function Signup(props) {
 		setLogin(false);
 		setTimeout(() => document.getElementById("nameInput").focus(), 400);
 	}
+	useEffect(() => {
+		if (linkSent && acknowledged) {
+			setLinkSent(false);
+			setAcknowledged(false);
+			setResetPassword(false);
+		}
+	}, [linkSent, acknowledged]);
+	function reset_pass() {
+		setMessage("Account Recovery");
+		setResetPassword(true);
+		document.querySelector("#loginEmail").focus();
+	}
 	return (
 		<div className="teaDescendant">
 			<div
@@ -383,29 +414,42 @@ function Signup(props) {
 							onSubmit={handleLogin}
 							style={{ transform: "translateX(0)", padding: "10px" }}
 						>
+							{linkSent && (
+								<div className="confirmation">
+									<h2>
+										<i class="fas fa-envelope"></i> Link Sent
+									</h2>
+									<p>Please check your spam folder for</p>
+									<small>noreply@reactback-1cf7d.firebaseapp.com</small>
+								</div>
+							)}
 							<input
 								ref={emailRef}
 								type="email"
 								placeholder="*Email"
+								id="loginEmail"
 								value={email}
 								onChange={(e) => setEmail(String(e.target.value).toLowerCase())}
 								required
+								disabled={linkSent}
 							></input>
-							<input
-								ref={passwordRef}
-								type="password"
-								placeholder="*Password"
-								value={password}
-								onChange={(e) => setPassword(e.target.value)}
-								required
-							></input>
+							{!resetPassword && (
+								<input
+									ref={passwordRef}
+									type="password"
+									placeholder="*Password"
+									value={password}
+									onChange={(e) => setPassword(e.target.value)}
+									required
+								></input>
+							)}
 							{error && <label style={{ opacity: 0.8 }}>{error}</label>}
 							{!transitioning && canLogin && (
 								<input
 									type="submit"
 									// disabled={loading || currentUser}
 									className="loginBtn loginOrange"
-									value="sign in"
+									value={!resetPassword ? "sign in" : "send password link"}
 								></input>
 							)}
 						</form>
@@ -422,12 +466,27 @@ function Signup(props) {
 					</div>
 					<div className="psa">
 						{!_user ? (
-							<>
-								<i className="fas fa-walking"></i> New here?{" "}
-								<Link to="/" onClick={signup_redirect}>
-									Gossip awaits you!
-								</Link>
-							</>
+							!resetPassword ? (
+								<>
+									<i className="fas fa-walking"></i> New here?{" "}
+									<Link to="/" onClick={signup_redirect}>
+										Gossip awaits you!
+									</Link>
+									<br />
+									<i class="fas fa-key"></i>{" "}
+									<a href="#" onClick={reset_pass}>
+										Reset password
+									</a>
+								</>
+							) : !linkSent ? (
+								<a href="#" onClick={() => setResetPassword(false)}>
+									Cancel
+								</a>
+							) : (
+								<a href="#" onClick={() => setAcknowledged(true)}>
+									Continue
+								</a>
+							)
 						) : (
 							<p>
 								<span>✨</span> We made some changes

@@ -545,6 +545,22 @@ p {
 	gap: 10px;
 	transition: opacity 0.3s ease-in;
 	position: relative;
+	// after password link is sent
+	.confirmation h2 {
+		padding-top: 1rem;
+		padding-bottom: 0;
+	}
+	.confirmation p {
+		color: $textMain;
+		margin-bottom: 0.5rem;
+		margin-top: 1.5rem;
+	}
+	.confirmation small {
+		color: $niceOrange;
+	}
+	input:disabled {
+		opacity: 0.3;
+	}
 }
 
 .signupBtn {
@@ -630,7 +646,7 @@ p {
 		}
 	}
 	form {
-		background-color: #2b3137;
+		background-color: $foreAlt;
 	}
 }
 
