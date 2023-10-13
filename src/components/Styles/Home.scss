@@ -1692,7 +1692,7 @@ p {
 	display: flex;
 	flex-flow: column;
 	position: relative;
-	background-color: #212121;
+	background-color: $foreMain;
 	padding: 10px;
 	gap: 10px;
 	justify-content: stretch;
@@ -1716,7 +1716,7 @@ p {
 			background: none;
 		}
 		button:hover {
-			background-color: rgba(255, 255, 255, 0.3);
+			background-color: $foreAlt;
 		}
 	}
 }
@@ -1736,6 +1736,8 @@ p {
 	border: none;
 	padding: 10px;
 	font-size: 1.2rem;
+	background: $foreAlt;
+	color: #fff;
 }
 .commenter input[type="text"] {
 	flex: 100%;
