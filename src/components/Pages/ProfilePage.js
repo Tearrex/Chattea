@@ -4,6 +4,11 @@ import {
 	updateDoc,
 	doc,
 	getDoc,
+	getDocs,
+	collection,
+	query,
+	where,
+	limit,
 	setDoc,
 	serverTimestamp,
 } from "@firebase/firestore";
@@ -50,8 +55,8 @@ function ProfilePage(props) {
 	const bannerChanger = useRef();
 	const pfpChanger = useRef();
 	useEffect(() => {
-		profile_cleanup();
-	}, [_user, _users, user_id]);
+		if (_user || localStorage.getItem("guest")) profile_cleanup();
+	}, [_user, _users, user_id, profile]);
 
 	const [relatedUsers, setRelatedUsers] = useState([]); // list of users relevant
 	// used to rerender the main profile card
@@ -61,26 +66,35 @@ function ProfilePage(props) {
         If the user is viewing a profile other than their own,
         don't allow them to edit the input fields.
         */
-		var isUserSelf = _user && user_id === _user.user_id;
+		var isUserSelf =
+			_user &&
+			(user_id === _user.user_id ||
+				String(user_id).substring(1) == _user.username);
 		var inputs = profileCard.current.getElementsByTagName("input");
 		for (let i = 0; i < inputs.length; i++) {
 			if (inputs[i].className === "addBuddy") continue;
 			inputs[i].disabled = !isUserSelf;
 		}
+		// if it's the user's own profile, set their information
 		if (isUserSelf) {
+			console.log("user self");
+			setProfile(_user);
 			bannerChanger.current.style.opacity = null;
 			pfpChanger.current.style.display = "block";
-		} else {
-			bannerChanger.current.style.opacity = "0";
-			pfpChanger.current.style.display = "none";
-		}
-		// if it's the user's own profile, set their information
-		if (_user !== undefined && user_id === _user.user_id) {
-			setProfile(_user);
 		}
 		// otherwise, grab info from the _users state or fetch from firestore
 		else {
-			if (!_users[user_id]) {
+			bannerChanger.current.style.opacity = "0";
+			pfpChanger.current.style.display = "none";
+			let user;
+			if (String(user_id).startsWith("@"))
+				user =
+					Object.values(_users).find(
+						(u) => u.username === String(user_id).substring(1)
+					) ||
+					(_user && _user.username === String(user_id).substring(1) && _user);
+			else user = _users[user_id];
+			if (!user) {
 				var localUsers = localStorage.getItem("users");
 				if (localUsers) {
 					localUsers = JSON.parse(localUsers);
@@ -88,15 +102,31 @@ function ProfilePage(props) {
 						return console.log("waiting for cache to load...");
 					}
 				}
-				console.log(`${user_id} != ${profile ? profile.user_id : "null"}`);
-				const userRef = doc(_dbRef, "users", user_id);
-				const _doc = await getDoc(userRef);
-				if (_doc.exists()) {
-					const _profile = { user_id: _doc.id, ..._doc.data() };
-					_setUsers({ ..._users, [_doc.id]: _profile });
+				if (!String(user_id).startsWith("@")) {
+					const userRef = doc(_dbRef, "users", user_id);
+					const _doc = await getDoc(userRef);
+					if (_doc.exists()) {
+						const _profile = { user_id: _doc.id, ..._doc.data() };
+						_setUsers({ ..._users, [_doc.id]: _profile });
+					}
+				} else {
+					const usersRef = collection(_dbRef, "users");
+					const userQuery = query(
+						usersRef,
+						where("username", "==", String(user_id).substring(1)),
+						limit(1)
+					);
+					const snap = await getDocs(userQuery);
+					if (snap.docs.length > 0) {
+						let _doc = snap.docs[0];
+						const _profile = { user_id: _doc.id, ..._doc.data() };
+						_setUsers({ ..._users, [_doc.id]: _profile });
+					} else {
+						console.log("no match for ", user_id);
+					}
 				}
 			} else {
-				setProfile(_users[user_id]);
+				setProfile(user);
 			}
 			var suggs = [];
 			if (_user) {
@@ -146,7 +176,7 @@ function ProfilePage(props) {
 		} else {
 			usernameField.current.style.border = null;
 			// show save options if the name field has been altered
-			if (inputName !== _user.username && user_id === _user.user_id)
+			if (inputName !== _user.username && profile.user_id === _user.user_id)
 				setSave(true);
 			else {
 				if (profile && userPfp === profile.pfp) setSave(false);
@@ -294,8 +324,8 @@ function ProfilePage(props) {
 		document.body.style.overflow = focusPost !== null ? "hidden" : null;
 	}, [focusPost]);
 	function ban_user() {
-		if (!window.confirm(`Ban ${_users[user_id].username}?`)) return;
-		const _doc = doc(_dbRef, "banned/" + user_id);
+		if (!window.confirm(`Ban ${profile.username}?`)) return;
+		const _doc = doc(_dbRef, "banned/" + profile.user_id);
 		try {
 			setDoc(_doc, {
 				banBy: _user.user_id,
@@ -378,7 +408,9 @@ function ProfilePage(props) {
 									ref={usernameField}
 									type="text"
 									value={
-										_user && _user.user_id === user_id
+										_user &&
+										(_user.user_id === user_id ||
+											_user.username === String(user_id).substring(1))
 											? inputName
 											: "@" + inputName
 									}
@@ -417,27 +449,33 @@ function ProfilePage(props) {
 							{!uploading ? "Cancel" : _msg}
 						</button>
 					</div>
-					<div className="userInfo">
-						<p style={{ margin: 0 }}>
-							Joined <span>{profile && profile.joined}</span>
-						</p>
-						<div className="buddyInfo">
-							{_user && _user.role === "admin" && user_id !== _user.user_id && (
-								<button className="banBtn" onClick={ban_user}>
-									<i className="fas fa-bolt"></i> BAN
-								</button>
-							)}
-							{privateView && (
-								<span>
-									<i className="fas fa-eye"></i>
-								</span>
-							)}
-							<UserList users={profile ? profile.buddies : []} buddies />
-							{_user && _user.user_id !== user_id && _users[user_id] ? (
-								<BuddyButton buddy={user_id} />
-							) : null}
+					{profile && (
+						<div className="userInfo">
+							<p style={{ margin: 0 }}>
+								Joined <span>{profile && profile.joined}</span>
+							</p>
+							<div className="buddyInfo">
+								{_user &&
+									_user.role === "admin" &&
+									profile.user_id !== _user.user_id && (
+										<button className="banBtn" onClick={ban_user}>
+											<i className="fas fa-bolt"></i> BAN
+										</button>
+									)}
+								{privateView && (
+									<span>
+										<i className="fas fa-eye"></i>
+									</span>
+								)}
+								<UserList users={profile ? profile.buddies : []} buddies />
+								{_user &&
+								_user.user_id !== profile.user_id &&
+								_users[profile.user_id] ? (
+									<BuddyButton buddy={profile.user_id} />
+								) : null}
+							</div>
 						</div>
-					</div>
+					)}
 					<div
 						className="bRelation"
 						style={{
@@ -454,22 +492,24 @@ function ProfilePage(props) {
 							</Link>
 						))}
 					</div>
-					<div className="privacyModes">
-						<button
-							active={!privateView && "true"}
-							onClick={() => setPrivateView(false)}
-						>
-							<i className="fas fa-globe-americas"></i> Public
-						</button>
-						<button
-							active={privateView && "true"}
-							onClick={() => setPrivateView(true)}
-						>
-							<i className="fas fa-lock"></i> Private
-						</button>
-					</div>
+					{profile && (
+						<div className="privacyModes">
+							<button
+								active={!privateView && "true"}
+								onClick={() => setPrivateView(false)}
+							>
+								<i className="fas fa-globe-americas"></i> Public
+							</button>
+							<button
+								active={privateView && "true"}
+								onClick={() => setPrivateView(true)}
+							>
+								<i className="fas fa-lock"></i> Private
+							</button>
+						</div>
+					)}
 				</div>
-				{_user && _user.user_id === user_id && (
+				{profile && _user.user_id === profile.user_id && (
 					<>
 						<p className="privateAlert profile border">
 							{privateView ? (
@@ -489,18 +529,19 @@ function ProfilePage(props) {
 					</>
 				)}
 				{!privateView ? (
-					((_user && _user.user_id === user_id) || _users[user_id]) && (
+					profile && (
 						<MediaFeed
-							focus={user_id}
+							focus={profile.user_id}
 							private={false}
 							setFocusPost={setFocusPost}
 							postInjection={latestPost}
 						/>
 					)
-				) : !_user ||
-				  (_user.user_id != user_id &&
-						_users[user_id] &&
-						!_users[user_id].buddies.includes(_user.user_id)) ? (
+				) : !profile ||
+				  !_user ||
+				  (_user.user_id != profile.user_id &&
+						_users[profile.user_id] &&
+						!_users[profile.user_id].buddies.includes(_user.user_id)) ? (
 					<div className="privateAlert">
 						<h2>
 							<i class="fas fa-eye-slash"></i> No Access
@@ -511,11 +552,24 @@ function ProfilePage(props) {
 					</div>
 				) : (
 					<MediaFeed
-						focus={user_id}
+						focus={profile.user_id}
 						private={true}
 						setFocusPost={setFocusPost}
 						postInjection={latestPost}
 					/>
+				)}
+				{!profile && (
+					<div className="infinite-scroll-component">
+						<div className="privateAlert" style={{ gridColumn: "1/-1" }}>
+							<h2>
+								<i className="fas fa-search"></i> User not found
+							</h2>
+							<p>
+								We couldn't find anyone with the handle{" "}
+								{String(user_id).startsWith("@") ? user_id : "you provided"}.
+							</p>
+						</div>
+					</div>
 				)}
 			</div>
 		</div>

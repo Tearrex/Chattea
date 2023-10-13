@@ -152,7 +152,11 @@ function MediaFeed(props) {
 			startFresh = true;
 		}
 		var _query;
-		if (oldDoc === null || oldDoc === undefined) {
+		if (
+			oldDoc === null ||
+			oldDoc === undefined ||
+			oldDoc.data()["private"] != props.private
+		) {
 			console.log("olddoc null");
 			if (props.focus === undefined)
 				_query = query(postsRef, orderBy("date", "desc"), limit(_limit));
@@ -325,7 +329,7 @@ function MediaFeed(props) {
 								☕ There is no more tea down here...
 							</h2>
 						) : (
-							<div className="privateAlert" style={{gridColumn: "1/-1"}}>
+							<div className="privateAlert" style={{ gridColumn: "1/-1" }}>
 								<h2>
 									<i className="fas fa-exclamation-circle"></i> That didn't work
 								</h2>
