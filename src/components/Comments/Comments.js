@@ -23,7 +23,7 @@ async function post_comment(text, postID, user_id, author_id, mentions = null) {
 				content: text,
 				date: serverTimestamp(),
 				user_id: user_id,
-				mentions
+				mentions,
 			}
 		);
 		console.log("Added comment " + docRef.id);
@@ -62,7 +62,7 @@ function Comments(props) {
 			var _cache = [];
 			_comments.forEach((c) => {
 				if (
-					c.user_id !== _user.user_id &&
+					(!_user || c.user_id !== _user.user_id) &&
 					_users[c.user_id] === undefined &&
 					!_cache.includes(c.user_id)
 				) {

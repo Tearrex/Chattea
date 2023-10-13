@@ -15,7 +15,7 @@ function Comment(props) {
 	const [username, setUsername] = useState("LOADING");
 	useEffect(() => {
 		let suffix = "";
-		if (user_id === _user["user_id"]) {
+		if (_user && user_id === _user["user_id"]) {
 			setPfp(_user.pfp);
 			if (_user.role === "admin") suffix = " ";
 			setUsername(_user.username + suffix);
@@ -88,10 +88,7 @@ function Comment(props) {
 				style={{ flexShrink: 0 }}
 			>
 				<img src={pfp} alt="pfp" />
-				<span
-					className="cUser"
-					onClick={visit_user}
-				>
+				<span className="cUser" onClick={visit_user}>
 					{username}
 				</span>
 			</Link>
@@ -100,7 +97,7 @@ function Comment(props) {
 					return c;
 				})}
 			</span>
-			{_user.user_id !== user_id && _users[user_id] && (
+			{(!_user || (_user && _user.user_id !== user_id && _users[user_id])) && (
 				<button className="reply" onClick={() => props.mentionUser(user_id)}>
 					<i class="fas fa-reply"></i>
 				</button>

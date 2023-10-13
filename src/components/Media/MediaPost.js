@@ -313,6 +313,10 @@ function MediaPost(props) {
 		}
 	}
 	function mention_user(user, force = false) {
+		if (!_user) {
+			localStorage.setItem("redirect", `/post/${postID}`);
+			return setLogin(true);
+		}
 		let index = !force ? comment.lastIndexOf("@" + mentionQuery) : -1;
 		if (index === -1) {
 			if (!force) return;
@@ -348,7 +352,7 @@ function MediaPost(props) {
 		const button = document.querySelector(`.smileButton[post='${postID}']`);
 		if (button) button.click();
 	}
-	const emojis = ["😂", "❤️", "🔥", "😭", "😵‍💫", "😮", "😱", "😵", "👍", "☕"];
+	const emojis = ["👍", "😂", "❤️", "🔥", "😭", "😮", "☕"];
 	return (
 		<div
 			className="mediaCard"
@@ -479,70 +483,78 @@ function MediaPost(props) {
 						<button onClick={(e) => toggle_options(false)}>Cancel</button>
 					</div>
 					<div className="commentNest">
-						<form
-							ref={commentBox}
-							className="commenter"
-							onSubmit={handle_comment}
-						>
-							{mentioning && (
-								<>
-									<div className="mentionList">
-										{_user &&
-											Object.values(_users)
-												.filter((u) => _user.buddies.indexOf(u.user_id) !== -1)
-												.filter((u) =>
-													String(u.username)
-														.toLowerCase()
-														.startsWith(mentionQuery.toLowerCase())
-												)
-												.map((u) => {
-													return (
-														<div
-															className="tooltip mention"
-															onClick={() => mention_user(u)}
-														>
-															<img src={u.pfp} />
-															<span className="tooltext">{u.username}</span>
-														</div>
-													);
-												})}
-									</div>
-								</>
-							)}
-							<input
-								ref={textInput}
-								type="text"
-								value={comment}
-								disabled={!_user}
-								onChange={change_comment}
-								onKeyDown={(e) => watch_comment(e)}
-								caret={mentioning ? "true" : null}
-								placeholder="Mention buddies with @"
-							/>
-							<div className="emojis">
-								{emojis.map((emoji, i) => {
-									return <button onClick={(e) => add_emoji(e, emoji)}>{emoji}</button>;
-								})}
-							</div>
-						</form>
+						{_user && (
+							<form
+								ref={commentBox}
+								className="commenter"
+								onSubmit={handle_comment}
+							>
+								{mentioning && (
+									<>
+										<div className="mentionList">
+											{_user &&
+												Object.values(_users)
+													.filter(
+														(u) => _user.buddies.indexOf(u.user_id) !== -1
+													)
+													.filter((u) =>
+														String(u.username)
+															.toLowerCase()
+															.startsWith(mentionQuery.toLowerCase())
+													)
+													.map((u) => {
+														return (
+															<div
+																className="tooltip mention"
+																onClick={() => mention_user(u)}
+															>
+																<img src={u.pfp} />
+																<span className="tooltext">{u.username}</span>
+															</div>
+														);
+													})}
+										</div>
+									</>
+								)}
+								<input
+									ref={textInput}
+									type="text"
+									value={comment}
+									disabled={!_user}
+									onChange={change_comment}
+									onKeyDown={(e) => watch_comment(e)}
+									caret={mentioning ? "true" : null}
+									placeholder="Mention buddies with @"
+								/>
+								<input type="submit" style={{ display: "none" }} />
+								<div className="emojis">
+									{emojis.map((emoji, i) => {
+										return (
+											<button onClick={(e) => add_emoji(e, emoji)}>
+												{emoji}
+											</button>
+										);
+									})}
+								</div>
+							</form>
+						)}
 						{smilers && Object.entries(smilers).length > 0 && (
 							<UserList users={smilers} onClose={() => setSmilers(null)} open />
 						)}
-						{_user && (
-							<Comments
-								postID={postID}
-								authorID={postID}
-								updateComments={setCommentCount}
-								mentionUser={(user_id) => mention_user(user_id, true)}
-								toCache={(e) => send_commenters_to_cache(e)}
-							/>
-						)}
+						<Comments
+							postID={postID}
+							authorID={postID}
+							updateComments={setCommentCount}
+							mentionUser={(user_id) => mention_user(user_id, true)}
+							toCache={(e) => send_commenters_to_cache(e)}
+						/>
 					</div>
 					<div className="timestamp">
-						{_user && (_user.user_id === user_id || _users[user_id]) && (
-							<div className="pActions" onClick={props.setFocusPost}>
-								<img src="/ellipsis.svg" width={20} alt="menu" />
-							</div>
+						{(!_user ||
+							(_user && (_user.user_id === user_id || _users[user_id]))) && (
+							<button className="pActions" onClick={props.setFocusPost}>
+								<i class="fas fa-ellipsis-h"></i>
+							</button>
 						)}
 						<p>Posted {postDate}</p>
 					</div>

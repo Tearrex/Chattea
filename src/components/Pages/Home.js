@@ -109,6 +109,7 @@ function Home() {
 	}
 	useEffect(() => {
 		document.getElementById("welcomer").style.display = null;
+		localStorage.removeItem("tc");
 	}, []);
 	return (
 		<div className="homeWrapper">

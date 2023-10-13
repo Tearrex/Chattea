@@ -116,9 +116,11 @@ function MediaActions(props) {
 										Delete Post
 									</button>
 								)}
-							<button className="high" onClick={() => setReport(true)}>
-								<i class="fas fa-flag"></i> Report
-							</button>
+							{_user && (
+								<button className="high" onClick={() => setReport(true)}>
+									Report
+								</button>
+							)}
 							{_user && _user.role === "admin" && (
 								<button className="feature">
 									<i className="fas fa-star" /> Feature Post
@@ -129,7 +131,7 @@ function MediaActions(props) {
 									<i class="fas fa-thumbtack"></i> Pin post
 								</button>
 							)}
-							{focusPost[1].user_id !== _user.user_id && (
+							{_user && focusPost[1].user_id !== _user.user_id && (
 								<button onClick={buddify}>
 									{!_user.buddies.includes(focusPost[1].user_id) ? (
 										<>

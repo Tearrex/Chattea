@@ -6,7 +6,7 @@ import {
 import MediaPost from "./MediaPost";
 import { _dbRef } from "../Main/firebase";
 import React, { useContext, useEffect, useState } from "react";
-import { MembersContext, UserContext } from "../Main/Contexts";
+import { MembersContext, UserContext, showLogin } from "../Main/Contexts";
 import {
 	getDoc,
 	getDocs,
@@ -18,10 +18,12 @@ import {
 	endBefore,
 } from "@firebase/firestore";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { useNavigate } from "react-router-dom";
 function MediaFeed(props) {
 	const { _user, _setUser } = useContext(UserContext);
 	const { _users, _setUsers } = useContext(MembersContext);
-
+	const { _showLogin, setLogin } = useContext(showLogin);
+	const navigate = useNavigate();
 	/*
 	Iterates over every requested user, checks if their info is
 	already cached and fetches it from the database if not.
@@ -33,7 +35,11 @@ function MediaFeed(props) {
 		const checkCache = async () => {
 			var _toCache = {};
 			for (let i = 0; i < cache.length; i++) {
-				if (!_users[cache[i]] && !_toCache[cache[i]] && (localStorage.getItem("guest") || _user.user_id !== cache[i])) {
+				if (
+					!_users[cache[i]] &&
+					!_toCache[cache[i]] &&
+					(localStorage.getItem("guest") || _user.user_id !== cache[i])
+				) {
 					if (_user && cache[i] === _user.user_id) continue;
 					const userRef = doc(_dbRef, "users", cache[i]);
 					const _doc = await getDoc(userRef);
@@ -81,7 +87,29 @@ function MediaFeed(props) {
 
 	const [posts, _setPosts] = useState({}); // mapped to MediaPost components
 
+	function splash_page() {
+		navigate("/");
+		setTimeout(() => {
+			let focusElement = document.querySelector("#nameInput");
+			if (focusElement) focusElement.focus();
+		});
+	}
 	function next_batch() {
+		let history = localStorage.getItem("tc");
+		if (history) {
+			try {
+				history = parseInt(history);
+			} catch (e) {
+				history = null;
+			}
+			if (history >= 2) {
+				return hasMore(false);
+			} else {
+				localStorage.setItem("tc", ++history);
+			}
+		} else {
+			if (localStorage.getItem("guest")) localStorage.setItem("tc", 1);
+		}
 		var startFresh = false; // replace old posts?
 		if (
 			props.focus !== undefined &&
@@ -127,7 +155,7 @@ function MediaFeed(props) {
 		}
 		var _posts;
 		if (startFresh) _posts = {};
-		else _posts = posts;
+		else _posts = { ...posts };
 		var _toCache = [];
 		getDocs(_query).then((snap) => {
 			var _old = null;
@@ -220,7 +248,7 @@ function MediaFeed(props) {
 			var _cache = [];
 			for (let i = 0; i < commenters.length; i++) {
 				if (
-					commenters[i] !== _user.user_id &&
+					(!_user || commenters[i] !== _user.user_id) &&
 					!cache.includes(commenters[i]) &&
 					_users[commenters[i]] === undefined
 				) {
@@ -251,11 +279,35 @@ function MediaFeed(props) {
 			scrollThreshold={"100%"}
 			loader={<div className="loader" />}
 			endMessage={
-				<h2
-					style={{ textAlign: "center", color: "#FFF", fontWeight: "normal", gridColumn: "1/-1" }}
-				>
-					☕ There is no more tea down here...
-				</h2>
+				<>
+					{_user ? (
+						<h2
+							style={{
+								textAlign: "center",
+								color: "#FFF",
+								fontWeight: "normal",
+								gridColumn: "1/-1",
+							}}
+						>
+							☕ There is no more tea down here...
+						</h2>
+					) : (
+						<div className="brochure">
+							<h4>
+								<i class="fas fa-smile-beam"></i>
+								<br />
+								<br />
+								Chattea is better with you.
+							</h4>
+							<div className="buttons">
+								<button onClick={splash_page}>Sign Up</button>
+								or
+								<button onClick={() => setLogin(true)}>Log In</button>
+							</div>
+							<p>to keep browsing</p>
+						</div>
+					)}
+				</>
 			}
 		>
 			{Object.entries(posts).length === 0

@@ -307,6 +307,7 @@ function ProfilePage(props) {
 	}
 	useEffect(() => {
 		document.getElementById("welcomer").style.display = null;
+		localStorage.removeItem("tc");
 	}, []);
 	return (
 		<div className="homeWrapper">
