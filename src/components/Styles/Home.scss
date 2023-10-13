@@ -648,7 +648,7 @@ p {
 	gap: 10px;
 	align-items: center;
 	flex: 1 0;
-	background-color: #fff;
+	background-color: $foreAlt;
 	padding: 10px;
 	.musicLoad {
 		margin: 0;
@@ -784,12 +784,12 @@ p {
 		}
 		label[active="true"],
 		button[active="true"] {
-			color: #000 !important;
+			color: #fff !important;
 		}
 		& > * {
 			color: $secondFore;
 			&:hover {
-				color: #000;
+				color: $textMain;
 			}
 		}
 	}
@@ -806,12 +806,17 @@ p {
 		font-size: 1.1rem;
 		display: inline-block;
 		padding: 0 15px;
+		background: $foreMain;
+		color: #fff;
+		border-radius: 20px;
+		::placeholder {
+			color: $textMain;
+		}
 		/*width: 60%;
     height: 100%;*/
 	}
 	input[type="submit"] {
 		display: none;
-		border-radius: 0 20px 20px 0;
 	}
 }
 .submission.guestBanner {
@@ -880,16 +885,17 @@ p {
 	&::before {
 		content: "\f002";
 		position: absolute;
+		color: #fff;
 		top: 50%;
 		transform: translateY(-50%);
-		left: 0.5rem;
+		left: 1rem;
 		font-size: 1.5rem;
 	}
 	&[searching="false"]::before {
 		content: "\f27a" !important;
 	}
 	input {
-		padding-left: 2.5rem !important;
+		padding-left: 3rem !important;
 	}
 }
 

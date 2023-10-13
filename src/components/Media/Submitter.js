@@ -479,7 +479,6 @@ function Submitter(props) {
 							ref={_textInput}
 							value={_text}
 							onChange={(e) => change_text(e)}
-							style={{ borderRadius: "20px 0 0 20px" }}
 							type="text"
 							id="subTxt"
 							placeholder={
