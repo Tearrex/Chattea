@@ -377,7 +377,11 @@ function ProfilePage(props) {
 								<input
 									ref={usernameField}
 									type="text"
-									value={inputName}
+									value={
+										_user && _user.user_id === user_id
+											? inputName
+											: "@" + inputName
+									}
 									onChange={(e) => change_name(e)}
 								/>
 								<p className="charCount">
@@ -466,7 +470,23 @@ function ProfilePage(props) {
 					</div>
 				</div>
 				{_user && _user.user_id === user_id && (
-					<Submitter onPostSubmit={setLatestPost} privateMode={privateView} />
+					<>
+						<p className="privateAlert profile border">
+							{privateView ? (
+								<>
+									<i className="fas fa-eye"></i> Only your buddies can see your
+									private page. <Link to="/#faq">Learn more.</Link>
+								</>
+							) : (
+								<>
+									<i className="fas fa-eye"></i> Anyone can see your public
+									page. <Link to="/#faq">Learn more.</Link>
+								</>
+							)}
+						</p>
+
+						<Submitter onPostSubmit={setLatestPost} privateMode={privateView} />
+					</>
 				)}
 				{!privateView ? (
 					((_user && _user.user_id === user_id) || _users[user_id]) && (

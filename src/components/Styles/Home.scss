@@ -109,6 +109,9 @@ footer {
 		cursor: pointer;
 		background-color: $niceOrange;
 		color: $lightText;
+		span {
+			color: #000;
+		}
 	}
 	.faQuestion {
 		width: 100%;
@@ -119,7 +122,8 @@ footer {
 			outline: none;
 			width: 100%;
 			padding: 15px 10px;
-			color: $alttext;
+			background: #22262b;
+			color: #fff;
 			font-size: 1.2rem;
 			// the emoji
 			p {
@@ -132,10 +136,18 @@ footer {
 				transform: translateY(-50%);
 				line-height: 0;
 			}
+			span:first-child {
+				opacity: 0.7;
+			}
+			&:hover span:first-child {
+				opacity: 1;
+			}
 		}
 		.expandable {
 			text-align: left;
-			background-color: $mainEven;
+			// background-color: $mainEven;
+			background: linear-gradient(to bottom, #222 0%, #111 50%);
+			color: #fff;
 			overflow: hidden;
 			max-height: 0;
 			transition: max-height 0.4s ease-in;
@@ -153,37 +165,9 @@ footer {
 					padding: 0;
 					list-style-position: inside;
 				}
-				i {
+				i,
+				a {
 					color: $niceOrange;
-				}
-			}
-		}
-		.discordBtn {
-			align-self: center;
-			border: none;
-			outline: none;
-			padding: 10px;
-			border-radius: 15px;
-			background-color: #7289da;
-			cursor: pointer;
-			transition: box-shadow 0.5s ease-in-out;
-			div:first-child {
-				display: flex;
-				flex-flow: row;
-				align-items: center;
-				gap: 10px;
-				div {
-					background-image: url(#{$assetPath}/discord.svg);
-					background-size: contain;
-					background-position: center;
-					background-repeat: no-repeat;
-					width: 40px;
-					height: 40px;
-				}
-				p {
-					margin: 0;
-					font-size: 1.2rem;
-					color: $lightText;
 				}
 			}
 		}
@@ -232,7 +216,7 @@ body {
 	padding: 10px;
 	display: flex;
 	height: 60px;
-	background-color: $mainFore;
+	background-color: #2b3137;
 	color: rgb(98, 98, 98);
 	// box-shadow: 0px 6px 5px rgba(0, 0, 0, 0.7);
 	p {
@@ -300,9 +284,9 @@ body {
 		display: flex;
 		font-size: 1.7rem;
 		align-items: center;
-		color: $darkerText;
+		color: #fff;
 		span {
-			color: $niceOrange;
+			color: $niceOrange !important;
 		}
 		// im not proud of the lack of organization here.....
 		div {
@@ -598,10 +582,10 @@ p {
 	color: #fff;
 	display: block;
 	outline: none;
-	background: none;
+	background: #22262b;
 	padding: 15px 10px;
 	border: none;
-	border-bottom: 5px solid rgba($color: #fefefe, $alpha: 0.5);
+	// border-bottom: 5px solid rgba($color: #fefefe, $alpha: 0.5);
 	transition: border-bottom 0.4s ease-out;
 	&:focus,
 	&:active {
@@ -610,9 +594,10 @@ p {
 	&:focus + label,
 	&:active + label {
 		display: block;
+		color: $secondFore;
 	}
 	&::placeholder {
-		color: rgba($color: #000000, $alpha: 0.5);
+		color: rgba($color: #fff, $alpha: 0.5);
 	}
 }
 .niceInputs input[type="submit"] {
@@ -645,7 +630,7 @@ p {
 		}
 	}
 	form {
-		background-color: #d6d6d6;
+		background-color: #2b3137;
 	}
 }
 
@@ -1552,7 +1537,7 @@ p {
 }
 .postUserInfo {
 	text-align: center;
-	background-color: #1e1e1e;
+	background-color: #2b3137;
 	// box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5); z-index: 1;
 	display: flex;
 	align-items: stretch;
@@ -1570,7 +1555,7 @@ p {
 	z-index: 5;
 }
 #postActionModal {
-	background-color: #e9e9ed;
+	background-color: #2b3137;
 	position: fixed;
 	top: 50%;
 	left: 50%;
@@ -1581,15 +1566,32 @@ p {
 	border-radius: 0.8rem;
 	overflow: hidden;
 	width: clamp(120px, 90vw, 400px);
-	& > button {
+	.reportSelect {
+		background: #22262b;
+		border: none;
+		border-radius: 1rem;
+		width: 90%;
+		padding: 1rem;
+		margin: 15px 0;
+		color: rgba($color: #fff, $alpha: 0.8);
+	}
+	button {
 		padding: 15px 0;
 		border: none;
+		background: #2b3137;
+		color: rgba(255, 255, 255, 0.5);
 		outline: none;
-		border-bottom: 1px solid #bebebe;
+		border-bottom: 1px solid #22262b;
+		&:hover {
+			color: #fff;
+		}
 	}
-	& > button.high {
+	button.high {
 		color: $teaColor;
 		font-weight: bold;
+		&:hover {
+			text-decoration: underline;
+		}
 	}
 	button.feature {
 		color: $niceOrange;
@@ -1598,16 +1600,14 @@ p {
 		margin-left: auto;
 		margin-right: auto;
 	}
-	.reportSelect {
-		width: 90%;
-		padding: 15px 0;
-		margin-top: 15px;
-		margin-bottom: 15px;
-	}
 	.repHead {
 		padding: 10px;
-		border-bottom: 1px solid #bebebe;
 		margin: 0;
+		color: rgba(255, 255, 255, 0.5);
+		background: #22262b;
+	}
+	.subText {
+		color: rgba(255, 255, 255, 0.5);
 	}
 	.reportBtn {
 		background-color: $niceOrange;
@@ -1735,10 +1735,10 @@ p {
 	background-color: #313131;
 }
 .commentSection .comment:nth-child(odd) {
-	background-color: #3b3b3b;
+	background-color: #22282b;
 }
 .commentSection .comment:nth-child(even) {
-	background-color: #151515;
+	background-color: #0b0d0e;
 }
 .comment {
 	display: flex;
@@ -1746,7 +1746,7 @@ p {
 	align-items: center;
 	gap: 5px;
 	color: #9e9e9e;
-	padding: 5px 10px;
+	padding: 0.5rem;
 	position: relative;
 	.mention {
 		color: $niceOrange;
@@ -1762,7 +1762,7 @@ p {
 		cursor: pointer;
 	}
 	.ubadge {
-		background-color: #1e1e1e;
+		background-color: #000;
 		border-radius: 100vh;
 		padding-right: 0.7rem;
 	}

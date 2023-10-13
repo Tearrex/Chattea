@@ -6,7 +6,7 @@
 	position: fixed;
 	overflow: hidden;
 	width: clamp(200px, 90%, 350px);
-	background-color: rgb(246, 246, 246);
+	background-color: #0b0d0e;
 	box-shadow: 0px 0px 5px 5px rgba(0, 0, 0, 0.5);
 	.teamatrix {
 		position: absolute;
@@ -34,9 +34,15 @@
 	}
 	.psa {
 		padding: 10px 0;
-		color: $darkerText;
+		color: rgba(255, 255, 255, 0.5);
 		a {
 			color: $niceOrange;
+		}
+		p {
+			margin: 0;
+		}
+		p span {
+			color: #fff;
 		}
 	}
 	.popup,
@@ -160,26 +166,38 @@
 		}
 	}
 }
-.privateAlert {
-    color: $secondFore !important;
-    h2 {
-        margin-top: 5rem;
-    }
-    a {
-        color: $niceOrange;
-    }
+.privateAlert.border {
+	border: 4px dashed $niceOrange;
+	padding: 1rem; margin: 0;
 }
-.mainProfile .privacyModes {
+.privateAlert {
+	color: $secondFore !important;
+	h2 {
+		margin-top: 5rem;
+	}
+	a {
+		color: $niceOrange;
+	}
+}
+.privatePrompt a {
+	color: $niceOrange
+}
+.privateAlert.profile {
+	i {
+		color: $niceOrange;
+	}
+}
+.privacyModes {
 	display: flex;
 	flex-flow: row;
 	button {
 		flex: 50%;
 		padding: 1rem 0;
 	}
-    button[active] {
-        background: $niceOrange;
-        color: #fff;
-    }
+	button[active] {
+		background: $niceOrange;
+		color: #fff;
+	}
 }
 .profileMemo {
 	margin: 0;
@@ -288,7 +306,7 @@
 	width: 50px;
 	height: 50px;
 	border-radius: 50%;
-	background-color: $niceOrange;
+	background-color: $foreMain;
 	transition: border-radius 0.5s ease;
 	cursor: pointer;
 }
@@ -326,6 +344,9 @@
 .aboutSection {
 	box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5);
 	z-index: 1;
+	.userBio {
+		background-color: $foreAlt;
+	}
 	.userBio,
 	textarea {
 		padding: 10px 0;
@@ -334,13 +355,13 @@
 		text-align: center;
 		font-size: 1.4rem;
 		width: 100%;
-		color: rgb(98, 98, 98);
+		color: $textMain;
 	}
 }
 .buddiesFrame {
 	z-index: 6;
 	padding: 10px;
-	background-color: $mainFore;
+	background-color: $foreAlt;
 	width: clamp(200px, 90%, 600px);
 	max-height: 50%;
 	overflow-y: scroll;
@@ -354,9 +375,9 @@
 		justify-content: center;
 		align-items: center;
 		gap: 10px;
-		background-color: $mainEven;
-		padding: 10px;
-		color: $darkerText;
+		background-color: $foreMain;
+		padding: 0.5rem;
+		color: $textMain;
 		font-size: 1.2rem;
 		.buddy {
 			flex: 100%;
@@ -368,7 +389,7 @@
 		.pfp {
 			width: 60px;
 			height: 60px;
-			background-color: $niceOrange;
+			background-color: $foreAlt;
 			border-radius: 50%;
 			flex-shrink: 0;
 			cursor: pointer;
@@ -377,18 +398,25 @@
 			flex-shrink: 0;
 		}
 		&:hover {
-			background-color: #bdbdbd;
+			color: #fff;
 		}
 	}
 }
 .userInfo {
-	background-color: #c6c6c6;
+	background-color: $foreMain;
 	gap: 10px;
 	display: flex;
 	flex-flow: row;
 	justify-content: center;
-	padding: 10px;
+	padding: 2rem 1rem;
 	align-items: center;
+	.buds {
+		color: $niceOrange;
+		text-decoration: none;
+		&:hover {
+			text-decoration: underline;
+		}
+	}
 	.banBtn {
 		background-color: $teaColor;
 		color: #fff;
@@ -437,10 +465,6 @@
 }
 .bRelation {
 	overflow: hidden;
-	p {
-		color: #fff;
-		margin: 0;
-	}
 	display: grid;
 	grid-auto-flow: row;
 	grid-template-columns: repeat(3, 1fr);
@@ -455,7 +479,7 @@
 	flex-flow: row;
 	align-items: center;
 	gap: 5px;
-	background-color: $mainEven;
+	background-color: #2b3137;
 	padding: 10px;
 	text-decoration: none;
 	border-radius: 100vh;
@@ -467,12 +491,18 @@
 		border-radius: 100vh;
 	}
 	p {
-		color: $alttext;
+		color: rgba(255, 255, 255, 0.5);
 		flex-shrink: 0;
+		margin: 0;
 	}
-	small {
+	p:hover {
+		color: #fff;
+	}
+	small,
+	i {
 		color: $niceOrange;
 		font-weight: bold;
+		flex-shrink: 0;
 		flex: 100%;
 	}
 }

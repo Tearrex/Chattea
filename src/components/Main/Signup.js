@@ -416,15 +416,23 @@ function Signup(props) {
 						>
 							{/* <h1>Welcome back,</h1> */}
 							<div ref={pictureNest}>
-								<p>{_user !== undefined ? _user.username : ""}</p>
+								<p>@{_user !== undefined ? _user.username : ""}</p>
 							</div>
 						</div>
 					</div>
 					<div className="psa">
-						<i className="fas fa-walking"></i> New here?{" "}
-						<Link to="/" onClick={signup_redirect}>
-							Gossip awaits you!
-						</Link>
+						{!_user ? (
+							<>
+								<i className="fas fa-walking"></i> New here?{" "}
+								<Link to="/" onClick={signup_redirect}>
+									Gossip awaits you!
+								</Link>
+							</>
+						) : (
+							<p>
+								<span>✨</span> We made some changes
+							</p>
+						)}
 					</div>
 				</div>
 			</div>

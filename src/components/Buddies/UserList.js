@@ -73,14 +73,16 @@ function UserList(props) {
 	return (
 		<>
 			{props.buddies && (
-				<button
-					className="buddies stealthBtn"
-					onClick={() => {
+				<a
+					href="#"
+					className="buds"
+					onClick={(e) => {
+						e.preventDefault();
 						if (users.length > 0) setOpen(true);
 					}}
 				>
-					<p>{users.length} <i className="fas fa-user-friends"></i></p>
-				</button>
+					<i class="fas fa-user-friends"></i> {users.length} buddies
+				</a>
 			)}
 			<div ref={popupRef}>
 				<div
@@ -96,7 +98,14 @@ function UserList(props) {
 					{users &&
 						users.length > 0 &&
 						users.map((buddy) => {
-							return <UserListItem buddy={buddy} key={buddy} toggle={setOpen} />;
+							return (
+								<UserListItem
+									buddy={buddy}
+									key={buddy}
+									toggle={setOpen}
+									smile={!props.buddies}
+								/>
+							);
 						})}
 				</div>
 			</div>

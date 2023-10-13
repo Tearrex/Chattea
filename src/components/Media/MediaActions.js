@@ -216,7 +216,7 @@ function MediaActions(props) {
 											Blackmail / Slander / Misinformation
 										</option>
 									</select>
-									<p style={{ margin: 0, paddingBottom: "10px", opacity: 0.8 }}>
+									<p style={{ margin: 0, paddingBottom: "10px", opacity: 0.8 }} className="subText">
 										Keep Chattea safe, please don't abuse this form...
 									</p>
 								</>

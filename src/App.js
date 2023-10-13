@@ -123,6 +123,8 @@ function App() {
 			const docRef = doc(_dbRef, "users", currentUser.uid);
 			getDoc(docRef).then((s) => {
 				if (s.exists()) {
+					localStorage.removeItem("tc");
+					localStorage.removeItem("guest");
 					var _user = s.data();
 					_setUser({
 						user_id: currentUser.uid,

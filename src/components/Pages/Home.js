@@ -21,10 +21,12 @@ function Home() {
 	const { _users, _setUsers } = useContext(MembersContext);
 	const { _showLogin, setLogin } = useContext(showLogin);
 	const [suggestions, setSuggestions] = useState([]);
-
+	const [mutuals, setMutuals] = useState([]);
 	const [cache, setCache] = useState([]);
 
 	const [focusPost, setFocusPost] = useState(null);
+
+	const [privateView, setPrivateView] = useState(false);
 	useEffect(() => {
 		document.body.style.overflow = focusPost !== null ? "hidden" : null;
 	}, [focusPost]);
@@ -55,13 +57,17 @@ function Home() {
 		const buddies = _user.buddies;
 
 		var suggs = {};
+		var _mutuals = [];
 
 		var toCache = [];
+		// loop through all of user's buddies (user ids)
 		for (let i = 0; i < buddies.length; i++) {
 			const buddy = _users[buddies[i]]; // buddy as a User object
 			if (!buddy) return;
-			const friends2 = buddy.buddies; // array of user IDs
+			const friends2 = buddy.buddies; // now get the buddy's buddies
 
+			if (friends2.includes(_user.user_id) && !_mutuals[buddies[i]])
+				_mutuals.push(buddies[i]);
 			for (let b = 0; b < friends2.length; b++) {
 				const buddyBuddy = _users[friends2[b]]; // get User object with ID
 				if (!buddyBuddy) {
@@ -81,6 +87,7 @@ function Home() {
 			console.log("miraaAA", suggs);
 			setCache(toCache);
 			setSuggestions(suggs);
+			setMutuals(_mutuals);
 		}
 	}, [_users, _user]);
 	async function postMessage(_content, imgFunc = null) {
@@ -119,40 +126,108 @@ function Home() {
 			<div id="home" className="clamper">
 				<div id="audionest"></div>
 				{_user ? (
-					<Submitter onMessageSend={postMessage} />
+					<>
+						<p className="privateAlert border">
+							✨ New private pages for Chattea users.{" "}
+							<Link to="/#faq">Learn more</Link>
+							<div className="privacyModes" style={{ marginTop: "1rem" }}>
+								<button
+									active={!privateView && "true"}
+									onClick={() => setPrivateView(false)}
+								>
+									<i className="fas fa-globe-americas"></i> Public
+								</button>
+								<button
+									active={privateView && "true"}
+									onClick={() => setPrivateView(true)}
+								>
+									<i className="fas fa-lock"></i> Private
+								</button>
+							</div>
+						</p>
+
+						{!privateView ? (
+							<Submitter onMessageSend={postMessage} />
+						) : (
+							<h2 style={{ color: "#fff" }} className="privatePrompt">
+								<Link to={"/profile/" + _user.user_id}>Visit your profile</Link> to
+								post something private
+							</h2>
+						)}
+					</>
 				) : (
 					<h1 style={{ opacity: 0.5, color: "#fff" }}>
 						Hello stranger, get comfy <i className="fas fa-mug-hot"></i>
 					</h1>
 				)}
-				<div
-					className="exploreBuddies"
-					style={{
-						display: Object.entries(suggestions).length > 0 ? null : "none",
-					}}
-				>
-					<div
-						className="bRelation"
-						style={{
-							overflowX: "scroll",
-						}}
-					>
-						{suggestions &&
-							Object.values(suggestions).map((x, i) => (
-								<Link to={"/profile/" + x.id} className="bCard" key={i}>
-									<img src={_users[x.id].pfp} alt="user pic" />
-									{/* <p>{_users[x.id].username}</p> */}
-									<small>
-										<i class="fas fa-user-friends"></i> <b>+{x.count}</b>{" "}
-										relatives
-									</small>
-								</Link>
-							))}
-					</div>
-				</div>
-				{(_user || localStorage.getItem("guest")) && (
-					<MediaFeed setFocusPost={setFocusPost} private={false} />
-				)}
+				{/* .infinite-scroll-component */}
+				{(_user || localStorage.getItem("guest")) &&
+					(!privateView ? (
+						<MediaFeed setFocusPost={setFocusPost} private={false} />
+					) : (
+						<div className="infinite-scroll-component">
+							<div className="privateAlert" style={{ gridColumn: "1/-1" }}>
+								<h2>
+									<i className="fas fa-wrench"></i> Improvements Coming
+								</h2>
+								<p>
+									We can't show a digest of all private posts yet, <br />
+									but you can browse your buddies' private pages individually.
+								</p>
+								<br />
+								<div
+									className="bRelation"
+									style={{
+										gridAutoFlow: "row",
+										marginTop: "2rem",
+									}}
+								>
+									{mutuals.map((m, i) => {
+										// return <button>{_users[m].username}</button>;
+										return (
+											<Link to={"/profile/" + m} className="bCard" key={i}>
+												<img src={_users[m].pfp} alt="user pic" />
+												<p>
+													@{_users[m].username}{" "}
+													<i className="fas fa-unlock"></i>
+												</p>
+												{/* <small>
+													<i class="fas fa-user-friends"></i> <b>+{x.count}</b>{" "}
+													relatives
+												</small> */}
+											</Link>
+										);
+									})}
+								</div>
+								<h2>
+									<i className="fas fa-globe-americas"></i> Your buddies know
+									these people
+								</h2>
+								<div
+									className="exploreBuddies"
+									style={{
+										display:
+											Object.entries(suggestions).length > 0 ? null : "none",
+									}}
+								>
+									<div
+										className="bRelation"
+										style={{
+											overflowX: "scroll",
+										}}
+									>
+										{suggestions &&
+											Object.values(suggestions).map((x, i) => (
+												<Link to={"/profile/" + x.id} className="bCard" key={i}>
+													<img src={_users[x.id].pfp} alt="user pic" />
+													<p>@{_users[x.id].username}</p>
+												</Link>
+											))}
+									</div>
+								</div>
+							</div>
+						</div>
+					))}
 			</div>
 		</div>
 	);

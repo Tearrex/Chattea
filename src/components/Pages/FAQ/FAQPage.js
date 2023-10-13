@@ -3,6 +3,7 @@ import { useContext } from "react";
 import { UserContext } from "../../Main/Contexts";
 import GithubButton from "../../GithubButton";
 import FAQuestion from "./FAQuestion";
+import { Link } from "react-router-dom";
 
 function FAQPage(props) {
 	const navigate = useNavigate();
@@ -15,6 +16,14 @@ function FAQPage(props) {
 		localStorage.setItem("guest", "true");
 		navigate("/main");
 	}
+	function mod_discretions(e) {
+		e.preventDefault();
+		let button = document.querySelector("#modDiscretion");
+		if (button && button.nextSibling.getAttribute("open") != "true") {
+			button.click();
+		}
+		button.scrollIntoView();
+	}
 	return (
 		<footer id="faq">
 			<div className="faqNest">
@@ -25,8 +34,8 @@ function FAQPage(props) {
 					<p>
 						Chattea is a modest social media platform for making pocket-sized
 						memories as you go about your days. Meet new people and vibe with
-						those that share similar hobbies or interests. The idea is to post
-						glimpses of your activities while adding some mystery ;)
+						those that share similar hobbies or interests. Post glimpses of your
+						activities while adding some mystery ;)
 						<br />
 					</p>
 					<p>
@@ -34,29 +43,56 @@ function FAQPage(props) {
 						out of some goofy post.
 					</p>
 				</FAQuestion>
-				<FAQuestion question="Who can see my posts?" emote="👀">
+				<FAQuestion
+					question="Who can see my posts?"
+					emote={<i className="fas fa-eye"></i>}
+				>
 					<p>
-						At the moment, every user that is logged in can view what you post.
-						Stay tuned for updates!
+						Chattea now offers the options of public & private visiblity for
+						your social media posts. <br />
+						<br />
+						The corresponding icons <i className="fas fa-globe-americas"></i>/
+						<i className="fas fa-lock"></i> are displayed before the timestamp
+						of each post.
+						<br />
+						<br />
+						Public posts <u>can be seen by anyone</u> and are shown on the home
+						page by default.
 						<br />
 						Please keep the content appropriate for the general public, be kind
 						to others.
-					</p>
-				</FAQuestion>
-				<FAQuestion question="Can I edit my posts?" emote="✏️">
-					<p>
-						To keep things simple, you cannot edit the posts that you make. Same
-						goes for comments. You can always <i>delete</i> your posts later.
+						<br />
+						<br />
+						Private posts are <u>exclusive to your buddies</u> list. <br />
+						Removing a buddy will instantly revoke their access to your private
+						page.
+						<br />
+						<br />
+						<Link to="#" onClick={mod_discretions}>
+							Read more on moderation discretions.
+						</Link>
+						<br />
+						<br />
 					</p>
 				</FAQuestion>
 				<FAQuestion question="What are buddies?" emote="👥">
 					<p>
-						Buddies are your friends. You should only add someone as your buddy
-						if you know them. This feature will be expanded upon to make it more
-						useful later.
+						Buddies are your friends. By adding someone on Chattea, you allow
+						them to view the private posts on your account & mention you in
+						comments.{" "}
 					</p>
 				</FAQuestion>
-				<FAQuestion question="What about my data?" emote="😱">
+				<FAQuestion question="Can I edit my posts?" emote="✏️">
+					<p>
+						No, same goes for comments. It complicates moderation for us.
+						<br />
+						You can always <i>delete</i> your posts later.
+					</p>
+				</FAQuestion>
+				<FAQuestion
+					question="What about my data?"
+					emote={<i className="fas fa-database"></i>}
+				>
 					<p>Privacy concerns are a big deal! Here are the details:</p>
 					<h2>How we store your data</h2>
 					<p>When you sign up, the following is collected from you</p>
@@ -71,18 +107,22 @@ function FAQPage(props) {
 						that exists on the website. <br />
 						<u>Your email is private from others</u>; It serves as an
 						authentication and recovery method for your account. <br />
-						We also fight spam by limiting accessibility to some parts of the
-						website for those that are not verified. You'll only be emailed per
-						your request.
+						We also fight spam by blocking access to some features for
+						unverified emails. You'll only be emailed per your request.
 					</p>
 					<p>
 						Every user is assigned an <b>identifier</b> upon signing up. The
 						identifier (ID) is a unique sequence of random letters and numbers
 						that distinguishes you from the rest of the users on Chattea.
 					</p>
-					<h2>How we use your data</h2>
-					<p>Your identifier is logged when you do something like</p>
-					<ul className="dataSection">
+					<h2>
+						<i className="fas fa-cog"></i> How we use your data
+					</h2>
+					<p>Your identifier is logged when you do one of the following</p>
+					<ul
+						className="dataSection"
+						style={{ listStyleType: "decimal-leading-zero" }}
+					>
 						<li>Create a post</li>
 						<li>Like a post</li>
 						<li>Add a comment</li>
@@ -95,37 +135,43 @@ function FAQPage(props) {
 					<p>
 						As you browse the website, the profile data you fetch about other
 						users will be cached locally on your device until you log out or
-						clear your browser cookies. This cuts down bandwidth costs and the
-						amount of requests your browser makes to the cloud. This means edits
-						to your profile may not update for others right away.
+						clear your browser cookies. <br />
+						This lowers the amount of requests your browser makes to the cloud;
+						Edits to your profile may not propagate for others right away.
 					</p>
 				</FAQuestion>
 				<FAQuestion question="But why tea?" emote="🤔">
 					<p>It's just catchy...</p>
 				</FAQuestion>
-				{_user === undefined && (
-					<>
-						<hr style={{ width: "100%" }} />
-						<div className="faqactions">
+				<hr style={{ width: "100%" }} />
+				<div className="faqactions">
+					{_user === undefined ? (
+						<>
 							<button className="faqSignUp" onClick={focus_signup}>
 								<i class="fas fa-angle-double-up"></i> Sign up!
 							</button>
 							<button onClick={guest_mode} className="guestMode">
 								<i className="fas fa-eye"></i> Try guest mode
 							</button>
-						</div>
-					</>
-				)}
+						</>
+					) : (
+						<button className="faqSignUp" onClick={() => navigate("/main")}>
+							<i className="fas fa-sign-in-alt"></i> Hey{" "}
+							<span>@{_user.username}</span>, jump in!
+						</button>
+					)}
+				</div>
+
 				<hr style={{ width: "100%" }} />
 				<h2>
 					<i class="fas fa-info-circle"></i> Feature Discretions
 				</h2>
-				<FAQuestion question="Profanity filters" emote="###">
+				<FAQuestion question="Profanity filter" emote="###">
 					<p>
-						Upon opening Chattea's feed for the first time, your browser will
-						make a secure HTTP request to our{" "}
+						<i className="fas fa-cog"></i> Upon opening Chattea's feed for the
+						first time, your browser will make a secure HTTP request to{" "}
 						<a href="https://github.com/Tearrex/Chattea" target="_blank">
-							public code repository
+							our public code repository
 						</a>{" "}
 						for a list of blacklisted words and save it to local storage. <br />
 						<br />
@@ -147,14 +193,14 @@ function FAQPage(props) {
 						You must verify your email before posting images. <br />
 						<br />
 						Images over a certain file size are subject to lossy{" "}
-						<b>compression</b> by your browser prior to uploading to our cloud
-						storage. The size limit fluctuates depending on storage demands.
+						<b>compression</b> prior to uploading to the cloud. This process is
+						done locally by your browser. The size limit fluctuates depending on
+						storage demands.
 						<br />
 						<br />
-						We also offer an embedded browser tool for <b>cropping</b> your
-						images into perfect squares for the best viewing experience for all
-						users. We encourage you to use it, but{" "}
-						<u>here's what you must know</u>:
+						We also offer an embedded browser tool for <b>cropping</b> images
+						into squares to provide the best viewing experience for all users.
+						We encourage you to use it, but <u>here's what you must know</u>:
 						<br />
 						<br />
 						<p style={{ textAlign: "center", width: "100%" }}>
@@ -172,8 +218,8 @@ function FAQPage(props) {
 						<br />
 						<i class="fas fa-shield-alt"></i> We protect your privacy by
 						stripping all metadata from the image before sending it back to you.
-						The binary data of your image is processed in server memory instead
-						of saving to disk storage, for optimal security.
+						The binary data is processed in server memory instead of saving to
+						disk storage, for optimal security.
 					</p>
 				</FAQuestion>
 				<FAQuestion
@@ -188,14 +234,15 @@ function FAQPage(props) {
 						<br />
 						Before using this service, <u>keep in mind</u>:
 						<br />
-						Your initial use will make a secure HTTP request to an intermediate
-						cloud API in order to retrieve a temporary access token for search
-						results. This creates a seamless experience for you by not prompting
-						for log in through Spotify.
+						<i className="fas fa-cog"></i> Your initial use will make a secure
+						HTTP request to an intermediate cloud API in order to retrieve a
+						temporary access token for search results. This creates a seamless
+						experience for you by not prompting for log in through Spotify.
 					</p>
 				</FAQuestion>
 				<FAQuestion
 					question="User moderation"
+					buttonId="modDiscretion"
 					emote={<i className="fas fa-user-shield"></i>}
 				>
 					<p>

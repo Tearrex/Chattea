@@ -5,15 +5,21 @@ function FAQuestion(props) {
 	function expand() {
 		if (expander.current.style.maxHeight !== "0px") {
 			expander.current.style.maxHeight = "0";
+			expander.current.setAttribute("open", "false");
 		} else {
 			expander.current.style.maxHeight =
 				expander.current.scrollHeight + 10 + "px";
+			expander.current.setAttribute("open", "true");
 		}
 	}
 	return (
 		<div className="faQuestion">
-			<button className="stealthBtn" onClick={expand}>
-				{props.question}
+			<button
+				className="stealthBtn"
+				id={props.buttonId || null}
+				onClick={expand}
+			>
+				<span>{props.question}</span>
 				<p>{props.emote || null}</p>
 			</button>
 			<div className="expandable" ref={expander} style={{ maxHeight: "0" }}>

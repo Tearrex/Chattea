@@ -33,7 +33,7 @@ function UserListItem(props) {
 					className="pfp niceClip"
 					style={{ backgroundImage: "url(" + pfp + ")" }}
 				/>
-				{name}
+				@{name}{props.smile && " 🙂"}
 			</div>
 			{_user && props.buddy !== _user.user_id ? (
 				<BuddyButton buddy={props.buddy} />
