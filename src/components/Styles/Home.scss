@@ -85,6 +85,7 @@ footer {
 	margin: 0 auto;
 	h2 {
 		margin: 0;
+		color: $niceOrange;
 	}
 	.faqactions {
 		display: flex;
@@ -96,6 +97,10 @@ footer {
 			border: none;
 			outline: none;
 			flex: 50%;
+		}
+		.guestMode {
+			color: #fff;
+			background: #111;
 		}
 	}
 	.faqSignUp {
@@ -147,6 +152,9 @@ footer {
 					margin: 0;
 					padding: 0;
 					list-style-position: inside;
+				}
+				i {
+					color: $niceOrange;
 				}
 			}
 		}
@@ -206,14 +214,15 @@ body {
 		z-index: -5;
 		transition: background-image 1s ease;
 	}
-	.dark {
-		//background-image: linear-gradient(#6b6b6b 35%, #3a3a3a 70%);
-		background-color: #111111;
-	}
+	.dark,
 	.light {
-		// background-image: linear-gradient(#f7941d, #F5B041);
-		background-image: linear-gradient(#cacaca, #919191);
+		//background-image: linear-gradient(#6b6b6b 35%, #3a3a3a 70%);
+		background-color: #000;
 	}
+	// .light {
+	// 	// background-image: linear-gradient(#f7941d, #F5B041);
+	// 	background-image: linear-gradient(#cacaca, #919191);
+	// }
 }
 
 .welcomer {
@@ -558,11 +567,16 @@ p {
 	background-color: #ccff00;
 }
 
-.loginBtn {
+.loginBtn,
+.jump.stealthBtn {
 	padding: 20px 0;
 	border: none;
 	outline: none;
 	color: #fff;
+	font-size: 1.2rem;
+}
+.jump.stealthBtn {
+	background-color: #212121;
 }
 .loginOrange {
 	background-color: $niceOrange !important;
@@ -676,6 +690,11 @@ p {
 		grid-auto-flow: row;
 		gap: 1rem;
 		width: 100%;
+		@media screen and (max-width: 500px) {
+			display: flex;
+			flex-flow: column;
+			gap: 0.5rem;
+		}
 		button {
 			height: 50px;
 			&:first-of-type {
@@ -940,7 +959,7 @@ p {
 		}
 	}
 	.logout {
-		background-color: #d35400;
+		background-color: #111;
 		color: #e7e7e7;
 	}
 	button {
@@ -1254,7 +1273,41 @@ p {
 	}
 }
 
-.mediaCard {
+.brochure {
+	background-color: $niceOrange;
+	align-items: center;
+	border-radius: 0.8rem;
+	justify-content: center;
+	gap: 0.5rem;
+	grid-column: 1/-1 !important;
+	h4 {
+		margin: 2rem 0;
+	}
+	h4 i {
+		font-size: 3rem;
+	}
+	p {
+		margin-bottom: 2rem;
+	}
+	.buttons {
+		display: flex;
+		flex-flow: row;
+		width: 100%;
+		justify-content: center;
+		align-items: center;
+		gap: 0.5rem;
+		button {
+			background: none;
+			border: 5px solid #c67717 !important;
+			padding: 1rem;
+			&:hover {
+				background: #c67717;
+			}
+		}
+	}
+}
+.mediaCard,
+.brochure {
 	display: flex;
 	justify-self: center;
 	flex-flow: column;
@@ -1321,11 +1374,12 @@ p {
 		margin: 0 auto;
 	}
 	.pActions {
+		color: $secondFore;
+		background: none;
+		padding: 1rem;
+		aspect-ratio: 1/1;
+		font-size: 1.2rem;
 		flex-shrink: 0;
-		display: flex;
-		align-items: center;
-		padding: 0 1rem;
-		color: $secondFore !important;
 	}
 }
 
@@ -1628,7 +1682,6 @@ p {
 		overflow: hidden;
 		button {
 			font-size: 1.5rem;
-			border-radius: 100vh;
 			background: none;
 		}
 		button:hover {

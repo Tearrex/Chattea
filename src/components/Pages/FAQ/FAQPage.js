@@ -18,6 +18,9 @@ function FAQPage(props) {
 	return (
 		<footer id="faq">
 			<div className="faqNest">
+				<h2>
+					<i class="fas fa-question-circle"></i> FAQ
+				</h2>
 				<FAQuestion question="What is Chattea?" emote="☕">
 					<p>
 						Chattea is a modest social media platform for making pocket-sized
@@ -64,12 +67,13 @@ function FAQPage(props) {
 						<li>Current date</li>
 					</ul>
 					<p>
-						This information is recorded on a database to keep track of every
-						user that exists on the website. Your email is not shared with
-						others, it serves as a recovery method for your account and
-						mitigates grief by limiting accessibility to some parts of the
+						This info is saved on a cloud database to keep track of every user
+						that exists on the website. <br />
+						<u>Your email is private from others</u>; It serves as an
+						authentication and recovery method for your account. <br />
+						We also fight spam by limiting accessibility to some parts of the
 						website for those that are not verified. You'll only be emailed per
-						your request and passwords are encrypted.
+						your request.
 					</p>
 					<p>
 						Every user is assigned an <b>identifier</b> upon signing up. The
@@ -80,44 +84,130 @@ function FAQPage(props) {
 					<p>Your identifier is logged when you do something like</p>
 					<ul className="dataSection">
 						<li>Create a post</li>
-						<li>Smile a post</li>
+						<li>Like a post</li>
 						<li>Add a comment</li>
 						<li>Add a buddy</li>
 					</ul>
 					<p>
 						This is only used to make Chattea function properly. Like displaying
 						the correct author for each post and comment.
-						<br />
-						For the sake of transparency, this question will be kept updated
-						with the latest information of how your data is handled.
 					</p>
 					<p>
 						As you browse the website, the profile data you fetch about other
-						users will be cached until you log out or clear your browser
-						cookies. We do this to cut down on bandwidth costs and the amount of
-						requests your device makes to the server. This means edits to your
-						profile may not update for others right away.
+						users will be cached locally on your device until you log out or
+						clear your browser cookies. This cuts down bandwidth costs and the
+						amount of requests your browser makes to the cloud. This means edits
+						to your profile may not update for others right away.
 					</p>
-					<h2>Note</h2>
-					<p>
-						You can always check the source code of this project on GitHub to
-						see exactly what it does in the background.
-					</p>
-					<GithubButton />
 				</FAQuestion>
 				<FAQuestion question="But why tea?" emote="🤔">
 					<p>It's just catchy...</p>
 				</FAQuestion>
 				{_user === undefined && (
-					<div className="faqactions">
-						<button className="faqSignUp" onClick={focus_signup}>
-							<i class="fas fa-angle-double-up"></i> Interested? Sign up!
-						</button>
-						<button onClick={guest_mode}>
-							<i className="fas fa-eye"></i> Try guest mode
-						</button>
-					</div>
+					<>
+						<hr style={{ width: "100%" }} />
+						<div className="faqactions">
+							<button className="faqSignUp" onClick={focus_signup}>
+								<i class="fas fa-angle-double-up"></i> Sign up!
+							</button>
+							<button onClick={guest_mode} className="guestMode">
+								<i className="fas fa-eye"></i> Try guest mode
+							</button>
+						</div>
+					</>
 				)}
+				<hr style={{ width: "100%" }} />
+				<h2>
+					<i class="fas fa-info-circle"></i> Feature Discretions
+				</h2>
+				<FAQuestion question="Profanity filters" emote="###">
+					<p>
+						Upon opening Chattea's feed for the first time, your browser will
+						make a secure HTTP request to our{" "}
+						<a href="https://github.com/Tearrex/Chattea" target="_blank">
+							public code repository
+						</a>{" "}
+						for a list of blacklisted words and save it to local storage. <br />
+						<br />
+						Your browser will process user-generated text before displaying it
+						to you. This can be toggled later.
+					</p>
+				</FAQuestion>
+				<FAQuestion question="Mentioning users" emote="@">
+					<p>
+						You can only mention your buddies. They will be notified only if
+						they have you added as well.
+					</p>
+				</FAQuestion>
+				<FAQuestion
+					question="Posting images"
+					emote={<i className="fas fa-image"></i>}
+				>
+					<p>
+						You must verify your email before posting images. <br />
+						<br />
+						Images over a certain file size are subject to lossy{" "}
+						<b>compression</b> by your browser prior to uploading to our cloud
+						storage. The size limit fluctuates depending on storage demands.
+						<br />
+						<br />
+						We also offer an embedded browser tool for <b>cropping</b> your
+						images into perfect squares for the best viewing experience for all
+						users. We encourage you to use it, but{" "}
+						<u>here's what you must know</u>:
+						<br />
+						<br />
+						<p style={{ textAlign: "center", width: "100%" }}>
+							<i class="fas fa-compress-alt"></i> Large images are still
+							compressed before cropping
+							<br />
+							<i class="fas fa-cloud-upload-alt"></i> Cropping involves
+							intermediate upload of image for cloud processing.
+						</p>
+						<br />
+						<br />
+						Unlike compression, your image is cropped by an automated HTTP
+						server for a cost-effective computing approach.
+						<br />
+						<br />
+						<i class="fas fa-shield-alt"></i> We protect your privacy by
+						stripping all metadata from the image before sending it back to you.
+						The binary data of your image is processed in server memory instead
+						of saving to disk storage, for optimal security.
+					</p>
+				</FAQuestion>
+				<FAQuestion
+					question="Sharing Spotify songs"
+					emote={<i className="fab fa-spotify"></i>}
+				>
+					<p>
+						Our website integrates with Spotify's Web API to show off previews
+						of your favorite songs on a post. Tracks that do not have a valid
+						preview URL cannot be played and will not be shown.
+						<br />
+						<br />
+						Before using this service, <u>keep in mind</u>:
+						<br />
+						Your initial use will make a secure HTTP request to an intermediate
+						cloud API in order to retrieve a temporary access token for search
+						results. This creates a seamless experience for you by not prompting
+						for log in through Spotify.
+					</p>
+				</FAQuestion>
+				<FAQuestion
+					question="User moderation"
+					emote={<i className="fas fa-user-shield"></i>}
+				>
+					<p>
+						All user-generated content is contingent to inspection or deletion
+						at moderator discretion without prior notice. We do our best to keep
+						our small community civil and we ask that you help us achieve the
+						same by not abusing our platform. <br />
+						<br />
+						Repeat offenders will be blocked permanently from further
+						interaction within Chattea.
+					</p>
+				</FAQuestion>
 			</div>
 			<h3
 				style={{
