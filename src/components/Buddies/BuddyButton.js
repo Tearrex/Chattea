@@ -20,11 +20,9 @@ function BuddyButton(props) {
 	const [lastAction, setLastAction] = useState(0);
 	const [cooldown, setCooldown] = useState(0);
 	const cooldownIncrement = 5000;
-	const inputRef = useRef();
 	useEffect(() => {
-		if (_user !== undefined && _user.buddies.includes(props.buddy)) {
+		if (_user && _user.buddies.includes(props.buddy)) {
 			setAdded(true);
-			inputRef.current.checked = true;
 		}
 	}, [_user]);
 	function buddify(add) {
@@ -81,7 +79,7 @@ function BuddyButton(props) {
 	return (
 		<label className="buddyBtn">
 			<input
-				ref={inputRef}
+				value={added}
 				className="addBuddy"
 				type="checkbox"
 				onClick={(e) => buddify(e)}

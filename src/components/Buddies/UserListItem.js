@@ -4,40 +4,42 @@ import { MembersContext, UserContext } from "../Main/Contexts";
 import BuddyButton from "./BuddyButton";
 
 function UserListItem(props) {
-    const navigate = useNavigate();
-    const { _user, _setUser } = useContext(UserContext);
-    const { _users, _setUsers } = useContext(MembersContext);
-    const [name, setName] = useState("User");
-    const [pfp, setPfp] = useState("/default_user.png");
-    /*
+	const navigate = useNavigate();
+	const { _user, _setUser } = useContext(UserContext);
+	const { _users, _setUsers } = useContext(MembersContext);
+	const [name, setName] = useState("User");
+	const [pfp, setPfp] = useState("/default_user.png");
+	/*
     The user data is fetched in the BuddyList component,
     we just wait for it with this hook
     */
-    useEffect(() => {
-        if(_user !== undefined && _user.user_id === props.buddy)
-        {
-            setName(_user.username); setPfp(_user.pfp);
-        }
-        else if(_users[props.buddy] !== undefined)
-        {
-            setName(_users[props.buddy].username); setPfp(_users[props.buddy].pfp);
-        }
-    }, [_user, _users, props]);
-    function go_to_profile()
-    {
-        navigate("/profile/"+props.buddy);
-        props.toggle();
-    }
-    return (
-        <div className="buddyItem">
-            <div className="buddy" onClick={go_to_profile}>
-                <div className="pfp niceClip" style={{backgroundImage:"url("+pfp+")"}}/>
-                {name}
-            </div>
-            {(_user !== undefined && props.buddy !== _user.user_id) ?
-            <BuddyButton buddy={props.buddy}/> : null}
-        </div>
-    );
+	useEffect(() => {
+		if (_user !== undefined && _user.user_id === props.buddy) {
+			setName(_user.username);
+			setPfp(_user.pfp);
+		} else if (_users[props.buddy] !== undefined) {
+			setName(_users[props.buddy].username);
+			setPfp(_users[props.buddy].pfp);
+		}
+	}, [_user, _users, props]);
+	function go_to_profile() {
+		navigate("/profile/" + props.buddy);
+		props.toggle();
+	}
+	return (
+		<div className="buddyItem">
+			<div className="buddy" onClick={go_to_profile}>
+				<div
+					className="pfp niceClip"
+					style={{ backgroundImage: "url(" + pfp + ")" }}
+				/>
+				{name}
+			</div>
+			{_user && props.buddy !== _user.user_id ? (
+				<BuddyButton buddy={props.buddy} />
+			) : null}
+		</div>
+	);
 }
 
 export default UserListItem;

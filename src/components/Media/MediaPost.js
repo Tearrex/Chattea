@@ -1,4 +1,11 @@
-import { doc, deleteDoc } from "firebase/firestore";
+import {
+	doc,
+	deleteDoc,
+	collection,
+	query,
+	orderBy,
+	limit,
+} from "firebase/firestore";
 import { useEffect, useState, useRef, useContext } from "react";
 import { _dbRef, _storageRef } from "../Main/firebase";
 import SmileButton from "../Smiles/SmileButton";
@@ -19,7 +26,15 @@ function MediaPost(props) {
 	const { _user, _setUser } = useContext(UserContext);
 	const { _showLogin, setLogin } = useContext(showLogin);
 	const { _users, _setUsers } = useContext(MembersContext);
-	const { caption, content, date, image_url, user_id, track } = props.msg;
+	const {
+		caption,
+		content,
+		date,
+		image_url,
+		user_id,
+		track,
+		private: _private,
+	} = props.msg;
 	const [captionInput, setCaption] = useState("");
 	const [isAuthor, setAuthor] = useState(false);
 	const [postDate, setPostDate] = useState("");
@@ -146,12 +161,15 @@ function MediaPost(props) {
 			"users/" + props.authorID + "/smiles/" + props.postID
 		);
 		await deleteDoc(smilesRef);
+		
 		//console.log("deleted?");
-		const imgRef = ref(_storageRef, "images/" + user_id + "/" + props.postID);
-		try {
-			await deleteObject(imgRef);
-		} catch (e) {
-			console.log(e);
+		if (image_url !== "") {
+			const imgRef = ref(_storageRef, "images/" + user_id + "/" + props.postID);
+			try {
+				await deleteObject(imgRef);
+			} catch (e) {
+				console.log(e);
+			}
 		}
 		props.onDelete();
 		console.log("Removed post " + props.postID);
@@ -356,6 +374,7 @@ function MediaPost(props) {
 	return (
 		<div
 			className="mediaCard"
+			private={_private ? "true" : "false"}
 			onClick={() =>
 				console.log({ post: props.postID, author: props.authorID })
 			}
@@ -502,9 +521,10 @@ function MediaPost(props) {
 															.toLowerCase()
 															.startsWith(mentionQuery.toLowerCase())
 													)
-													.map((u) => {
+													.map((u, i) => {
 														return (
 															<div
+																key={i}
 																className="tooltip mention"
 																onClick={() => mention_user(u)}
 															>
@@ -556,7 +576,18 @@ function MediaPost(props) {
 								<i class="fas fa-ellipsis-h"></i>
 							</button>
 						)}
-						<p>Posted {postDate}</p>
+						{_private === true ? (
+							<div className="tooltip lock">
+								<i class="fas fa-lock"></i>
+								<span className="tooltext">Private</span>
+							</div>
+						) : (
+							<div className="tooltip public">
+								<i class="fas fa-globe-americas"></i>
+								<span className="tooltext">Public</span>
+							</div>
+						)}
+						<p>{postDate}</p>
 					</div>
 				</div>
 			</div>

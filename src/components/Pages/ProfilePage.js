@@ -17,6 +17,7 @@ import UserList from "../Buddies/UserList";
 import { Link } from "react-router-dom";
 import MediaActions from "../Media/MediaActions";
 import * as filter from "profanity-filter";
+import Submitter from "../Media/Submitter";
 function ProfilePage(props) {
 	const { _user, _setUser } = useContext(UserContext);
 	const { _users, _setUsers } = useContext(MembersContext);
@@ -35,6 +36,7 @@ function ProfilePage(props) {
 	const [bannerSaved, setBannerSaved] = useState(false);
 
 	const [profile, setProfile] = useState(null);
+	const [privateView, setPrivateView] = useState(false);
 
 	/*
     Instead of using states for original values, utilize
@@ -309,6 +311,7 @@ function ProfilePage(props) {
 		document.getElementById("welcomer").style.display = null;
 		localStorage.removeItem("tc");
 	}, []);
+	const [latestPost, setLatestPost] = useState(null);
 	return (
 		<div className="homeWrapper">
 			<div id="audionest"></div>
@@ -420,10 +423,13 @@ function ProfilePage(props) {
 									<i className="fas fa-bolt"></i> BAN
 								</button>
 							)}
+							{privateView && (
+								<span>
+									<i className="fas fa-eye"></i>
+								</span>
+							)}
 							<UserList users={profile ? profile.buddies : []} buddies />
-							{_user !== undefined &&
-							_user.user_id !== user_id &&
-							_users[user_id] ? (
+							{_user && _user.user_id !== user_id && _users[user_id] ? (
 								<BuddyButton buddy={user_id} />
 							) : null}
 						</div>
@@ -444,9 +450,52 @@ function ProfilePage(props) {
 							</Link>
 						))}
 					</div>
+					<div className="privacyModes">
+						<button
+							active={!privateView && "true"}
+							onClick={() => setPrivateView(false)}
+						>
+							<i className="fas fa-globe-americas"></i> Public
+						</button>
+						<button
+							active={privateView && "true"}
+							onClick={() => setPrivateView(true)}
+						>
+							<i className="fas fa-lock"></i> Private
+						</button>
+					</div>
 				</div>
-				{((_user && _user.user_id === user_id) || _users[user_id]) && (
-					<MediaFeed focus={user_id} setFocusPost={setFocusPost} />
+				{_user && _user.user_id === user_id && (
+					<Submitter onPostSubmit={setLatestPost} privateMode={privateView} />
+				)}
+				{!privateView ? (
+					((_user && _user.user_id === user_id) || _users[user_id]) && (
+						<MediaFeed
+							focus={user_id}
+							private={false}
+							setFocusPost={setFocusPost}
+							postInjection={latestPost}
+						/>
+					)
+				) : !_user ||
+				  (_user.user_id != user_id &&
+						_users[user_id] &&
+						!_users[user_id].buddies.includes(_user.user_id)) ? (
+					<div className="privateAlert">
+						<h2>
+							<i class="fas fa-eye-slash"></i> No Access
+						</h2>
+						<p>{inputName} must add you as their buddy</p>
+						<br />
+						<Link to="/#faq">Learn more</Link>
+					</div>
+				) : (
+					<MediaFeed
+						focus={user_id}
+						private={true}
+						setFocusPost={setFocusPost}
+						postInjection={latestPost}
+					/>
 				)}
 			</div>
 		</div>

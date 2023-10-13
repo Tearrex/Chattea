@@ -36,7 +36,8 @@ function UserPanel(props) {
         }*/
 		setShow(false);
 		await logout();
-		_setUser(undefined); // navigate("/");
+		_setUser(undefined);
+		navigate("/");
 	}
 	useEffect(() => {
 		if (show) {

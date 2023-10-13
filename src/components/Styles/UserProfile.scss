@@ -160,6 +160,27 @@
 		}
 	}
 }
+.privateAlert {
+    color: $secondFore !important;
+    h2 {
+        margin-top: 5rem;
+    }
+    a {
+        color: $niceOrange;
+    }
+}
+.mainProfile .privacyModes {
+	display: flex;
+	flex-flow: row;
+	button {
+		flex: 50%;
+		padding: 1rem 0;
+	}
+    button[active] {
+        background: $niceOrange;
+        color: #fff;
+    }
+}
 .profileMemo {
 	margin: 0;
 	color: #000;
@@ -382,7 +403,7 @@
 		flex-shrink: 0;
 		justify-content: center;
 		gap: 10px;
-		align-items: stretch;
+		align-items: center;
 		.buddies {
 			display: flex;
 			flex-flow: row;

@@ -151,7 +151,7 @@ function Home() {
 					</div>
 				</div>
 				{(_user || localStorage.getItem("guest")) && (
-					<MediaFeed setFocusPost={setFocusPost} />
+					<MediaFeed setFocusPost={setFocusPost} private={false} />
 				)}
 			</div>
 		</div>

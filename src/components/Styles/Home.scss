@@ -718,11 +718,10 @@ p {
 	.trackList .track {
 		display: flex;
 		flex-flow: row;
-		align-items: center;
+		align-items: stretch;
 		background-color: $secondFore;
 		position: relative;
 		a {
-			height: 100%;
 			aspect-ratio: 1/1;
 			background-color: #aaa;
 			display: flex;
@@ -1381,6 +1380,15 @@ p {
 		font-size: 1.2rem;
 		flex-shrink: 0;
 	}
+	.lock,
+	.public {
+		aspect-ratio: 1/1;
+		padding: 1rem;
+		font-size: 1.2rem;
+	}
+	.lock {
+		color: $niceOrange;
+	}
 }
 
 .mediaPostImg {
@@ -1637,6 +1645,7 @@ p {
 		color: #fff;
 		padding: 1rem;
 		bottom: 105%;
+		display: none;
 		left: 50%;
 		transform: translateX(-50%);
 		position: absolute;

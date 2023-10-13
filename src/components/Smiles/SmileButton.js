@@ -44,6 +44,7 @@ function SmileButton(props) {
 		if (_user !== undefined && props.author !== _user["user_id"]) {
 			//console.log(props.canSmile);
 			const _doc = getDoc(_smilesRef).then((s) => {
+				if(!s.exists()) return;
 				var _data = s.data();
 				//console.log("smile data", _data["smiles"]);
 				if (_data["smiles"].includes(_user["user_id"])) didSmile(true);

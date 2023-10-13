@@ -18,7 +18,7 @@ import {
 	endBefore,
 } from "@firebase/firestore";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 function MediaFeed(props) {
 	const { _user, _setUser } = useContext(UserContext);
 	const { _users, _setUsers } = useContext(MembersContext);
@@ -56,9 +56,19 @@ function MediaFeed(props) {
 		};
 		checkCache();
 	}, [cache]);
+	useEffect(() => {
+		console.log("private", props.private);
+		setNewDoc(null);
+		setOldDoc(null);
+		_setPosts({});
+		next_batch();
+	}, [props.private]);
 	const _limit = 5; // batch size, amount of documents to fetch at once
 
-	const postsRef = collection(_dbRef, "posts");
+	const postsRef =
+		props.private === false
+			? collection(_dbRef, "posts")
+			: collection(_dbRef, "users", props.focus, "posts");
 
 	const [oldDoc, setOldDoc] = useState(null); // oldest firebase document, referenced for infinite scroll component
 	useEffect(() => {
@@ -74,6 +84,16 @@ function MediaFeed(props) {
 			setLastUser(newDoc.data().user_id);
 		}
 	}, [newDoc]);
+	useEffect(() => {
+		if (
+			newDoc &&
+			props.postInjection &&
+			Object.values(props.postInjection)[0].date > newDoc.data().date
+		) {
+			console.warn("injected post", props.postInjection);
+			_setPosts({ ...props.postInjection, ...posts });
+		}
+	}, [props.postInjection]);
 	// when the profile page switches users, it will now clear previous posts from the media feed.
 	useEffect(() => {
 		if (newDoc === null && oldDoc === null && switching) {
@@ -86,6 +106,7 @@ function MediaFeed(props) {
 	}, [newDoc, oldDoc, switching]);
 
 	const [posts, _setPosts] = useState({}); // mapped to MediaPost components
+	const [fetchError, setFetchError] = useState(false);
 
 	function splash_page() {
 		navigate("/");
@@ -124,9 +145,15 @@ function MediaFeed(props) {
 		} else if (switching) {
 			setSwitching(false);
 			startFresh = true;
+		} else if (
+			(props.private && (!oldDoc || !oldDoc.data()["private"])) ||
+			(!props.private && (!oldDoc || oldDoc.data()["private"]))
+		) {
+			startFresh = true;
 		}
 		var _query;
 		if (oldDoc === null || oldDoc === undefined) {
+			console.log("olddoc null");
 			if (props.focus === undefined)
 				_query = query(postsRef, orderBy("date", "desc"), limit(_limit));
 			// we can't order by date with the user_id filter
@@ -138,6 +165,7 @@ function MediaFeed(props) {
 					limit(_limit)
 				);
 		} else {
+			console.log("olddoc exists", oldDoc);
 			if (props.focus === undefined)
 				_query = query(
 					postsRef,
@@ -157,40 +185,44 @@ function MediaFeed(props) {
 		if (startFresh) _posts = {};
 		else _posts = { ...posts };
 		var _toCache = [];
-		getDocs(_query).then((snap) => {
-			var _old = null;
-			var _new = null;
-			if (snap.docs.length === 0) console.log("no posts left");
-			snap.forEach((s) => {
-				var data = s.data();
-				//console.log(s);
-				if (_new === null) _new = s;
-				else _old = s;
-				_posts = { ..._posts, [s.id]: data };
-				if (
-					!_user ||
-					(data.user_id !== _user.user_id &&
-						!cache.includes(data.user_id) &&
-						!_toCache.includes(data.user_id))
-				) {
-					_toCache.push(data.user_id);
-				}
-			});
-			if (_toCache.length > 0)
-				requestAnimationFrame((e) => {
-					setCache(cache.concat(_toCache));
+		getDocs(_query)
+			.then((snap) => {
+				var _old = null;
+				var _new = null;
+				if (snap.docs.length === 0) console.log("no posts left");
+				snap.forEach((s) => {
+					var data = s.data();
+					//console.log(s);
+					if (_new === null) _new = s;
+					else _old = s;
+					_posts = { ..._posts, [s.id]: data };
+					if (
+						!_user ||
+						(data.user_id !== _user.user_id &&
+							!cache.includes(data.user_id) &&
+							!_toCache.includes(data.user_id))
+					) {
+						_toCache.push(data.user_id);
+					}
 				});
-			if (
-				newDoc === null ||
-				!_user ||
-				(newDoc !== null &&
-					lastUser !== _user.user_id &&
-					props.focus !== undefined)
-			)
-				setNewDoc(_new);
-			setOldDoc(_old);
-			_setPosts(_posts);
-		});
+				if (_toCache.length > 0)
+					requestAnimationFrame((e) => {
+						setCache(cache.concat(_toCache));
+					});
+				if (
+					newDoc === null ||
+					!_user ||
+					(newDoc !== null &&
+						lastUser !== _user.user_id &&
+						props.focus !== undefined)
+				)
+					setNewDoc(_new);
+				setOldDoc(_old);
+				_setPosts(_posts);
+			})
+			.catch((e) => {
+				setFetchError(true);
+			});
 	}
 
 	const col = collection(_dbRef, "posts");
@@ -206,8 +238,8 @@ function MediaFeed(props) {
 		// viewing profile page
 		liveQuery = query(
 			col,
-			where("user_id", "==", props.focus),
 			orderBy("date", "desc"),
+			where("user_id", "==", props.focus),
 			endBefore(newDoc)
 		);
 	}
@@ -281,20 +313,35 @@ function MediaFeed(props) {
 			endMessage={
 				<>
 					{_user ? (
-						<h2
-							style={{
-								textAlign: "center",
-								color: "#FFF",
-								fontWeight: "normal",
-								gridColumn: "1/-1",
-							}}
-						>
-							☕ There is no more tea down here...
-						</h2>
+						!fetchError ? (
+							<h2
+								style={{
+									textAlign: "center",
+									color: "#FFF",
+									fontWeight: "normal",
+									gridColumn: "1/-1",
+								}}
+							>
+								☕ There is no more tea down here...
+							</h2>
+						) : (
+							<div className="privateAlert" style={{gridColumn: "1/-1"}}>
+								<h2>
+									<i className="fas fa-exclamation-circle"></i> That didn't work
+								</h2>
+								<p>
+									{(_users[props.focus] && _users[props.focus].username) ||
+										"The user"}{" "}
+									may have removed you as a buddy
+								</p>
+								<br />
+								<Link to="/#faq">Learn more</Link>
+							</div>
+						)
 					) : (
 						<div className="brochure">
 							<h4>
-								<i class="fas fa-smile-beam"></i>
+								<i className="fas fa-smile-beam"></i>
 								<br />
 								<br />
 								Chattea is better with you.

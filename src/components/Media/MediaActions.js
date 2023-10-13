@@ -5,6 +5,10 @@ import {
 	collection,
 	deleteDoc,
 	doc,
+	getDocs,
+	limit,
+	orderBy,
+	query,
 	serverTimestamp,
 	setDoc,
 	updateDoc,
@@ -20,31 +24,57 @@ function MediaActions(props) {
 	const { _users, _setUsers } = useContext(MembersContext);
 	const { focusPost, setFocusPost } = props;
 	function closeModal() {
-		setFocusPost(null);
+		if (setFocusPost) setFocusPost(null);
 	}
 	async function delete_post() {
 		var role = "yourself";
 		if (_user.user_id !== focusPost[1].user_id) role = "moderator";
 		if (!window.confirm(`Delete this post as ${role}?`)) return;
-		const postRef = doc(_dbRef, "posts", focusPost[0]);
+
+		const commentsRef = collection(
+			_dbRef,
+			// "users",
+			// user_id,
+			"posts",
+			focusPost[0],
+			"comments"
+		);
+		const commentsQuery = query(commentsRef, orderBy("date", "asc"));
+
+		try {
+			const snap = await getDocs(commentsQuery);
+			if (snap.docs.length > 0) console.log(snap.docs.length, "docs found");
+			snap.forEach(async (doc) => {
+				await deleteDoc(doc.ref);
+				console.log("deleted comment", doc.id);
+			});
+		} catch (e) {
+			return alert("failed to delete");
+		}
+
+		const postRef = !focusPost[1].private
+			? doc(_dbRef, "posts", focusPost[0])
+			: doc(_dbRef, "users", focusPost[1].user_id, "posts", focusPost[0]);
 		await deleteDoc(postRef);
 		const smilesRef = doc(
 			_dbRef,
 			"users/" + focusPost[1].user_id + "/smiles/" + focusPost[0]
 		);
 		await deleteDoc(smilesRef);
-		//console.log("deleted?");
-		const imgRef = ref(
-			_storageRef,
-			"images/" + focusPost[1].user_id + "/" + focusPost[0]
-		);
-		try {
-			await deleteObject(imgRef);
-		} catch (e) {
-			console.log(e);
+
+		if (focusPost[1].image_url != "") {
+			const imgRef = ref(
+				_storageRef,
+				"images/" + focusPost[1].user_id + "/" + focusPost[0]
+			);
+			try {
+				await deleteObject(imgRef);
+			} catch (e) {
+				console.log(e);
+			}
 		}
 		alert("Removed post " + focusPost[0]);
-		setFocusPost(null); // close modal
+		if (setFocusPost) setFocusPost(null); // close modal
 	}
 	function buddify() {
 		const buddyRef = doc(_dbRef, "users/" + _user.user_id);

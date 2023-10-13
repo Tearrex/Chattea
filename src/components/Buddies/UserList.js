@@ -55,7 +55,6 @@ function UserList(props) {
 
 	const [isOpen, setOpen] = useState(open !== undefined);
 	useEffect(() => {
-		if (users.length === 0) return;
 		if (!props.buddies && !open) {
 			console.log("bye beee");
 			if (props.onClose) props.onClose();
@@ -96,8 +95,8 @@ function UserList(props) {
 				<div className="buddiesFrame center">
 					{users &&
 						users.length > 0 &&
-						users.map((buddy, i) => {
-							return <UserListItem buddy={buddy} key={i} toggle={setOpen} />;
+						users.map((buddy) => {
+							return <UserListItem buddy={buddy} key={buddy} toggle={setOpen} />;
 						})}
 				</div>
 			</div>

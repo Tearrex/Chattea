@@ -3,7 +3,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { useAuth, _storageRef, _dbRef } from "../Main/firebase";
 import { uploadBytesResumable, ref, getDownloadURL } from "firebase/storage";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { UserContext } from "../Main/Contexts";
 import { Timestamp, addDoc, setDoc, collection } from "firebase/firestore";
 import imageCompression from "browser-image-compression";
@@ -159,7 +159,9 @@ function Submitter(props) {
 		if (pickingTrack) {
 			return search_song();
 		}
-		const newPost = doc(collection(_dbRef, "posts"));
+		const newPost = !props.privateMode
+			? doc(collection(_dbRef, "posts"))
+			: doc(collection(_dbRef, "users", _user.user_id, "posts"));
 		let _content = _text;
 		let _author = _user.user_id;
 		let _caption = caption;
@@ -207,34 +209,54 @@ function Submitter(props) {
 							image_url: downloadURL,
 							user_id: _author,
 							caption: _caption,
+							private: props.privateMode || false
+						}).then(() => {
+							setCropped(false);
+							remove_image();
+							compProgress.current.style.maxWidth = "0%";
+							setUploading(false);
+							clear_audios(true);
+							setDoc(
+								doc(_dbRef, "users/" + _user.user_id + "/smiles/" + newPost.id),
+								{ smiles: [] }
+							).then(() => {
+								getDoc(newPost).then((snap) => {
+									if (snap.exists()) {
+										if (props.onPostSubmit)
+											props.onPostSubmit({ [newPost.id]: snap.data() });
+									}
+								});
+							});
+
+							console.log("Post upload succesful!");
 						});
-						setCropped(false);
-						setDoc(
-							doc(_dbRef, "users/" + _user.user_id + "/smiles/" + newPost.id),
-							{ smiles: [] }
-						);
-						remove_image();
-						compProgress.current.style.maxWidth = "0%";
-						setUploading(false);
-						console.log("Post upload succesful!");
 					});
 				}
 			);
 		} else {
 			try {
-				const docRef = await addDoc(collection(_dbRef, "posts"), {
+				let collectionRef = !props.privateMode
+					? collection(_dbRef, "posts")
+					: collection(_dbRef, "users", _user.user_id, "posts");
+				const docRef = await addDoc(collectionRef, {
 					content: _content,
 					date: Timestamp.now(),
 					image_url: "",
 					track: _track,
 					caption: "",
 					user_id: _user.user_id,
+					private: props.privateMode || false
 				});
-				await setDoc(
-					doc(_dbRef, "users/" + _user.user_id + "/smiles/" + docRef.id),
-					{ smiles: [] }
-				);
-				console.log("Created post " + docRef.id);
+				const snap = await getDoc(docRef);
+				if (snap.exists()) {
+					await setDoc(
+						doc(_dbRef, "users/" + _user.user_id + "/smiles/" + docRef.id),
+						{ smiles: [] }
+					);
+					if (props.onPostSubmit)
+						props.onPostSubmit({ [docRef.id]: snap.data() });
+					console.log("Created post " + docRef.id);
+				}
 			} catch (e) {
 				console.log(e);
 			}
@@ -281,14 +303,18 @@ function Submitter(props) {
 			);
 		}
 	}
-	function clear_audios() {
+	function clear_audios(all = false) {
 		const nest = document.querySelector("#audionest");
 		if (!nest) return;
 
 		const remains = nest.querySelectorAll("audio");
 		for (let r = 0; r < remains.length; r++) {
 			const _audio = remains[r];
-			if (pickedTrack && _audio.getAttribute("src") == pickedTrack.preview_url)
+			if (
+				!all &&
+				pickedTrack &&
+				_audio.getAttribute("src") == pickedTrack.preview_url
+			)
 				continue;
 			_audio.pause();
 			_audio.remove();
@@ -317,23 +343,9 @@ function Submitter(props) {
 		clear_audios();
 
 		let audio = new Audio(track.preview_url);
+		audio.autoplay = true;
 		nest.appendChild(audio);
-		try {
-			setTimeout(() => {
-				if (document.querySelector("audio").readyState === 2) {
-					audio.play();
-					setPickedTrack(track);
-				} else {
-					console.warn("player was not ready!!!", audio);
-					audio.currentTime = 0;
-					audio.play(); // try again, buffer issue?
-					setPickedTrack(track);
-				}
-			}, 1000);
-		} catch (e) {
-			console.log("error playing");
-			clear_audios();
-		}
+		setPickedTrack(track);
 	}
 	function toggle_music_view(e) {
 		e.preventDefault();
@@ -343,7 +355,7 @@ function Submitter(props) {
 	}
 	function cancel_pick(e) {
 		e.preventDefault();
-		clear_audios();
+		clear_audios(true);
 		_setText(""); // clear search query
 		setPickedTrack(null);
 		setPickingTrack(false);
@@ -451,6 +463,10 @@ function Submitter(props) {
 			setMobileCrop(true);
 		}
 	}, []);
+	function open_spotify(e) {
+		let confirm = window.confirm("Open spotify link?");
+		if (!confirm) return e.preventDefault();
+	}
 	return (
 		<div className="subPop" id="subPop">
 			<form className="submission" onSubmit={postMessage}>
@@ -527,6 +543,7 @@ function Submitter(props) {
 											href={track[1].external_urls.spotify}
 											target="_blank"
 											rel="nonreferrer"
+											onClick={open_spotify}
 										>
 											<i class="fas fa-external-link-alt"></i>
 										</a>
@@ -570,12 +587,8 @@ function Submitter(props) {
 										<span>{pickedTrack.artists[0].name}</span>
 									</p>
 								</div>
-								<a
-									href={pickedTrack.external_urls.spotify}
-									target="_blank"
-									rel="nonreferrer"
-								>
-									<i class="fas fa-external-link-alt"></i>
+								<a href="#" onClick={cancel_pick}>
+									<i class="fas fa-minus"></i>
 								</a>
 							</div>
 						</div>
