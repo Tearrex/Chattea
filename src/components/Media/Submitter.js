@@ -385,7 +385,6 @@ function Submitter(props) {
 		let middleX = canvasPos.x + canvasPos.width / 4;
 		let middleY = canvasPos.height / 4 + canvasPos.y;
 
-		console.log([x, y]);
 		x = Math.min(
 			Math.max(distance(middleX, x), 0),
 			canvasPos.width - matrix.clientWidth
@@ -485,7 +484,7 @@ function Submitter(props) {
 				</div>
 				{pickingTrack && !spotifyToken && (
 					<p className="musicLoad">
-						<i className="fas fa-cog"></i> Waiting for server...
+						<i className="fas fa-cog"></i> Waiting for API token...
 					</p>
 				)}
 				{pickingTrack && trackResults && (
@@ -610,7 +609,7 @@ function Submitter(props) {
 			<div ref={subWarning} className="subWarning">
 				<div ref={compProgress} className="compProgress"></div>
 				<div className="compText">
-					⚠️ Upload exceeds 1MB, your image will be compressed!{" "}
+					⚠️ Upload exceeds 1MB, compression will occur.{" "}
 					<span>({imageSize}/1.0MB)</span>
 				</div>
 			</div>
@@ -639,7 +638,7 @@ function Submitter(props) {
 				>
 					{waiting && (
 						<h1 className="load">
-							<i class="fas fa-cog"></i> Processing request...
+							<i class="fas fa-cog"></i> Processing...
 						</h1>
 					)}
 					<div className="imgMenu">

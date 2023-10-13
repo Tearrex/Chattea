@@ -129,6 +129,9 @@ function SplashPage() {
 		const jump = document.getElementById("featjump");
 		window.scrollTo(0, jump.getBoundingClientRect().top - window.innerHeight);
 	}
+	function feature_jump() {
+		document.querySelector(".features").scrollIntoView({ behavior: "smooth" });
+	}
 	function redirect_user() {
 		if (_user) navigate("/main");
 	}
@@ -189,7 +192,7 @@ function SplashPage() {
 									style={{ display: emailInput === prevEmail ? "block" : null }}
 								>
 									{emailInput !== prevEmail
-										? "You'll have to verify this email."
+										? "You'll have to verify this later."
 										: "This email is already in use."}
 								</label>
 								<input
@@ -218,12 +221,19 @@ function SplashPage() {
 							>
 								<i class="fas fa-sign-in-alt"></i> Member Login
 							</button>
+							<button
+								className="jump stealthBtn"
+								type="button"
+								onClick={feature_jump}
+							>
+								<i class="fas fa-angle-double-down"></i> Learn more
+							</button>
 						</form>
 					</div>
 				</div>
 			</section>
 			<section className="features">
-				<h1 onClick={feature_scroll}>
+				<h1 id="featureHead">
 					<i class="fas fa-star"></i> Feature your cat{" "}
 					<i class="fas fa-chevron-down down"></i>
 				</h1>
@@ -241,14 +251,14 @@ function SplashPage() {
 			</section>
 			<section className="musictaste">
 				<img src="/spotify.svg" className="spotify" />
-				<img src="/waver.png" className="humanoid" />
+				<div className="portal">
+					<img src="/waver.png" className="humanoid" />
+				</div>
 				<header>
-					<h1 style={{ textAlign: "right" }}>
+					<h1 style={{ textAlign: "left" }}>
 						<i className="fas fa-music" /> Add some sound
 					</h1>
-					<p>
-						Pair a snapshot with your favorite music from Spotify.
-					</p>
+					<p>Pair a snapshot with your favorite music from Spotify.</p>
 				</header>
 			</section>
 			<FAQPage />

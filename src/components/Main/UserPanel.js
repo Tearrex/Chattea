@@ -52,7 +52,7 @@ function UserPanel(props) {
 			ref={selfRef}
 			className="welcome"
 			id="welcome"
-			style={{ zIndex: "-5", opacity: "0"}}
+			style={{ zIndex: "-5", opacity: "0" }}
 			onTransitionEnd={hide}
 		>
 			<div className="profile">
@@ -69,11 +69,11 @@ function UserPanel(props) {
 						{/**verified === false ?
                         <button className="verifyEmail"><span>📧</span>Verify</button>
                     : null */}
-						<button className="logout stealthBtn" onClick={logout_user}>
-							<i className="fas fa-sign-out-alt"></i> log out
-						</button>
 						<button className="stealthBtn" onClick={() => navigate("/#faq")}>
 							<i className="fas fa-question"></i> FAQ
+						</button>
+						<button className="logout stealthBtn" onClick={logout_user}>
+							<i className="fas fa-sign-out-alt"></i> log out
 						</button>
 					</div>
 				</div>
