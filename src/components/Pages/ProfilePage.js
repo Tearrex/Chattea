@@ -509,7 +509,7 @@ function ProfilePage(props) {
 						</div>
 					)}
 				</div>
-				{profile && _user.user_id === profile.user_id && (
+				{profile && _user && _user.user_id === profile.user_id && (
 					<>
 						<p className="privateAlert profile border">
 							{privateView ? (
