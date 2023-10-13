@@ -61,7 +61,7 @@ function MediaFeed(props) {
 		setNewDoc(null);
 		setOldDoc(null);
 		_setPosts({});
-		next_batch();
+		if(props.focus) next_batch();
 	}, [props.private]);
 	const _limit = 5; // batch size, amount of documents to fetch at once
 
@@ -74,6 +74,7 @@ function MediaFeed(props) {
 	useEffect(() => {
 		// whether to display the message that the user reached the end of the road/feed
 		hasMore(oldDoc !== null && oldDoc !== undefined);
+		if (oldDoc) console.log("new olddoc", oldDoc);
 	}, [oldDoc]);
 	const [newDoc, setNewDoc] = useState(null); // the latest document we fetched, referenced for realtime updates w/ Firebase hooks
 	const [lastUser, setLastUser] = useState("");
@@ -155,7 +156,8 @@ function MediaFeed(props) {
 		if (
 			oldDoc === null ||
 			oldDoc === undefined ||
-			oldDoc.data()["private"] != props.private
+			(oldDoc.data()["private"] != props.private &&
+				oldDoc.data()["private"] != undefined)
 		) {
 			console.log("olddoc null");
 			if (props.focus === undefined)
@@ -194,6 +196,7 @@ function MediaFeed(props) {
 				var _old = null;
 				var _new = null;
 				if (snap.docs.length === 0) console.log("no posts left");
+				console.log("fetched", snap.docs.length);
 				snap.forEach((s) => {
 					var data = s.data();
 					//console.log(s);
