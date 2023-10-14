@@ -59,8 +59,10 @@ function MediaFeed(props) {
 	useEffect(() => {
 		console.log("private", props.private);
 		if (
-			oldDoc &&
-			(oldDoc.data().private || false) != (props.private || false)
+			!oldDoc ||
+			(oldDoc &&
+				(oldDoc.data().private || false) != (props.private || false)) ||
+			(props.focus != lastUser && lastUser != "")
 		) {
 			console.warn("jumping batch");
 			return next_batch();
@@ -80,18 +82,20 @@ function MediaFeed(props) {
 	useEffect(() => {
 		// whether to display the message that the user reached the end of the road/feed
 		hasMore(oldDoc !== null && oldDoc !== undefined);
-		if (oldDoc) console.log("new olddoc", oldDoc);
-		else console.log("olddoc is NULL");
+		if (oldDoc) {
+			console.log("OLDDOC", oldDoc);
+			setLastUser(oldDoc.data().user_id);
+		} else console.log("OLDDOC is NULL");
 	}, [oldDoc]);
 	const [newDoc, setNewDoc] = useState(null); // the latest document we fetched, referenced for realtime updates w/ Firebase hooks
 	const [lastUser, setLastUser] = useState("");
 	const [switching, setSwitching] = useState(false);
 	// remember the user id of the latest document to recognize profile page switching
-	useEffect(() => {
-		if (newDoc !== null && newDoc !== undefined) {
-			setLastUser(newDoc.data().user_id);
-		}
-	}, [newDoc]);
+	// useEffect(() => {
+	// 	if (oldDoc) {
+	// 		setLastUser(newDoc.data().user_id);
+	// 	}
+	// }, [oldDoc]);
 	useEffect(() => {
 		if (
 			newDoc &&
@@ -104,7 +108,7 @@ function MediaFeed(props) {
 	}, [props.postInjection]);
 	// when the profile page switches users, it will now clear previous posts from the media feed.
 	useEffect(() => {
-		if (newDoc === null && oldDoc === null && switching) {
+		if (!newDoc && !oldDoc && switching) {
 			// wanted to give it smooth behavior but it often starts requesting more
 			// batches of posts in the middle of the scroll animation since the images don't load right away.
 			// a placeholder element with a fixed height would help
@@ -146,13 +150,14 @@ function MediaFeed(props) {
 					(oldDoc.data().private || false) != (props.private || false))) &&
 			!switching
 		) {
+			console.log("DETECTED visiblity switch");
 			setNewDoc(null);
 			setSwitching(true);
 			setOldDoc(null);
 			return;
 		} else if (switching) {
 			console.log("switching NOW!");
-			setSwitching(false);
+			// setSwitching(false);
 			startFresh = true;
 		} else if (
 			(props.private && (!oldDoc || !oldDoc.data()["private"])) ||
@@ -162,11 +167,8 @@ function MediaFeed(props) {
 			console.log("fresh batch now!");
 		}
 		let _query;
-		if (
-			!oldDoc ||
-			(oldDoc.data()["private"] || false) != (props.private || false)
-		) {
-			console.log("olddoc null");
+		if (startFresh) {
+			console.log("feed from zero");
 			if (!props.focus)
 				_query = query(postsRef, orderBy("date", "desc"), limit(_limit));
 			// we can't order by date with the user_id filter
@@ -200,14 +202,22 @@ function MediaFeed(props) {
 		var _toCache = [];
 		getDocs(_query)
 			.then((snap) => {
-				var _old = null;
-				var _new = null;
-				if (snap.docs.length === 0) hasMore(false)
+				let _old = null;
+				let _new = null;
+				if (snap.docs.length === 0) {
+					hasMore(false);
+					if (!switching) return;
+					else {
+						setOldDoc(null);
+						// setSwitching(false);
+						hasMore(false);
+					}
+				}
 				console.log("fetched", snap.docs.length);
 				snap.forEach((s) => {
 					var data = s.data();
 					//console.log(s);
-					if (_new === null) _new = s;
+					if (!_new) _new = s;
 					_old = s;
 					_posts = { ..._posts, [s.id]: data };
 					if (
@@ -229,7 +239,10 @@ function MediaFeed(props) {
 					(newDoc && lastUser !== _user.user_id && props.focus)
 				)
 					setNewDoc(_new);
-				if (_old) setOldDoc(_old);
+				if (_old || switching) {
+					setOldDoc(_old);
+					setSwitching(false);
+				}
 				_setPosts(_posts);
 			})
 			.catch((e) => {
@@ -274,7 +287,8 @@ function MediaFeed(props) {
 		}
 	}, [livePosts]);
 	useEffect(() => {
-		next_batch();
+		if (props.focus && lastUser !== props.focus && lastUser !== "")
+			next_batch();
 	}, [props.focus]);
 	useEffect(() => {
 		if (Object.keys(posts).length > 0) {
