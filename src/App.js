@@ -182,6 +182,11 @@ function App() {
 									path="/profile/:user_id"
 									element={<ProfilePage />}
 								/>
+								<Route
+									exact
+									path="/profile/:user_id/:visibility"
+									element={<ProfilePage />}
+								/>
 								<Route exact path="/post/:post_id" element={<BriefPost />} />
 							</Routes>
 						</div>

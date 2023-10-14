@@ -118,10 +118,17 @@ function Home() {
 		document.getElementById("welcomer").style.display = null;
 		localStorage.removeItem("tc");
 	}, []);
+	// state passed down to mediaactions and mediafeed components to bounce between
+	// different modal tabs of the post management menu
+	const [changeVisibility, setChangeVisibility] = useState(false);
 	return (
 		<div className="homeWrapper">
 			{focusPost !== null && (
-				<MediaActions focusPost={focusPost} setFocusPost={setFocusPost} />
+				<MediaActions
+					focusPost={focusPost}
+					setFocusPost={setFocusPost}
+					visibilityContext={{ changeVisibility, setChangeVisibility }}
+				/>
 			)}
 			<div id="home" className="clamper">
 				<div id="audionest"></div>
@@ -150,8 +157,8 @@ function Home() {
 							<Submitter onMessageSend={postMessage} />
 						) : (
 							<h2 style={{ color: "#fff" }} className="privatePrompt">
-								<Link to={"/profile/" + _user.user_id}>Visit your profile</Link> to
-								post something private
+								<Link to={"/profile/" + _user.user_id}>Visit your profile</Link>{" "}
+								to post something private
 							</h2>
 						)}
 					</>
@@ -163,13 +170,17 @@ function Home() {
 				{/* .infinite-scroll-component */}
 				{(_user || localStorage.getItem("guest")) &&
 					(!privateView ? (
-						<MediaFeed setFocusPost={setFocusPost} private={false} />
+						<MediaFeed
+							setFocusPost={(f, v) => {
+								setFocusPost(f);
+								setChangeVisibility(v || false);
+							}}
+							private={false}
+							visibilityContext={{ changeVisibility, setChangeVisibility }}
+						/>
 					) : (
 						<div className="infinite-scroll-component">
 							<div className="privateAlert" style={{ gridColumn: "1/-1" }}>
-								<h2>
-									<i className="fas fa-wrench"></i> Improvements Coming
-								</h2>
 								<p>
 									We can't show a digest of all private posts yet, <br />
 									but you can browse your buddies' private pages individually.
@@ -185,7 +196,11 @@ function Home() {
 									{mutuals.map((m, i) => {
 										// return <button>{_users[m].username}</button>;
 										return (
-											<Link to={"/profile/" + m} className="bCard" key={i}>
+											<Link
+												to={"/profile/" + m + "/private"}
+												className="bCard"
+												key={i}
+											>
 												<img src={_users[m].pfp} alt="user pic" />
 												<p>
 													@{_users[m].username}{" "}

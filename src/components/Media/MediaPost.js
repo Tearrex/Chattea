@@ -161,7 +161,7 @@ function MediaPost(props) {
 			"users/" + props.authorID + "/smiles/" + props.postID
 		);
 		await deleteDoc(smilesRef);
-		
+
 		//console.log("deleted?");
 		if (image_url !== "") {
 			const imgRef = ref(_storageRef, "images/" + user_id + "/" + props.postID);
@@ -572,21 +572,28 @@ function MediaPost(props) {
 					<div className="timestamp">
 						{(!_user ||
 							(_user && (_user.user_id === user_id || _users[user_id]))) && (
-							<button className="pActions" onClick={props.setFocusPost}>
+							<button className="pActions" onClick={() => props.setFocusPost()}>
 								<i class="fas fa-ellipsis-h"></i>
 							</button>
 						)}
-						{_private === true ? (
-							<div className="tooltip lock">
-								<i class="fas fa-lock"></i>
-								<span className="tooltext">Private</span>
-							</div>
-						) : (
-							<div className="tooltip public">
-								<i class="fas fa-globe-americas"></i>
-								<span className="tooltext">Public</span>
-							</div>
-						)}
+						<div
+							className="tooltip lock"
+							isauthor={_user && _user.user_id === user_id ? "true" : null}
+							onClick={() => props.setFocusPost(true)}
+						>
+							{_private === true ? (
+								<>
+									<i class="fas fa-lock"></i>
+									<span className="tooltext">Private</span>
+								</>
+							) : (
+								<>
+									<i class="fas fa-globe-americas"></i>
+									<span className="tooltext">Public</span>
+								</>
+							)}
+						</div>
+
 						<p>{postDate}</p>
 					</div>
 				</div>

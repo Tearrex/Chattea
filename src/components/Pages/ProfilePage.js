@@ -26,7 +26,7 @@ import Submitter from "../Media/Submitter";
 function ProfilePage(props) {
 	const { _user, _setUser } = useContext(UserContext);
 	const { _users, _setUsers } = useContext(MembersContext);
-	const { user_id } = useParams();
+	const { user_id, visibility } = useParams();
 	const [canSave, setSave] = useState(false);
 	const [uploading, setUploading] = useState(false);
 	//profile picture
@@ -41,7 +41,9 @@ function ProfilePage(props) {
 	const [bannerSaved, setBannerSaved] = useState(false);
 
 	const [profile, setProfile] = useState(null);
-	const [privateView, setPrivateView] = useState(false);
+	const [privateView, setPrivateView] = useState(
+		visibility === "private" || false
+	);
 
 	/*
     Instead of using states for original values, utilize
@@ -149,7 +151,7 @@ function ProfilePage(props) {
 			setUserPfp(profile.pfp);
 			setBio(profile.about);
 			if (profile["banner"] !== undefined) setBanner(profile.banner);
-			console.log("Author's profile", profile);
+			// console.log("Author's profile", profile);
 		}
 	}, [profile]);
 	// write firebase rules
@@ -342,11 +344,19 @@ function ProfilePage(props) {
 		localStorage.removeItem("tc");
 	}, []);
 	const [latestPost, setLatestPost] = useState(null);
+
+	// state passed down to mediaactions and mediafeed components to bounce between
+	// different modal tabs of the post management menu
+	const [changeVisibility, setChangeVisibility] = useState(false);
 	return (
 		<div className="homeWrapper">
 			<div id="audionest"></div>
 			{focusPost !== null && (
-				<MediaActions focusPost={focusPost} setFocusPost={setFocusPost} />
+				<MediaActions
+					focusPost={focusPost}
+					setFocusPost={setFocusPost}
+					visibilityContext={{ changeVisibility, setChangeVisibility }}
+				/>
 			)}
 			<div id="home" className="clamper">
 				<div
@@ -533,8 +543,12 @@ function ProfilePage(props) {
 						<MediaFeed
 							focus={profile.user_id}
 							private={false}
-							setFocusPost={setFocusPost}
+							setFocusPost={(f, v) => {
+								setFocusPost(f);
+								setChangeVisibility(v || false);
+							}}
 							postInjection={latestPost}
+							visibilityContext={{ changeVisibility, setChangeVisibility }}
 						/>
 					)
 				) : !profile ||
@@ -554,8 +568,12 @@ function ProfilePage(props) {
 					<MediaFeed
 						focus={profile.user_id}
 						private={true}
-						setFocusPost={setFocusPost}
+						setFocusPost={(f, v) => {
+							setFocusPost(f);
+							setChangeVisibility(v || false);
+						}}
 						postInjection={latestPost}
+						visibilityContext={{ changeVisibility, setChangeVisibility }}
 					/>
 				)}
 				{!profile && (

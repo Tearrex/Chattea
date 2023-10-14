@@ -58,15 +58,21 @@ function MediaFeed(props) {
 	}, [cache]);
 	useEffect(() => {
 		console.log("private", props.private);
+		if (
+			oldDoc &&
+			(oldDoc.data().private || false) != (props.private || false)
+		) {
+			console.warn("jumping batch");
+			return next_batch();
+		}
 		setNewDoc(null);
 		setOldDoc(null);
 		_setPosts({});
-		if(props.focus) next_batch();
 	}, [props.private]);
 	const _limit = 5; // batch size, amount of documents to fetch at once
 
 	const postsRef =
-		props.private === false
+		(props.private || false) === false
 			? collection(_dbRef, "posts")
 			: collection(_dbRef, "users", props.focus, "posts");
 
@@ -75,6 +81,7 @@ function MediaFeed(props) {
 		// whether to display the message that the user reached the end of the road/feed
 		hasMore(oldDoc !== null && oldDoc !== undefined);
 		if (oldDoc) console.log("new olddoc", oldDoc);
+		else console.log("olddoc is NULL");
 	}, [oldDoc]);
 	const [newDoc, setNewDoc] = useState(null); // the latest document we fetched, referenced for realtime updates w/ Firebase hooks
 	const [lastUser, setLastUser] = useState("");
@@ -134,16 +141,17 @@ function MediaFeed(props) {
 		}
 		var startFresh = false; // replace old posts?
 		if (
-			props.focus !== undefined &&
-			props.focus !== lastUser &&
-			lastUser !== "" &&
+			((props.focus && props.focus !== lastUser && lastUser !== "") ||
+				(oldDoc &&
+					(oldDoc.data().private || false) != (props.private || false))) &&
 			!switching
 		) {
 			setNewDoc(null);
-			setOldDoc(null);
 			setSwitching(true);
+			setOldDoc(null);
 			return;
 		} else if (switching) {
+			console.log("switching NOW!");
 			setSwitching(false);
 			startFresh = true;
 		} else if (
@@ -151,16 +159,15 @@ function MediaFeed(props) {
 			(!props.private && (!oldDoc || oldDoc.data()["private"]))
 		) {
 			startFresh = true;
+			console.log("fresh batch now!");
 		}
-		var _query;
+		let _query;
 		if (
-			oldDoc === null ||
-			oldDoc === undefined ||
-			(oldDoc.data()["private"] != props.private &&
-				oldDoc.data()["private"] != undefined)
+			!oldDoc ||
+			(oldDoc.data()["private"] || false) != (props.private || false)
 		) {
 			console.log("olddoc null");
-			if (props.focus === undefined)
+			if (!props.focus)
 				_query = query(postsRef, orderBy("date", "desc"), limit(_limit));
 			// we can't order by date with the user_id filter
 			// firebase limitations....
@@ -172,7 +179,7 @@ function MediaFeed(props) {
 				);
 		} else {
 			console.log("olddoc exists", oldDoc);
-			if (props.focus === undefined)
+			if (!props.focus)
 				_query = query(
 					postsRef,
 					orderBy("date", "desc"),
@@ -195,13 +202,13 @@ function MediaFeed(props) {
 			.then((snap) => {
 				var _old = null;
 				var _new = null;
-				if (snap.docs.length === 0) console.log("no posts left");
+				if (snap.docs.length === 0) hasMore(false)
 				console.log("fetched", snap.docs.length);
 				snap.forEach((s) => {
 					var data = s.data();
 					//console.log(s);
 					if (_new === null) _new = s;
-					else _old = s;
+					_old = s;
 					_posts = { ..._posts, [s.id]: data };
 					if (
 						!_user ||
@@ -217,14 +224,12 @@ function MediaFeed(props) {
 						setCache(cache.concat(_toCache));
 					});
 				if (
-					newDoc === null ||
+					!newDoc ||
 					!_user ||
-					(newDoc !== null &&
-						lastUser !== _user.user_id &&
-						props.focus !== undefined)
+					(newDoc && lastUser !== _user.user_id && props.focus)
 				)
 					setNewDoc(_new);
-				setOldDoc(_old);
+				if (_old) setOldDoc(_old);
 				_setPosts(_posts);
 			})
 			.catch((e) => {
@@ -305,7 +310,7 @@ function MediaFeed(props) {
 				key={post[0]}
 				msg={post[1]}
 				postID={post[0]}
-				setFocusPost={() => props.setFocusPost(post)}
+				setFocusPost={(vis = false) => props.setFocusPost(post, vis)}
 				authorID={post[1].user_id}
 			/>
 		);

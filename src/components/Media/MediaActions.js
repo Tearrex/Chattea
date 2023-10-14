@@ -5,6 +5,7 @@ import {
 	collection,
 	deleteDoc,
 	doc,
+	getDoc,
 	getDocs,
 	limit,
 	orderBy,
@@ -18,12 +19,16 @@ import { useContext, useEffect, useState } from "react";
 import { copy_text } from "../../App";
 import { MembersContext, UserContext } from "../Main/Contexts";
 import { _dbRef, _storageRef } from "../Main/firebase";
+import { useNavigate } from "react-router-dom";
 
 function MediaActions(props) {
 	const { _user, _setUser } = useContext(UserContext);
 	const { _users, _setUsers } = useContext(MembersContext);
-	const { focusPost, setFocusPost } = props;
+	const { focusPost, setFocusPost, visibilityContext } = props;
+	const navigate = useNavigate();
 	function closeModal() {
+		if(mergeStatus > 0) return;
+		visibilityContext.setChangeVisibility(false);
 		if (setFocusPost) setFocusPost(null);
 	}
 	async function delete_post() {
@@ -49,7 +54,7 @@ function MediaActions(props) {
 				console.log("deleted comment", doc.id);
 			});
 		} catch (e) {
-			return alert("failed to delete");
+			return alert("failed to delete", e.message);
 		}
 
 		const postRef = !focusPost[1].private
@@ -112,6 +117,7 @@ function MediaActions(props) {
 	}
 	const [report, setReport] = useState(false);
 	const [reported, setReported] = useState(false);
+	const [vchanged, setVchanged] = useState(false);
 	async function submit_report() {
 		var report = document.getElementById("reptype").value;
 		if (report === "PICK A CATEGORY") return;
@@ -130,11 +136,71 @@ function MediaActions(props) {
 			console.log(e);
 		}
 	}
+	const [pickedPrivateVis, setPickedPrivateVis] = useState(
+		focusPost[1].private == true
+	);
+	const [mergeStatus, setMergeStatus] = useState(0);
+	useEffect(() => {
+		if (mergeStatus === 1)
+			setTimeout(() => {
+				console.log("private is", focusPost[1].private);
+				const _doc =
+					focusPost[1].private == true
+						? doc(
+								_dbRef,
+								"users/" + focusPost[1].user_id + "/posts/" + focusPost[0]
+						  )
+						: doc(_dbRef, "posts", focusPost[0]);
+
+				getDoc(_doc).then((snap) => {
+					if (snap.exists()) {
+						deleteDoc(snap.ref)
+							.then(() => {
+								setMergeStatus(2); // proceed to duplicate post
+							})
+							.catch((e) => {
+								alert("Failed to move post");
+								setMergeStatus(0);
+							});
+					}
+				});
+			}, 1000);
+		else if (mergeStatus === 2)
+			setTimeout(async () => {
+				const _newDoc = focusPost[1].private
+					? doc(_dbRef, "posts/" + focusPost[0])
+					: doc(
+							_dbRef,
+							"users/" + focusPost[1].user_id + "/posts/" + focusPost[0]
+					  );
+				try {
+					await setDoc(_newDoc, {
+						...focusPost[1],
+						private: !focusPost[1].private,
+					});
+				} catch (e) {
+					alert("failed to duplicate", e.message);
+					return setMergeStatus(0);
+				}
+				if (!focusPost[1].private)
+					navigate("/profile/" + focusPost[1].user_id + "/private");
+				else navigate("/post/" + focusPost[0]);
+				closeModal();
+			}, 1000);
+	}, [mergeStatus]);
+	function start_merge() {
+		if (
+			(pickedPrivateVis && focusPost[1].private) ||
+			(!pickedPrivateVis && !focusPost[1].private)
+		)
+			return;
+		setMergeStatus(1);
+	}
 	return (
 		<>
 			{focusPost !== null && (
 				<>
-					{!report && (
+					{!report && visibilityContext.changeVisibility === false && (
 						<div id="postActionModal">
 							{_user &&
 								(_user.role === "admin" ||
@@ -151,11 +217,13 @@ function MediaActions(props) {
 									Report
 								</button>
 							)}
-							{_user && _user.role === "admin" && (
-								<button className="feature">
-									<i className="fas fa-star" /> Feature Post
-								</button>
-							)}
+							{_user &&
+								_user.role === "admin" &&
+								focusPost[1].private != true && (
+									<button className="feature">
+										<i className="fas fa-star" /> Feature Post
+									</button>
+								)}
 							{_user && _user.user_id === focusPost[1].user_id && (
 								<button>
 									<i class="fas fa-thumbtack"></i> Pin post
@@ -189,6 +257,73 @@ function MediaActions(props) {
 							<button onClick={closeModal}>Cancel</button>
 						</div>
 					)}
+					{visibilityContext.changeVisibility === true && (
+						<div id="postActionModal">
+							<p className="repHead">Post Privacy</p>
+							{!vchanged ? (
+								<>
+									<div className="privacyModes">
+										<button
+											active={!pickedPrivateVis && "true"}
+											onClick={() => setPickedPrivateVis(false)}
+											disabled={!_user || _user.user_id != focusPost[1].user_id}
+										>
+											<i className="fas fa-globe-americas"></i> Public
+										</button>
+										<button
+											active={pickedPrivateVis && "true"}
+											onClick={() => setPickedPrivateVis(true)}
+											disabled={!_user || _user.user_id != focusPost[1].user_id}
+										>
+											<i className="fas fa-lock"></i> Private
+										</button>
+									</div>
+								</>
+							) : (
+								<p style={{ opacity: 0.8 }}>
+									We received your report and will review this post momentarily.
+								</p>
+							)}
+							{mergeStatus > 0 && (
+								<div className="mergestatus">
+									<p>
+										{mergeStatus === 1 && (
+											<>
+												<i className="fas fa-cog" /> Ejecting old post...
+											</>
+										)}
+										{mergeStatus === 2 && (
+											<>
+												<i className="fas fa-cog" /> Creating new post...
+											</>
+										)}
+									</p>
+								</div>
+							)}
+							{mergeStatus === 0 && (
+								<>
+									{!pickedPrivateVis ? (
+										<p className="featureStar">
+											<i className="fas fa-star"></i>
+											<br />
+											Public posts can be featured on Chattea.
+										</p>
+									) : (
+										<p className="private">
+											<i className="fas fa-eye-slash"></i>
+											<br />
+											Only your buddies can see this post.
+										</p>
+									)}
+									{(focusPost[1].private === true) != pickedPrivateVis && (
+										<button className="reportBtn hcenter" onClick={start_merge}>
+											Start Change
+										</button>
+									)}
+								</>
+							)}
+						</div>
+					)}
 					{report && (
 						<div id="postActionModal">
 							{!reported ? (
@@ -216,7 +351,10 @@ function MediaActions(props) {
 											Blackmail / Slander / Misinformation
 										</option>
 									</select>
-									<p style={{ margin: 0, paddingBottom: "10px", opacity: 0.8 }} className="subText">
+									<p
+										style={{ margin: 0, paddingBottom: "10px", opacity: 0.8 }}
+										className="subText"
+									>
 										Keep Chattea safe, please don't abuse this form...
 									</p>
 								</>

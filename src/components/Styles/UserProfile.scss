@@ -168,7 +168,8 @@
 }
 .privateAlert.border {
 	border: 4px dashed $niceOrange;
-	padding: 1rem; margin: 0;
+	padding: 1rem;
+	margin: 0;
 }
 .privateAlert {
 	color: $secondFore !important;
@@ -180,7 +181,7 @@
 	}
 }
 .privatePrompt a {
-	color: $niceOrange
+	color: $niceOrange;
 }
 .privateAlert.profile {
 	i {
@@ -467,7 +468,7 @@
 	overflow: hidden;
 	display: grid;
 	grid-auto-flow: row;
-	grid-template-columns: repeat(3, 1fr);
+	grid-template-columns: repeat(2, 1fr);
 	gap: 10px;
 	align-items: center;
 	.bTooltip {
@@ -480,9 +481,9 @@
 	align-items: center;
 	gap: 5px;
 	background-color: #2b3137;
-	padding: 10px;
 	text-decoration: none;
 	border-radius: 100vh;
+	justify-content: space-between;
 	img {
 		width: 60px;
 		aspect-ratio: 1/1;
@@ -494,8 +495,11 @@
 		color: rgba(255, 255, 255, 0.5);
 		flex-shrink: 0;
 		margin: 0;
+		margin-right: 1rem;
+		flex: 100%;
+		text-align: right;
 	}
-	p:hover {
+	&:hover p {
 		color: #fff;
 	}
 	small,
