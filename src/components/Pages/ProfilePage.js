@@ -42,7 +42,7 @@ function ProfilePage(props) {
 
 	const [profile, setProfile] = useState(null);
 	const [privateView, setPrivateView] = useState(
-		visibility === "private" || false
+		visibility === "private" || visibility === "p" || false
 	);
 
 	/*
@@ -57,7 +57,7 @@ function ProfilePage(props) {
 	const bannerChanger = useRef();
 	const pfpChanger = useRef();
 	useEffect(() => {
-		if (_user || localStorage.getItem("guest")) profile_cleanup();
+		profile_cleanup();
 	}, [_user, _users, user_id, profile]);
 
 	const [relatedUsers, setRelatedUsers] = useState([]); // list of users relevant
@@ -359,6 +359,27 @@ function ProfilePage(props) {
 				/>
 			)}
 			<div id="home" className="clamper">
+				{_user &&
+					profile &&
+					profile.user_id === _user.user_id && (
+						<div className="privateAlert">
+							<p>Share the link to your custom Chattea space</p>
+							<br />
+							<Link
+								to={
+									"/u/@" + _user.username + (privateView ? "/p" : "")
+								}
+							>
+								<i class="fas fa-link"></i>{" "}
+								{window.location.origin +
+									"/u/@" +
+									_user.username +
+									(privateView ? "/p/" : "")}
+							</Link>
+							<br />
+							<br />
+						</div>
+					)}
 				<div
 					ref={profileCard}
 					className="mainProfile"
@@ -441,7 +462,7 @@ function ProfilePage(props) {
 							type="text"
 							value={bioText}
 							placeholder={
-								_user !== undefined && user_id === _user["user_id"]
+								profile && _user && profile.user_id === _user["user_id"]
 									? "Don't be a stranger..."
 									: "No description"
 							}

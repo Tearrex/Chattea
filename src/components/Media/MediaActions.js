@@ -19,7 +19,7 @@ import { useContext, useEffect, useState } from "react";
 import { copy_text } from "../../App";
 import { MembersContext, UserContext } from "../Main/Contexts";
 import { _dbRef, _storageRef } from "../Main/firebase";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function MediaActions(props) {
 	const { _user, _setUser } = useContext(UserContext);
@@ -307,6 +307,8 @@ function MediaActions(props) {
 											<i className="fas fa-star"></i>
 											<br />
 											Public posts can be featured on Chattea.
+											<br/>
+											<Link to="/#faq">Learn more.</Link>
 										</p>
 									) : (
 										<p className="private">

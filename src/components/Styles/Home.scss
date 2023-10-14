@@ -985,7 +985,7 @@ p {
 	left: 50%;
 	transform: translate(-50%, -50%);
 	padding: 20px;
-	background-color: rgb(31, 31, 31);
+	background-color: $foreAlt;
 	justify-content: center;
 	align-items: center;
 	flex-flow: column;
@@ -1043,12 +1043,8 @@ p {
 	}
 	input[type="email"] {
 		text-align: center;
-		background: none;
-		color: rgb(241, 241, 241);
-		&:focus {
-			background-color: #fff;
-			color: #414141;
-		}
+		background: $foreMain;
+		color: #fff;
 	}
 	input[type="submit"] {
 		font-size: 1.2rem;
@@ -1612,11 +1608,16 @@ p {
 			color: $niceOrange;
 		}
 	}
-	.featureStar, .private {
-		color: $textMain; line-height: 2rem;
+	.featureStar,
+	.private {
+		color: $textMain;
+		line-height: 2rem;
 	}
 	.featureStar i {
 		color: $richSmile;
+	}
+	.featureStar a {
+		color: $niceOrange;
 	}
 	button {
 		padding: 15px 0;

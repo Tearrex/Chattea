@@ -520,6 +520,7 @@ function Signup(props) {
 						ref={emailInput}
 						type="email"
 						value={email}
+						placeholder="Email address"
 						onChange={(e) => setEmail(e.target.value)}
 					/>
 					<input

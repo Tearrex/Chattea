@@ -182,8 +182,8 @@ function Home() {
 						<div className="infinite-scroll-component">
 							<div className="privateAlert" style={{ gridColumn: "1/-1" }}>
 								<p>
-									We can't show a digest of all private posts yet, <br />
-									but you can browse your buddies' private pages individually.
+									We can't show a summary of all your buddies' posts yet, <br />
+									but you can browse their private pages individually.
 								</p>
 								<br />
 								<div
@@ -214,10 +214,12 @@ function Home() {
 										);
 									})}
 								</div>
-								<h2>
-									<i className="fas fa-globe-americas"></i> Your buddies know
-									these people
-								</h2>
+								{mutuals.length > 0 && (
+									<h2>
+										<i className="fas fa-globe-americas"></i> Your buddies know
+										these people
+									</h2>
+								)}
 								<div
 									className="exploreBuddies"
 									style={{

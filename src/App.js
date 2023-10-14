@@ -24,25 +24,24 @@ import "./components/Styles/Splash.scss";
 import "./components/Styles/UserProfile.scss";
 
 import * as filter from "profanity-filter";
+import UsersPage from "./components/Pages/UsersPage";
 
 export function setCaretPosition(caretPos) {
 	// caret attribute should be set by function caller prior
-    var elem = document.querySelector("input[caret]");
+	var elem = document.querySelector("input[caret]");
 
-    if(elem != null) {
-        if(elem.createTextRange) {
-            var range = elem.createTextRange();
-            range.move('character', caretPos);
-            range.select();
-        } else {
-            if(elem.selectionStart) {
-                elem.focus();
-                elem.setSelectionRange(caretPos, caretPos);
-            }
-            else
-                elem.focus();
-        }
-    }
+	if (elem != null) {
+		if (elem.createTextRange) {
+			var range = elem.createTextRange();
+			range.move("character", caretPos);
+			range.select();
+		} else {
+			if (elem.selectionStart) {
+				elem.focus();
+				elem.setSelectionRange(caretPos, caretPos);
+			} else elem.focus();
+		}
+	}
 }
 export function copy_text(text, success) {
 	if (navigator.clipboard) {
@@ -90,13 +89,11 @@ function App() {
     )
   }, [])*/
 
-  	// load profanity list from localstorage or fetch from github
+	// load profanity list from localstorage or fetch from github
 	useEffect(() => {
 		let swears = localStorage.getItem("swears");
 		if (!swears)
-			fetch(
-				"https://raw.githubusercontent.com/Tearrex/Chattea/main/swears.txt"
-			)
+			fetch("https://raw.githubusercontent.com/Tearrex/Chattea/main/swears.txt")
 				.then((res) => res.text())
 				.then((data) => {
 					let words = data.split("\n");
@@ -107,7 +104,7 @@ function App() {
 					}
 				});
 		else {
-			let words = (JSON.parse(swears));
+			let words = JSON.parse(swears);
 			console.log("local swears", words);
 			for (let i = 0; i < words.length; i++) {
 				filter.addWord(words[i]);
@@ -185,6 +182,12 @@ function App() {
 								<Route
 									exact
 									path="/profile/:user_id/:visibility"
+									element={<ProfilePage />}
+								/>
+								<Route exact path="/u/:user_id" element={<ProfilePage />} />
+								<Route
+									exact
+									path="/u/:user_id/:visibility"
 									element={<ProfilePage />}
 								/>
 								<Route exact path="/post/:post_id" element={<BriefPost />} />

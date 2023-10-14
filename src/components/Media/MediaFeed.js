@@ -38,7 +38,7 @@ function MediaFeed(props) {
 				if (
 					!_users[cache[i]] &&
 					!_toCache[cache[i]] &&
-					(localStorage.getItem("guest") || _user.user_id !== cache[i])
+					(!_user || _user.user_id !== cache[i])
 				) {
 					if (_user && cache[i] === _user.user_id) continue;
 					const userRef = doc(_dbRef, "users", cache[i]);
