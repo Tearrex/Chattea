@@ -1616,7 +1616,7 @@ p {
 	.featureStar i {
 		color: $richSmile;
 	}
-	.featureStar a {
+	.featureStar a, .private a {
 		color: $niceOrange;
 	}
 	button {

@@ -16,9 +16,9 @@ function FAQPage(props) {
 		localStorage.setItem("guest", "true");
 		navigate("/main");
 	}
-	function mod_discretions(e) {
+	function open_module(e, faqId) {
 		e.preventDefault();
-		let button = document.querySelector("#modDiscretion");
+		let button = document.querySelector(faqId);
 		if (button && button.nextSibling.getAttribute("open") != "true") {
 			button.click();
 		}
@@ -32,28 +32,36 @@ function FAQPage(props) {
 				</h2>
 				<FAQuestion question="What is Chattea?" emote="☕">
 					<p>
-						Chattea is a modest social media platform for making pocket-sized
-						memories as you go about your days. Meet new people and vibe with
-						those that share similar hobbies or interests. Post glimpses of your
-						activities while adding some mystery ;)
-						<br />
+						Chattea is your home for making pocket-sized memories as you go
+						about your days. Peep into what's happening across the cyberverse
+						without pushy ads or invasive tracking policies.{" "}
+						<Link to="#" onClick={(e) => open_module(e, "#privacy")}>
+							Details.
+						</Link>
 					</p>
 					<p>
-						You can check-in whenever you like and perhaps you'll get a laugh
-						out of some goofy post.
+						As people come along you can parley with those that share similar
+						interests and foster a split following with{" "}
+						<Link to="#" onClick={(e) => open_module(e, "#visibility")}>
+							public and private pages
+						</Link>
+						. Post glimpses of your activities while adding some mystery ;) You
+						can check-in whenever you like and perhaps you'll get a laugh out of
+						some goofy post.
 					</p>
 				</FAQuestion>
 				<FAQuestion
 					question="Who can see my posts?"
+					buttonId="visibility"
 					emote={<i className="fas fa-eye"></i>}
 				>
 					<p>
-						Chattea now offers the options of public & private visiblity for
-						your social media posts. <br />
+						Chattea offers the options of public & private visiblity for your
+						social media posts. <br />
 						<br />
 						The corresponding icons <i className="fas fa-globe-americas"></i>/
-						<i className="fas fa-lock"></i> are displayed before the timestamp
-						of each post.
+						<i className="fas fa-lock"></i> are shown with the timestamp of each
+						post.
 						<br />
 						<br />
 						Public posts <u>can be seen by anyone</u> and are shown on the home
@@ -63,57 +71,74 @@ function FAQPage(props) {
 						to others.
 						<br />
 						<br />
-						Private posts are <u>exclusive to your buddies</u> list. <br />
+						Private posts are <u>exclusive to your buddies</u> list. However we
+						still moderate the content that gets reported to us.
+						<br /> By adding someone on Chattea, you allow them to view the
+						private posts on your page & mention you in comments. They still
+						need to add you back before you can do the same.
+						<br />
+						<br />
 						Removing a buddy will instantly revoke their access to your private
 						page.
 						<br />
 						<br />
-						<Link to="#" onClick={mod_discretions}>
+						<Link to="#" onClick={open_module}>
 							Read more on moderation discretions.
 						</Link>
 						<br />
 						<br />
 					</p>
 				</FAQuestion>
-				<FAQuestion question="What are buddies?" emote="👥">
-					<p>
-						Buddies are your friends. By adding someone on Chattea, you allow
-						them to view the private posts on your account & mention you in
-						comments.{" "}
-					</p>
-				</FAQuestion>
 				<FAQuestion question="Can I edit my posts?" emote="✏️">
 					<p>
-						No, same goes for comments. It complicates moderation for us.
-						<br />
-						You can always <i>delete</i> your posts later.
+						You can only <i>delete</i> your posts.
 					</p>
 				</FAQuestion>
 				<FAQuestion
 					question="What about my data?"
+					buttonId="privacy"
 					emote={<i className="fas fa-database"></i>}
 				>
-					<p>Privacy concerns are a big deal! Here are the details:</p>
-					<h2>How we store your data</h2>
-					<p>When you sign up, the following is collected from you</p>
+					<p>
+						Privacy concerns are a big deal, and as a community-based platform
+						we take it very seriously.
+					</p>
+					<h2>Information We Collect</h2>
+					<p>Basic account details upon sign up</p>
 					<ul className="dataSection">
 						<li>Username</li>
 						<li>Email</li>
 						<li>Password</li>
+						<li>Profile Picture</li>
 						<li>Current date</li>
 					</ul>
 					<p>
-						This info is saved on a cloud database to keep track of every user
+						This info is saved on our cloud database to keep track of every user
 						that exists on the website. <br />
 						<u>Your email is private from others</u>; It serves as an
 						authentication and recovery method for your account. <br />
-						We also fight spam by blocking access to some features for
-						unverified emails. You'll only be emailed per your request.
+						You'll only be emailed per your request.{" "}
+						<u>We never share or sell this information with third parties.</u>
+					</p>
+					<p>The content you submit</p>
+					<ul className="dataSection">
+						<li>Attached images</li>
+						<li>Timestamp</li>
+					</ul>
+					<p>
+						Any visual media you share will be uploaded to our cloud storage
+						bucket. We do not use this content for any purpose other than
+						providing you with Chattea's intended functionality, like displaying
+						personalized feeds.
 					</p>
 					<p>
-						Every user is assigned an <b>identifier</b> upon signing up. The
-						identifier (ID) is a unique sequence of random letters and numbers
-						that distinguishes you from the rest of the users on Chattea.
+						When you delete a post we will also delete its traces of images from
+						the cloud before giving you the confirmation response.
+					</p>
+					<p>
+						Every user is assigned an <b>identifier</b> (ID) upon signing up.
+						The ID is a unique sequence of random letters and numbers that
+						distinguishes you from the rest of the users on Chattea.
 					</p>
 					<h2>
 						<i className="fas fa-cog"></i> How we use your data
@@ -129,16 +154,27 @@ function FAQPage(props) {
 						<li>Add a buddy</li>
 					</ul>
 					<p>
-						This is only used to make Chattea function properly. Like displaying
-						the correct author for each post and comment.
-					</p>
-					<p>
 						As you browse the website, the profile data you fetch about other
 						users will be cached locally on your device until you log out or
 						clear your browser cookies. <br />
 						This lowers the amount of requests your browser makes to the cloud;
 						Edits to your profile may not propagate for others right away.
 					</p>
+					<h2>
+						How we <u>DO NOT</u> use your data
+					</h2>
+					The only data we collect that can personally identify you is..... your
+					email. That's it—and maybe a smiley profile picture of your face. Keep
+					in mind what other social medias are (probably) collecting from you
+					that we strictly do not.
+					<ul className="dataSection" style={{ listStyleType: "circle" }}>
+						<li>Public IP addresses</li>
+						<li>Browser info (User-Agent)</li>
+						<li>Device info (MAC address, etc..)</li>
+						<li>Contact lists</li>
+						<li>Phone Numbers</li>
+						<li>GPS location</li>
+					</ul>
 				</FAQuestion>
 				<FAQuestion question="But why tea?" emote="🤔">
 					<p>It's just catchy...</p>
@@ -164,8 +200,18 @@ function FAQPage(props) {
 
 				<hr style={{ width: "100%" }} />
 				<h2>
-					<i class="fas fa-info-circle"></i> Feature Discretions
+					<i class="fas fa-info-circle"></i> App Discretions
 				</h2>
+				<FAQuestion
+					question="Opting for a feature"
+					emote={<i className="fas fa-star" />}
+				>
+					<p>
+						This is a proof of concept until our userbase grows large enough to
+						host polls and contests, your public profile should be in
+						goodstanding with our transparent policies defined thus far.
+					</p>
+				</FAQuestion>
 				<FAQuestion question="Profanity filter" emote="###">
 					<p>
 						<i className="fas fa-cog"></i> Upon opening Chattea's feed for the
@@ -193,22 +239,25 @@ function FAQPage(props) {
 						You must verify your email before posting images. <br />
 						<br />
 						Images over a certain file size are subject to lossy{" "}
-						<b>compression</b> prior to uploading to the cloud. This process is
-						done locally by your browser. The size limit fluctuates depending on
-						storage demands.
+						<b>compression</b> prior to uploading to our cloud. This process is
+						done locally by your browser. The size limit (1megabyte) fluctuates
+						depending on storage demands.
 						<br />
 						<br />
 						We also offer an embedded browser tool for <b>cropping</b> images
 						into squares to provide the best viewing experience for all users.
-						We encourage you to use it, but <u>here's what you must know</u>:
+						We encourage you to use it, but here's what you must know:
 						<br />
 						<br />
 						<p style={{ textAlign: "center", width: "100%" }}>
 							<i class="fas fa-compress-alt"></i> Large images are still
 							compressed before cropping
 							<br />
-							<i class="fas fa-cloud-upload-alt"></i> Cropping involves
-							intermediate upload of image for cloud processing.
+							<i class="fas fa-cloud-upload-alt"></i>{" "}
+							<u>
+								Cropping involves intermediate upload of image for cloud
+								processing.
+							</u>
 						</p>
 						<br />
 						<br />
@@ -249,7 +298,7 @@ function FAQPage(props) {
 						All user-generated content is contingent to inspection or deletion
 						at moderator discretion without prior notice. We do our best to keep
 						our small community civil and we ask that you help us achieve the
-						same by not abusing our platform. <br />
+						same by not abusing this platform. <br />
 						<br />
 						Repeat offenders will be blocked permanently from further
 						interaction within Chattea.

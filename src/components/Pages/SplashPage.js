@@ -123,6 +123,7 @@ function SplashPage() {
 		if (window.location.href.includes("#faq")) {
 			document.querySelector("#faq").scrollIntoView({ behavior: "smooth" });
 		}
+		document.body.style.overflow = null;
 	}, []);
 	function feature_scroll(e) {
 		e.preventDefault();

@@ -27,7 +27,7 @@ function MediaActions(props) {
 	const { focusPost, setFocusPost, visibilityContext } = props;
 	const navigate = useNavigate();
 	function closeModal() {
-		if(mergeStatus > 0) return;
+		if (mergeStatus > 0) return;
 		visibilityContext.setChangeVisibility(false);
 		if (setFocusPost) setFocusPost(null);
 	}
@@ -303,23 +303,29 @@ function MediaActions(props) {
 							{mergeStatus === 0 && (
 								<>
 									{!pickedPrivateVis ? (
-										<p className="featureStar">
-											<i className="fas fa-star"></i>
+										<p className="private">
+											<i className="fas fa-eye"></i>
 											<br />
-											Public posts can be featured on Chattea.
-											<br/>
+											Anyone can see{" "}
+											{_users[focusPost[1].user_id] &&
+												_users[focusPost[1].user_id].username}
+											's post
+											<br />
 											<Link to="/#faq">Learn more.</Link>
 										</p>
 									) : (
 										<p className="private">
 											<i className="fas fa-eye-slash"></i>
 											<br />
-											Only your buddies can see this post.
+											Only{" "}
+											{_users[focusPost[1].user_id] &&
+												_users[focusPost[1].user_id].username}
+											's buddies can see this post.
 										</p>
 									)}
 									{(focusPost[1].private === true) != pickedPrivateVis && (
 										<button className="reportBtn hcenter" onClick={start_merge}>
-											Start Change
+											<i className="fas fa-cog" /> Start Change
 										</button>
 									)}
 								</>
