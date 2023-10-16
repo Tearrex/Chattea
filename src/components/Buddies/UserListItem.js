@@ -23,7 +23,7 @@ function UserListItem(props) {
 		}
 	}, [_user, _users, props]);
 	function go_to_profile() {
-		navigate("/profile/" + props.buddy);
+		navigate("/u/" + props.buddy);
 		props.toggle();
 	}
 	return (

@@ -157,7 +157,7 @@ function Home() {
 							<Submitter onMessageSend={postMessage} />
 						) : (
 							<h2 style={{ color: "#fff" }} className="privatePrompt">
-								<Link to={"/profile/" + _user.user_id}>Visit your profile</Link>{" "}
+								<Link to={"/u/" + _user.user_id}>Visit your profile</Link>{" "}
 								to post something private
 							</h2>
 						)}
