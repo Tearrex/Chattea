@@ -4,7 +4,7 @@ import { signup } from "../Main/firebase";
 import { useNavigate } from "react-router";
 import { UserContext, showLogin } from "../Main/Contexts";
 import GithubButton from "../GithubButton";
-import FAQPage from "./FAQ/FAQPage";
+import FAQPage, { open_module } from "./FAQ/FAQPage";
 export function is_email(text) {
 	if (text.includes("@")) {
 		var at = text.split("@");
@@ -118,13 +118,6 @@ function SplashPage() {
 		// show login form
 		else navigate("/main"); // show live feed
 	}
-	useEffect(() => {
-		document.getElementById("welcomer").style.display = "none";
-		if (window.location.href.includes("#faq")) {
-			document.querySelector("#faq").scrollIntoView({ behavior: "smooth" });
-		}
-		document.body.style.overflow = null;
-	}, []);
 	function feature_scroll(e) {
 		e.preventDefault();
 		const jump = document.getElementById("featjump");
@@ -154,12 +147,20 @@ function SplashPage() {
 						<p>with people!</p>
 					</div>
 					<p>Downtime? Have a glance at what other humans are up to.</p>
+					{_user && (
+						<button className="faqSignUp funky" onClick={() => navigate("/main")}>
+							<i className="fas fa-sign-in-alt"></i> Hey{" "}
+							<span>@{_user.username}</span>, jump in!
+						</button>
+					)}
 				</div>
 				<div className="splashNet">
-					<div
-						className="splash"
-						style={{ backgroundImage: "url('network.png')" }}
-					></div>
+					{!_user && (
+						<div
+							className="splash"
+							style={{ backgroundImage: "url('network.png')" }}
+						></div>
+					)}
 					<div
 						className="splashRegister flashForm"
 						style={{ display: _user === undefined ? null : "none" }}
