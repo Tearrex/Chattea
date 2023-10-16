@@ -123,7 +123,7 @@ function FAQPage(props) {
 						This info is saved on our cloud database to keep track of every user
 						that exists on the website. <br />
 						<u>Your email is kept private from others</u>; Used solely for
-						authentication and recovery of for your account. You'll only be
+						authentication and recovery of your account. You'll only be
 						emailed per your request.
 						<br />
 						<br />
