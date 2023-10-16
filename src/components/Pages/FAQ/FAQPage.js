@@ -99,7 +99,7 @@ function FAQPage(props) {
 				</FAQuestion>
 				<FAQuestion question="Can I edit my posts?" emote="✏️">
 					<p>
-						You can only <i>delete</i> your posts.
+						You can only <i>delete</i> your posts and comments on your posts.
 					</p>
 				</FAQuestion>
 				<FAQuestion
