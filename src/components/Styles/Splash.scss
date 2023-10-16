@@ -234,7 +234,25 @@
 			max-width: 550px;
 		}
 	}
-
+	.faqSignUp {
+		width: 100%;
+		padding: 15px 10px;
+		cursor: pointer;
+		background-color: $niceOrange;
+		color: $lightText;
+		border: none;
+		font-size: 1.2rem;
+		span {
+			color: #000;
+		}
+	}
+	.faqSignUp.funky {
+		border-radius: 1rem;
+		border-bottom: 7px solid #de7d08;
+		&:active {
+			border-bottom: 2px solid #de7d08;
+		}
+	}
 	.splashNet {
 		display: flex;
 		flex-direction: row;

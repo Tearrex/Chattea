@@ -103,16 +103,6 @@ footer {
 			background: #111;
 		}
 	}
-	.faqSignUp {
-		width: 100%;
-		padding: 15px 10px;
-		cursor: pointer;
-		background-color: $niceOrange;
-		color: $lightText;
-		span {
-			color: #000;
-		}
-	}
 	.faQuestion {
 		width: 100%;
 		button:first-child {
@@ -233,7 +223,7 @@ body {
 	/*width: 100%; position: absolute;*/
 	color: #fff;
 	flex-flow: row-reverse;
-	font-size: 1.5rem;
+	// font-size: 1.2rem;
 	font-weight: lighter;
 	display: flex;
 	transition: opacity 0.4s ease-in;
@@ -245,9 +235,70 @@ body {
 		align-items: stretch;
 		background-color: rgba(0, 0, 0, 0.7);
 		border-radius: 100vh;
+		position: relative;
 		span {
 			margin: auto 0;
 		}
+		@keyframes hover {
+			0% {
+				transform: translateY(0%);
+			}
+			50% {
+				transform: translateY(5%);
+			}
+			100% {
+				transform: translateY(0%);
+			}
+		}
+		.hint {
+			background-color: $attentionBack;
+			border-radius: 0.5rem;
+			color: #fff;
+			padding: 1rem;
+			top: calc(100% + 0.5rem);
+			width: max-content;
+			// display: none;
+			// left: 50%;
+			// transform: translateX(-50%);
+			position: absolute;
+			animation: hover 2s linear infinite;
+			cursor: pointer;
+			&:hover {
+				text-decoration: underline;
+			}
+			&::after {
+				content: "";
+				position: absolute;
+				bottom: 95%; /* At the bottom of the tooltip */
+				right: 10%;
+				margin-left: -10px;
+				border-width: 10px;
+				border-style: solid;
+				border-color: transparent transparent $attentionBack transparent;
+			}
+		}
+	}
+}
+.hint {
+	background-color: $attentionBack;
+	border-radius: 0.5rem;
+	color: #fff;
+	padding: 1rem;
+	width: max-content;
+	position: absolute;
+	cursor: pointer;
+	&:hover {
+		text-decoration: underline;
+	}
+	&::after {
+		content: "";
+		position: absolute;
+		bottom: 95%; /* At the bottom of the tooltip */
+		right: 10%;
+		margin-left: -10px;
+		border-width: 10px;
+		border-style: solid;
+		border-color: transparent transparent $attentionBack transparent;
 	}
 }
 .persistor {
@@ -666,6 +717,7 @@ p {
 	flex: 1 0;
 	background-color: $foreAlt;
 	padding: 10px;
+	border-radius: $boxRad;
 	.musicLoad {
 		margin: 0;
 		width: 100%;
@@ -675,6 +727,10 @@ p {
 			animation: spinny 1s linear infinite;
 			color: $niceOrange;
 		}
+	}
+	.musicResults,
+	.musicLoad {
+		color: $textMain;
 	}
 	.musicResults i {
 		color: #1db954;
@@ -898,6 +954,29 @@ p {
 	align-items: center;
 	flex-grow: 1;
 	position: relative;
+	@keyframes subhover {
+		0% {
+			transform: translateY(0%);
+		}
+		50% {
+			transform: translateY(-10%);
+		}
+		100% {
+			transform: translateY(0%);
+		}
+	}
+	.hint {
+		bottom: 100%;
+		left: 0;
+		animation: subhover 2s linear infinite;
+		border-radius: 100vh;
+		&::after {
+			border-color: $attentionBack transparent transparent transparent;
+			top: 95%;
+			right: auto;
+			left: 15%;
+		}
+	}
 	&::before {
 		content: "\f002";
 		position: absolute;
@@ -919,10 +998,50 @@ p {
 	display: flex;
 	flex-flow: column;
 	z-index: 1;
-	overflow: hidden;
-	border-radius: $boxRad;
 }
-
+.subPop .verify {
+	color: $textMain;
+	a,
+	i {
+		color: $niceOrange;
+	}
+	i.spin {
+		animation: spinny 1s linear infinite;
+	}
+	span {
+		color: #fff;
+		white-space: nowrap;
+	}
+}
+.subPop .verify.error {
+	i {
+		color: $teaColor !important;
+	}
+}
+.subPop .emailChange {
+	display: flex;
+	gap: 0.5rem;
+	justify-content: center;
+	margin-bottom: 1rem;
+	button {
+		font-size: 1.5rem;
+		border-radius: 100vh;
+		padding: 1rem;
+		background-color: $foreAlt;
+		color: $textMain;
+		&:hover {
+			color: #fff;
+		}
+	}
+	input {
+		padding-left: 1rem;
+		color: $textMain;
+		outline: none;
+		background-color: $foreMain;
+		border: 5px solid $foreAlt;
+		border-radius: 100vh;
+	}
+}
 .subWidget {
 	padding: 0;
 	flex-shrink: 0;
@@ -1616,7 +1735,8 @@ p {
 	.featureStar i {
 		color: $richSmile;
 	}
-	.featureStar a, .private a {
+	.featureStar a,
+	.private a {
 		color: $niceOrange;
 	}
 	button {

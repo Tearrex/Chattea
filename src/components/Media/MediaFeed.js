@@ -127,6 +127,8 @@ function MediaFeed(props) {
 			if (focusElement) focusElement.focus();
 		});
 	}
+
+	const { postCount, setPostCount } = props.postCountContext || {};
 	function next_batch() {
 		let history = localStorage.getItem("tc");
 		if (history) {
@@ -244,6 +246,7 @@ function MediaFeed(props) {
 					setSwitching(false);
 				}
 				_setPosts(_posts);
+				if (setPostCount) setPostCount(Object.entries(_posts).length);
 			})
 			.catch((e) => {
 				setFetchError(true);

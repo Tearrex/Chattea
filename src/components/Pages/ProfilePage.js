@@ -348,6 +348,10 @@ function ProfilePage(props) {
 	// state passed down to mediaactions and mediafeed components to bounce between
 	// different modal tabs of the post management menu
 	const [changeVisibility, setChangeVisibility] = useState(false);
+
+	// state for conditionally showing tips and tricks for new users
+	// like encouraging them to make a first post
+	const [postCount, setPostCount] = useState(0);
 	return (
 		<div className="homeWrapper">
 			<div id="audionest"></div>
@@ -359,27 +363,6 @@ function ProfilePage(props) {
 				/>
 			)}
 			<div id="home" className="clamper">
-				{_user &&
-					profile &&
-					profile.user_id === _user.user_id && (
-						<div className="privateAlert">
-							<p>Share the link to your custom Chattea space</p>
-							<br />
-							<Link
-								to={
-									"/u/@" + _user.username + (privateView ? "/p" : "")
-								}
-							>
-								<i class="fas fa-link"></i>{" "}
-								{window.location.origin +
-									"/u/@" +
-									_user.username +
-									(privateView ? "/p/" : "")}
-							</Link>
-							<br />
-							<br />
-						</div>
-					)}
 				<div
 					ref={profileCard}
 					className="mainProfile"
@@ -457,8 +440,17 @@ function ProfilePage(props) {
 						{/**<textarea rows="3" cols="60"
                             placeholder={user_id === _user["user_id"] ? "Brief description about you...":"No description"}
                                 onChange={(e) => change_bio(e)} value={bioText} maxLength="150"></textarea> */}
+						{_user && _user.user_id === user_id && bioText === "" && (
+							<span
+								className="hint"
+								onClick={() => document.querySelector("#userBio").focus()}
+							>
+								✍️ Share something about yourself...
+							</span>
+						)}
 						<input
 							className="userBio"
+							id="userBio"
 							type="text"
 							value={bioText}
 							placeholder={
@@ -483,7 +475,18 @@ function ProfilePage(props) {
 					{profile && (
 						<div className="userInfo">
 							<p style={{ margin: 0 }}>
-								Joined <span>{profile && profile.joined}</span>
+								<i className="fas fa-seedling"></i> Joined{" "}
+								<span>{profile && profile.joined}</span>
+								<br />
+								<Link
+									to={"/u/@" + profile.username + (privateView ? "/p" : "")}
+								>
+									<i class="fas fa-link"></i>{" "}
+									{window.location.origin +
+										"/u/@" +
+										profile.username +
+										(privateView ? "/p/" : "")}
+								</Link>
 							</p>
 							<div className="buddyInfo">
 								{_user &&
@@ -498,7 +501,19 @@ function ProfilePage(props) {
 										<i className="fas fa-eye"></i>
 									</span>
 								)}
-								<UserList users={profile ? profile.buddies : []} buddies />
+								<div className="stack">
+									<UserList users={profile ? profile.buddies : []} buddies />
+									{relatedUsers.length > 0 && (
+										<div className="list">
+											{relatedUsers.map((x, i) => (
+												<Link to={"/profile/" + x} className="bTooltip" key={i}>
+													<img src={_users[x].pfp} alt="user pic" width={30} />
+													<span className="toolText">{_users[x].username}</span>
+												</Link>
+											))}
+										</div>
+									)}
+								</div>
 								{_user &&
 								_user.user_id !== profile.user_id &&
 								_users[profile.user_id] ? (
@@ -507,22 +522,6 @@ function ProfilePage(props) {
 							</div>
 						</div>
 					)}
-					<div
-						className="bRelation"
-						style={{
-							overflow: "unset",
-							display:
-								Object.entries(relatedUsers).length === 0 ? "none" : null,
-						}}
-					>
-						<p style={{ marginLeft: "10px" }}>Known by your buddies:</p>
-						{relatedUsers.map((x, i) => (
-							<Link to={"/profile/" + x} className="bTooltip" key={i}>
-								<img src={_users[x].pfp} alt="user pic" width={30} />
-								<span className="toolText">{_users[x].username}</span>
-							</Link>
-						))}
-					</div>
 					{profile && (
 						<div className="privacyModes">
 							<button
@@ -556,7 +555,11 @@ function ProfilePage(props) {
 							)}
 						</p>
 
-						<Submitter onPostSubmit={setLatestPost} privateMode={privateView} />
+						<Submitter
+							onPostSubmit={setLatestPost}
+							privateMode={privateView}
+							postCountContext={{ postCount, setPostCount }}
+						/>
 					</>
 				)}
 				{!privateView ? (
@@ -570,6 +573,7 @@ function ProfilePage(props) {
 							}}
 							postInjection={latestPost}
 							visibilityContext={{ changeVisibility, setChangeVisibility }}
+							postCountContext={{ postCount, setPostCount }}
 						/>
 					)
 				) : !profile ||
@@ -595,6 +599,7 @@ function ProfilePage(props) {
 						}}
 						postInjection={latestPost}
 						visibilityContext={{ changeVisibility, setChangeVisibility }}
+						postCountContext={{ postCount, setPostCount }}
 					/>
 				)}
 				{!profile && (

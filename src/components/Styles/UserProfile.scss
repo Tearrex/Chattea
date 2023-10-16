@@ -239,11 +239,17 @@
 	float: right;
 	margin-top: 10px;
 	margin-right: 10px;
+	position: relative;
 	opacity: 0.5;
-	transform: rotate(45deg);
 	transition: opacity 0.5s ease-in-out, transform 0.5s ease;
-	&:hover {
-		transform: rotate(0deg);
+	&::after {
+		content: "\f030";
+		position: absolute;
+		color: #fff;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size: 3rem;
 	}
 	input {
 		display: none;
@@ -274,6 +280,15 @@
 		background-size: 30px;
 		background-position: center;
 		background-repeat: no-repeat;
+		&::after {
+			content: "\f030";
+			position: absolute;
+			color: #fff;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			font-size: 3rem;
+		}
 		cursor: pointer;
 		input {
 			display: none;
@@ -344,7 +359,29 @@
 }
 .aboutSection {
 	box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5);
+	position: relative;
 	z-index: 1;
+	@keyframes abouthover {
+		0% {
+			transform: translateY(0%);
+		}
+		50% {
+			transform: translateY(-10%);
+		}
+		100% {
+			transform: translateY(0%);
+		}
+	}
+	.hint {
+		bottom: calc(100% + 0.5rem);
+		border-radius: 100vh;
+		right: 5%;
+		animation: abouthover 2s linear infinite;
+		&::after {
+			border-color: $attentionBack transparent transparent transparent;
+			top: 95%;
+		}
+	}
 	.userBio {
 		background-color: $foreAlt;
 	}
@@ -405,12 +442,13 @@
 }
 .userInfo {
 	background-color: $foreMain;
-	gap: 10px;
+	gap: 2rem;
 	display: flex;
 	flex-flow: row;
-	justify-content: center;
+	justify-content: space-between;
 	padding: 2rem 1rem;
 	align-items: center;
+	flex-wrap: wrap;
 	.buds {
 		color: $niceOrange;
 		text-decoration: none;
@@ -445,12 +483,30 @@
 			}
 		}
 	}
+	.buddyInfo .stack {
+		display: flex;
+		flex-flow: column;
+		gap: 0.5rem;
+		.list a {
+			aspect-ratio: 1/1;
+			display: inline-block;
+			line-height: 0;
+			img {
+				object-fit: cover;
+				height: 100%;
+				aspect-ratio: 1/1;
+				border-radius: 100vh;
+			}
+		}
+	}
+	a {
+		color: $niceOrange;
+	}
 	p {
+		white-space: nowrap;
 		font-size: 1.2rem;
 		color: #fff;
-		&:first-child {
-			flex: 100%;
-		}
+		text-align: left;
 	}
 	span {
 		color: #5d5d5d;
@@ -466,6 +522,7 @@
 }
 .bRelation {
 	overflow: hidden;
+	color: $textMain;
 	display: grid;
 	grid-auto-flow: row;
 	grid-template-columns: repeat(2, 1fr);
@@ -474,6 +531,11 @@
 	.bTooltip {
 		height: 30px;
 	}
+}
+.bRelation.flex {
+	display: flex;
+	flex-flow: row;
+	gap: 0.5rem;
 }
 .bCard {
 	display: flex;

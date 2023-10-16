@@ -1,16 +1,20 @@
 //import pfp from './default_user.png'
 //import cam from './cam_icon.png'
 import { useContext, useEffect, useRef, useState } from "react";
-import { useAuth, _storageRef, _dbRef } from "../Main/firebase";
+import { useAuth, _storageRef, _dbRef, logout } from "../Main/firebase";
 import { uploadBytesResumable, ref, getDownloadURL } from "firebase/storage";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { UserContext } from "../Main/Contexts";
 import { Timestamp, addDoc, setDoc, collection } from "firebase/firestore";
 import imageCompression from "browser-image-compression";
 import * as filter from "profanity-filter";
+import { sendEmailVerification, updateEmail } from "firebase/auth";
+import { is_email } from "../Pages/SplashPage";
+import { useNavigate } from "react-router-dom";
 function Submitter(props) {
 	const { _user, _setUser } = useContext(UserContext);
 	const currentUser = useAuth();
+	const navigate = useNavigate();
 	const [localFile, setLocalFile] = useState(null);
 	const [cropMode, setCropMode] = useState(false);
 	const [cropped, setCropped] = useState(false);
@@ -209,7 +213,7 @@ function Submitter(props) {
 							image_url: downloadURL,
 							user_id: _author,
 							caption: _caption,
-							private: props.privateMode || false
+							private: props.privateMode || false,
 						}).then(() => {
 							setCropped(false);
 							remove_image();
@@ -245,7 +249,7 @@ function Submitter(props) {
 					track: _track,
 					caption: "",
 					user_id: _user.user_id,
-					private: props.privateMode || false
+					private: props.privateMode || false,
 				});
 				const snap = await getDoc(docRef);
 				if (snap.exists()) {
@@ -467,6 +471,48 @@ function Submitter(props) {
 		let confirm = window.confirm("Open spotify link?");
 		if (!confirm) return e.preventDefault();
 	}
+	const { postCount, setPostCount } = props.postCountContext || {};
+	const [sendingLink, setSendingLink] = useState(false);
+	const [linkSent, setLinkSent] = useState(false);
+	const [linkFail, setLinkFail] = useState(false); // firebase demands recent login for verification
+	const [targetEmail, setTargetEmail] = useState(
+		(currentUser && currentUser.email) || ""
+	);
+	const [changingEmail, setChangingEmail] = useState(false);
+	async function send_link() {
+		if (changingEmail && targetEmail.trim() !== "" && !is_email(targetEmail)) {
+			return document.querySelector("#targetEmail").focus();
+		}
+		setSendingLink(true);
+		if (targetEmail.trim() !== "" && targetEmail.trim() !== currentUser.email) {
+			try {
+				await updateEmail(currentUser, targetEmail);
+			} catch (e) {
+				setSendingLink(false);
+				if (String(e).includes("recent-login")) return setLinkFail(true);
+				return alert("Failed to update email: " + e);
+			}
+			console.log("email updated!");
+		}
+		setTimeout(async () => {
+			try {
+				await sendEmailVerification(currentUser);
+			} catch (e) {
+				alert("Failed to send verification link: " + e);
+				setSendingLink(false);
+				setChangingEmail(false);
+				return;
+			}
+			setChangingEmail(false);
+			setLinkSent(true);
+		}, 1500);
+	}
+	async function do_logout() {
+		localStorage.setItem("redirect", window.location.pathname);
+		await logout();
+		_setUser(undefined);
+		navigate("/");
+	}
 	return (
 		<div className="subPop" id="subPop">
 			<form className="submission" onSubmit={postMessage}>
@@ -475,6 +521,15 @@ function Submitter(props) {
 						className="subVerbose"
 						searching={pickingTrack ? "true" : "false"}
 					>
+						{(postCount || 0) === 0 && (
+							<span
+								className="hint"
+								onClick={() => document.querySelector("#subTxt").focus()}
+							>
+								🎉 Make your first {props.privateMode ? "private" : "public"}{" "}
+								post
+							</span>
+						)}
 						<input
 							ref={_textInput}
 							value={_text}
@@ -596,17 +651,26 @@ function Submitter(props) {
 				<div className="bottom">
 					<label
 						className="subWidget photo"
-						style={{ borderRadius: "50%" }}
+						style={{
+							borderRadius: "50%",
+						}}
 						active={localFile !== null ? "true" : "false"}
 					>
-						<i class="fas fa-image"></i> {!localFile ? "Attach" : "Change"}{" "}
-						Image
+						<i class="fas fa-image"></i>{" "}
+						<span
+							style={{
+								textDecoration: !_user.verified ? "line-through" : null,
+							}}
+						>
+							{!localFile ? "Attach" : "Change"} Image
+						</span>
 						<input
 							ref={imageField}
 							type="file"
 							accept=".png, .jpg, .jpeg"
 							style={{ display: "none" }}
 							onChange={(e) => onFileChange(e)}
+							disabled={!_user.verified}
 						/>
 					</label>
 					<button
@@ -710,6 +774,58 @@ function Submitter(props) {
 				</div>
 				{/*<div className="fileCaption">Add a caption</div>*/}
 			</div>
+			{!linkSent ? (
+				!linkFail ? (
+					<h4 className="verify">
+						{sendingLink && <i className="fas fa-cog spin" />}Verify{" "}
+						<span>{(currentUser && currentUser.email) || "email"}</span> to post
+						images.
+						{!sendingLink && !changingEmail && (
+							<>
+								<br />
+								<br />{" "}
+								<a href="#" onClick={send_link}>
+									Send Link
+								</a>{" "}
+								or{" "}
+								<a
+									href="#"
+									onClick={() => setChangingEmail(true)}
+									id="targetEmail"
+								>
+									Change Email
+								</a>
+							</>
+						)}
+					</h4>
+				) : (
+					<h4 className="verify error">
+						<i className="fas fa-times" /> Please{" "}
+						<a href="#" onClick={do_logout}>
+							log out
+						</a>{" "}
+						and come back to try again.
+					</h4>
+				)
+			) : (
+				<h4 className="verify complete">
+					<i className="fas fa-check" /> Link sent, check your spam for{" "}
+					<span>noreply@reactback-1cf7d.firebaseapp.com</span>
+				</h4>
+			)}
+			{changingEmail && !linkSent && !linkFail && (
+				<div className="emailChange">
+					<input
+						type="text"
+						placeholder={(currentUser && currentUser.email) || ""}
+						value={targetEmail}
+						onChange={(e) => setTargetEmail(e.target.value)}
+					/>
+					<button onClick={send_link}>
+						<i class="fas fa-paper-plane"></i>
+					</button>
+				</div>
+			)}
 		</div>
 	);
 }

@@ -57,6 +57,16 @@ function UserPanel(props) {
 			onTransitionEnd={hide}
 		>
 			<div className="profile">
+				{_user &&
+					(_user.pfp == "/default_user.png" || _user.about === "") &&
+					!window.location.href.endsWith("/u/" + _user.user_id) && (
+						<span
+							className="hint"
+							onClick={() => navigate("/u/" + _user.user_id)}
+						>
+							🎨 Customize your profile
+						</span>
+					)}
 				<img
 					className="pfp"
 					style={{ objectFit: "cover", cursor: "pointer" }}
