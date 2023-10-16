@@ -418,7 +418,7 @@ function MediaPost(props) {
 						</>
 					)}
 				</div>
-				<Link to={"/profile/" + user_id} className="userAndPfp">
+				<Link to={"/u/" + user_id} className="userAndPfp">
 					{!isAuthor && (
 						<p
 							className="username"

@@ -77,8 +77,8 @@ function SplashPage() {
 			// send the user over to their brand new profile page.
 			// hopefully they'll get the memo and personalize it
 
-			// ill add tooltips and suggestions later on
-			navigate(`/profile/${_profile.user_id}`);
+			// ill add tooltips and suggestions later on (complete)
+			navigate(`/u/${_profile.user_id}`);
 		} catch (e) {
 			switch (e.code) {
 				case "auth/email-already-in-use":

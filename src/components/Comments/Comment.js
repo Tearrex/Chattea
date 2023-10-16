@@ -31,7 +31,7 @@ function Comment(props) {
 		await deleteDoc(commentRef);
 	}
 	function visit_user() {
-		navigate("/profile/" + user_id);
+		navigate("/u/" + user_id);
 	}
 	// this function must return array of elements to map properly
 	function render_comment(comment) {

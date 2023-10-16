@@ -506,7 +506,7 @@ function ProfilePage(props) {
 									{relatedUsers.length > 0 && (
 										<div className="list">
 											{relatedUsers.map((x, i) => (
-												<Link to={"/profile/" + x} className="bTooltip" key={i}>
+												<Link to={"/u/" + x} className="bTooltip" key={i}>
 													<img src={_users[x].pfp} alt="user pic" width={30} />
 													<span className="toolText">{_users[x].username}</span>
 												</Link>

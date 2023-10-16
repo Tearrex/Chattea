@@ -72,7 +72,7 @@ function UserPanel(props) {
 					style={{ objectFit: "cover", cursor: "pointer" }}
 					src={pfp}
 					onLoad={(e) => setShow(true)}
-					onClick={(e) => navigate("/profile/" + user_id)}
+					onClick={(e) => navigate("/u/" + user_id)}
 					alt="profile pic"
 				/>
 				<div className="userOptions">

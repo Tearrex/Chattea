@@ -197,7 +197,7 @@ function Home() {
 										// return <button>{_users[m].username}</button>;
 										return (
 											<Link
-												to={"/profile/" + m + "/private"}
+												to={"/u/" + m + "/private"}
 												className="bCard"
 												key={i}
 											>
@@ -235,7 +235,7 @@ function Home() {
 									>
 										{suggestions &&
 											Object.values(suggestions).map((x, i) => (
-												<Link to={"/profile/" + x.id} className="bCard" key={i}>
+												<Link to={"/u/" + x.id} className="bCard" key={i}>
 													<img src={_users[x.id].pfp} alt="user pic" />
 													<p>@{_users[x.id].username}</p>
 												</Link>

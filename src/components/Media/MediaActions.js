@@ -183,7 +183,7 @@ function MediaActions(props) {
 					return setMergeStatus(0);
 				}
 				if (!focusPost[1].private)
-					navigate("/profile/" + focusPost[1].user_id + "/private");
+					navigate("/u/" + focusPost[1].user_id + "/p");
 				else navigate("/post/" + focusPost[0]);
 				closeModal();
 			}, 1000);
