@@ -77,8 +77,10 @@ function FAQPage(props) {
 						page by default.
 						<br />
 						<br />
-						Private posts are <u>exclusive to your buddies</u> list. However, we
-						still moderate the content that gets reported by users. <br />
+						Private posts are <u>exclusive to your buddies</u> and enforced with
+						authentication. However, we still moderate the content that gets
+						reported by users.
+						<br />
 						<br /> By adding someone on Chattea, you allow them to view the
 						private posts on your page & mention you in comments. They still
 						need to add you back before you can do the same.
@@ -123,8 +125,8 @@ function FAQPage(props) {
 						This info is saved on our cloud database to keep track of every user
 						that exists on the website. <br />
 						<u>Your email is kept private from others</u>; Used solely for
-						authentication and recovery of your account. You'll only be
-						emailed per your request.
+						authentication and recovery of your account. You'll only be emailed
+						per your request.
 						<br />
 						<br />
 						<u>We never share or sell this information with third parties.</u>
