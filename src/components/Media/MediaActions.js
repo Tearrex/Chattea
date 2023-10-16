@@ -307,20 +307,28 @@ function MediaActions(props) {
 											<i className="fas fa-eye"></i>
 											<br />
 											Anyone can see{" "}
-											{_users[focusPost[1].user_id] &&
-												_users[focusPost[1].user_id].username}
-											's post
+											{(_users[focusPost[1].user_id] &&
+												_users[focusPost[1].user_id].username + "'s ") ||
+												(_user &&
+													_user.user_id == focusPost[1].user_id &&
+													"your ")}
+											post
 											<br />
-											<Link to="/#faq">Learn more.</Link>
+											{mergeStatus === 0 && <Link to="/#faq">Learn more.</Link>}
 										</p>
 									) : (
 										<p className="private">
 											<i className="fas fa-eye-slash"></i>
 											<br />
 											Only{" "}
-											{_users[focusPost[1].user_id] &&
-												_users[focusPost[1].user_id].username}
-											's buddies can see this post.
+											{(_users[focusPost[1].user_id] &&
+												_users[focusPost[1].user_id].username + "'s ") ||
+												(_user &&
+													_user.user_id == focusPost[1].user_id &&
+													"your ")}
+											buddies can see this post.
+											<br />
+											{mergeStatus === 0 && <Link to="/#faq">Learn more.</Link>}
 										</p>
 									)}
 									{(focusPost[1].private === true) != pickedPrivateVis && (
