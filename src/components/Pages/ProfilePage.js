@@ -4,6 +4,7 @@ import {
 	updateDoc,
 	doc,
 	getDoc,
+	deleteDoc,
 	getDocs,
 	collection,
 	query,
@@ -141,6 +142,12 @@ function ProfilePage(props) {
 						suggs.push(buddy.user_id);
 					}
 				}
+				if (
+					user_id !== _user.user_id &&
+					_users[user_id] &&
+					_users[user_id].buddies.includes(_user.user_id)
+				)
+					suggs.push(_user.user_id);
 				setRelatedUsers(suggs);
 			}
 		}
@@ -148,6 +155,7 @@ function ProfilePage(props) {
 	useEffect(() => {
 		if (profile) {
 			setName(profile.username);
+			setRelatedUsers([]);
 			setUserPfp(profile.pfp);
 			setBio(profile.about);
 			if (profile["banner"] !== undefined) setBanner(profile.banner);
@@ -339,6 +347,49 @@ function ProfilePage(props) {
 			console.log("failed to ban user");
 		}
 	}
+	async function delete_user() {
+		if (!window.confirm(`Delete ${profile.username}?`)) return;
+		const postsRef = collection(_dbRef, "posts");
+		const postsQuery = query(postsRef, where("user_id", "==", profile.user_id));
+		const snap = await getDocs(postsQuery);
+		if (snap.docs.length > 0) {
+			for (let i = 0; i < snap.docs.length; i++) {
+				const userPost = snap.docs[i];
+				const commentsRef = collection(
+					_dbRef,
+					"posts/" + userPost.id + "/comments"
+				);
+				const commentsQuery = query(commentsRef);
+				const _snaps = await getDocs(commentsQuery);
+				for (let c = 0; c < _snaps.docs.length; c++) {
+					const comment = _snaps.docs[c];
+					try {
+						await deleteDoc(comment.ref);
+					} catch (e) {
+						alert("failed deleting comment " + comment.id + " recursively", e);
+					}
+				}
+				try {
+					await deleteDoc(userPost.ref);
+				} catch (e) {
+					return alert("failed to delete user post " + userPost.id, e);
+				}
+			}
+		}
+		const _doc = doc(_dbRef, "users/" + profile.user_id);
+		try {
+			deleteDoc(_doc)
+				.then(() => {
+					let users = { ..._users };
+					delete users[profile.user_id];
+					localStorage.setItem("users", JSON.stringify(users));
+					window.location.reload();
+				})
+				.catch((e) => console.log("failed to ban user"));
+		} catch (error) {
+			window.alert("failed to delete user");
+		}
+	}
 	useEffect(() => {
 		document.getElementById("welcomer").style.display = null;
 		localStorage.removeItem("tc");
@@ -478,24 +529,19 @@ function ProfilePage(props) {
 								<i className="fas fa-seedling"></i> Joined{" "}
 								<span>{profile && profile.joined}</span>
 								<br />
-								<Link
-									to={"/u/@" + profile.username + (privateView ? "/p" : "")}
-								>
-									<i class="fas fa-link"></i>{" "}
-									{window.location.origin +
-										"/u/@" +
-										profile.username +
-										(privateView ? "/p/" : "")}
-								</Link>
+								{profile && (
+									<Link
+										to={"/u/@" + profile.username + (privateView ? "/p" : "")}
+									>
+										<i class="fas fa-link"></i>{" "}
+										{window.location.origin +
+											"/u/@" +
+											profile.username +
+											(privateView ? "/p/" : "")}
+									</Link>
+								)}
 							</p>
 							<div className="buddyInfo">
-								{_user &&
-									_user.role === "admin" &&
-									profile.user_id !== _user.user_id && (
-										<button className="banBtn" onClick={ban_user}>
-											<i className="fas fa-bolt"></i> BAN
-										</button>
-									)}
 								{privateView && (
 									<span>
 										<i className="fas fa-eye"></i>
@@ -506,22 +552,51 @@ function ProfilePage(props) {
 									{relatedUsers.length > 0 && (
 										<div className="list">
 											{relatedUsers.map((x, i) => (
-												<Link to={"/u/" + x} className="bTooltip" key={i}>
-													<img src={_users[x].pfp} alt="user pic" width={30} />
-													<span className="toolText">{_users[x].username}</span>
+												<Link
+													to={(x !== _user.user_id && "/u/" + x) || "#"}
+													className="bTooltip"
+													key={i}
+												>
+													<img
+														src={
+															(_users[x] && _users[x].pfp) ||
+															(_user && _user.user_id === x && _user.pfp)
+														}
+														alt="user pic"
+														width={30}
+													/>
+													<span className="toolText">
+														{(_users[x] && _users[x].username) ||
+															(_user && _user.user_id === x && _user.username)}
+													</span>
 												</Link>
 											))}
 										</div>
 									)}
 								</div>
 								{_user &&
+								profile != null &&
 								_user.user_id !== profile.user_id &&
 								_users[profile.user_id] ? (
-									<BuddyButton buddy={profile.user_id} />
+									<BuddyButton buddy={(profile && profile.user_id) || ""} />
 								) : null}
 							</div>
 						</div>
 					)}
+					{_user &&
+						profile &&
+						_user.role === "admin" &&
+						profile.user_id !== _user.user_id && (
+							<div className="modActions">
+								<i className="fas fa-shield-alt"></i>
+								<button className="banBtn" onClick={ban_user}>
+									<i className="fas fa-user-slash"></i> BAN
+								</button>
+								<button className="banBtn" onClick={delete_user}>
+									<i className="fas fa-trash-alt"></i> DELETE
+								</button>
+							</div>
+						)}
 					{profile && (
 						<div className="privacyModes">
 							<button
