@@ -521,15 +521,16 @@ function Submitter(props) {
 						className="subVerbose"
 						searching={pickingTrack ? "true" : "false"}
 					>
-						{(postCount || 0) === 0 && (
-							<span
-								className="hint"
-								onClick={() => document.querySelector("#subTxt").focus()}
-							>
-								🎉 Make your first {props.privateMode ? "private" : "public"}{" "}
-								post
-							</span>
-						)}
+						{window.location.pathname.startsWith("/u") &&
+							(postCount || 0) === 0 && (
+								<span
+									className="hint"
+									onClick={() => document.querySelector("#subTxt").focus()}
+								>
+									🎉 Make your first {props.privateMode ? "private" : "public"}{" "}
+									post
+								</span>
+							)}
 						<input
 							ref={_textInput}
 							value={_text}
