@@ -334,7 +334,7 @@ function ProfilePage(props) {
 		document.body.style.overflow = focusPost !== null ? "hidden" : null;
 	}, [focusPost]);
 	function ban_user() {
-		if (!window.confirm(`Ban ${profile.username}?`)) return;
+		if (!window.confirm(`Revoke ${profile.username}'s posting privileges?`)) return;
 		const _doc = doc(_dbRef, "banned/" + profile.user_id);
 		try {
 			setDoc(_doc, {
@@ -347,8 +347,49 @@ function ProfilePage(props) {
 			console.log("failed to ban user");
 		}
 	}
+	async function purge_user() {
+		if (
+			!window.confirm(
+				`Purge all of ${profile.username}'s posts? User will remain.`
+			)
+		)
+			return;
+		const postsRef = collection(_dbRef, "posts");
+		const postsQuery = query(postsRef, where("user_id", "==", profile.user_id));
+		const snap = await getDocs(postsQuery);
+		if (snap.docs.length > 0) {
+			for (let i = 0; i < snap.docs.length; i++) {
+				const userPost = snap.docs[i];
+				const commentsRef = collection(
+					_dbRef,
+					"posts/" + userPost.id + "/comments"
+				);
+				const commentsQuery = query(commentsRef);
+				const _snaps = await getDocs(commentsQuery);
+				for (let c = 0; c < _snaps.docs.length; c++) {
+					const comment = _snaps.docs[c];
+					try {
+						await deleteDoc(comment.ref);
+					} catch (e) {
+						alert("failed deleting comment " + comment.id + " recursively", e);
+					}
+				}
+				try {
+					await deleteDoc(userPost.ref);
+				} catch (e) {
+					return alert("failed to delete user post " + userPost.id, e);
+				}
+			}
+		}
+	}
 	async function delete_user() {
-		if (!window.confirm(`Delete ${profile.username}?`)) return;
+		if (
+			!window.confirm(
+				`Wipe ${profile.username}'s entire existence in the Chatteaverse?
+				Nobody will hear of them again...`
+			)
+		)
+			return;
 		const postsRef = collection(_dbRef, "posts");
 		const postsQuery = query(postsRef, where("user_id", "==", profile.user_id));
 		const snap = await getDocs(postsQuery);
@@ -592,8 +633,11 @@ function ProfilePage(props) {
 								<button className="banBtn" onClick={ban_user}>
 									<i className="fas fa-user-slash"></i> BAN
 								</button>
-								<button className="banBtn" onClick={delete_user}>
-									<i className="fas fa-trash-alt"></i> DELETE
+								<button className="wipeBtn" onClick={purge_user}>
+									<i className="fas fa-fire-alt"></i> PURGE
+								</button>
+								<button className="deleteBtn" onClick={delete_user}>
+									<i className="fas fa-exclamation"></i> DELETE
 								</button>
 							</div>
 						)}
