@@ -660,7 +660,10 @@ function Submitter(props) {
 						<i class="fas fa-image"></i>{" "}
 						<span
 							style={{
-								textDecoration: !_user.verified ? "line-through" : null,
+								textDecoration:
+									!currentUser || !currentUser.emailVerified
+										? "line-through"
+										: null,
 							}}
 						>
 							{!localFile ? "Attach" : "Change"} Image
@@ -671,7 +674,7 @@ function Submitter(props) {
 							accept=".png, .jpg, .jpeg"
 							style={{ display: "none" }}
 							onChange={(e) => onFileChange(e)}
-							disabled={!_user.verified}
+							disabled={!currentUser || !currentUser.emailVerified}
 						/>
 					</label>
 					<button
