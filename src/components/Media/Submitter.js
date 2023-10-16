@@ -775,7 +775,7 @@ function Submitter(props) {
 				</div>
 				{/*<div className="fileCaption">Add a caption</div>*/}
 			</div>
-			{!linkSent ? (
+			{(!currentUser || !currentUser.emailVerified) && !linkSent ? (
 				!linkFail ? (
 					<h4 className="verify">
 						{sendingLink && <i className="fas fa-cog spin" />}Verify{" "}
@@ -809,10 +809,12 @@ function Submitter(props) {
 					</h4>
 				)
 			) : (
-				<h4 className="verify complete">
-					<i className="fas fa-check" /> Link sent, check your spam for{" "}
-					<span>noreply@reactback-1cf7d.firebaseapp.com</span>
-				</h4>
+				!currentUser.emailVerified && (
+					<h4 className="verify complete">
+						<i className="fas fa-check" /> Link sent, check your spam for{" "}
+						<span>noreply@reactback-1cf7d.firebaseapp.com</span>
+					</h4>
+				)
 			)}
 			{changingEmail && !linkSent && !linkFail && (
 				<div className="emailChange">
