@@ -273,7 +273,14 @@ function FAQPage(props) {
 						<br />
 						<br />
 						Unlike compression, your image is cropped by an automated HTTP
-						server for a cost-effective computing approach.
+						server for a cost-effective computing approach.{" "}
+						<a
+							href="https://github.com/Tearrex/Chattea/blob/main/serverless/functions/index.js"
+							target="_blank"
+							rel="noreferrer"
+						>
+							See the code for this feature.
+						</a>
 						<br />
 						<br />
 						<i class="fas fa-shield-alt"></i> We protect your privacy by
