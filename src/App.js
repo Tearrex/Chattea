@@ -24,7 +24,6 @@ import "./components/Styles/Splash.scss";
 import "./components/Styles/UserProfile.scss";
 
 import * as filter from "profanity-filter";
-import UsersPage from "./components/Pages/UsersPage";
 
 export function setCaretPosition(caretPos) {
 	// caret attribute should be set by function caller prior
