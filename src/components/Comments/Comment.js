@@ -27,6 +27,10 @@ function Comment(props) {
 	}, [_users, _user]);
 	async function delete_comment() {
 		console.log(props.postID + " comment id: " + id);
+		const confirm = window.confirm(
+			"Are you sure you want to delete this comment?"
+		);
+		if (!confirm) return;
 		const commentRef = doc(_dbRef, "posts/" + props.postID + "/comments/" + id);
 		await deleteDoc(commentRef);
 	}
@@ -58,7 +62,7 @@ function Comment(props) {
 				if (user)
 					result.push(
 						<Link
-							to={"/profile/" + user[1]}
+							to={"/u/" + user[1]}
 							href="#"
 							className="mention"
 							key={result.length}
@@ -77,13 +81,16 @@ function Comment(props) {
 	}
 	return (
 		<div className="comment">
-			{_user !== undefined && _user.role === "admin" ? (
+			{_user &&
+			(_user.role === "admin" ||
+				_user.user_id === user_id ||
+				_user.user_id === props.authorID) ? (
 				<span className="cDelete" onClick={delete_comment}>
 					🗑️
 				</span>
 			) : null}
 			<Link
-				to={"/profile/" + user_id}
+				to={"/u/" + user_id}
 				className="ubadge"
 				style={{ flexShrink: 0 }}
 			>

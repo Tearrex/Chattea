@@ -83,6 +83,7 @@ function Comments(props) {
 				key={comment.id}
 				comment={comment}
 				postID={props.postID}
+				authorID={props.authorID}
 				mentionUser={props.mentionUser}
 			/>
 		);

@@ -563,7 +563,7 @@ function MediaPost(props) {
 						)}
 						<Comments
 							postID={postID}
-							authorID={postID}
+							authorID={user_id}
 							updateComments={setCommentCount}
 							mentionUser={(user_id) => mention_user(user_id, true)}
 							toCache={(e) => send_commenters_to_cache(e)}
