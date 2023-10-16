@@ -5,6 +5,7 @@ import {
 	query,
 	orderBy,
 	limit,
+	getDocs,
 } from "firebase/firestore";
 import { useEffect, useState, useRef, useContext } from "react";
 import { _dbRef, _storageRef } from "../Main/firebase";
@@ -153,16 +154,29 @@ function MediaPost(props) {
 		}
 	}
 	async function delete_post() {
-		//console.log("starting delete");
-		const postRef = doc(_dbRef, "posts", props.postID);
-		await deleteDoc(postRef);
+		const commentsRef = collection(_dbRef, "posts", props.postID, "comments");
+		const commentsQuery = query(commentsRef); // hopefully its not a massive batch...
+
+		// delete comments
+		const snap = await getDocs(commentsQuery);
+		if (snap.docs.length > 0) {
+			console.log("deleting comments...");
+			for (let i = 0; i < snap.docs.length; i++) {
+				const doc = snap.docs[i];
+				try {
+					await deleteDoc(doc.ref);
+				} catch (e) {
+					return alert("failed to delete comment", e);
+				}
+			}
+		}
+		// delete smiles
 		const smilesRef = doc(
 			_dbRef,
 			"users/" + props.authorID + "/smiles/" + props.postID
 		);
 		await deleteDoc(smilesRef);
-
-		//console.log("deleted?");
+		// delete the image (if any)
 		if (image_url !== "") {
 			const imgRef = ref(_storageRef, "images/" + user_id + "/" + props.postID);
 			try {
@@ -171,6 +185,9 @@ function MediaPost(props) {
 				console.log(e);
 			}
 		}
+		// finally, delete original document
+		const postRef = doc(_dbRef, "posts", props.postID);
+		await deleteDoc(postRef);
 		props.onDelete();
 		console.log("Removed post " + props.postID);
 	}
