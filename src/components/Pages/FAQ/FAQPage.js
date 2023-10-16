@@ -304,7 +304,14 @@ function FAQPage(props) {
 						<i className="fas fa-cog"></i> Your initial use will make a secure
 						HTTP request to an intermediate cloud API in order to retrieve a
 						temporary access token for search results. This creates a seamless
-						experience for you by not prompting for log in through Spotify.
+						experience for you by not prompting for log in through Spotify.{" "}
+						<a
+							href="https://github.com/Tearrex/Chattea/blob/main/serverless/functions/index.js"
+							target="_blank"
+							rel="noreferrer"
+						>
+							See the code for this feature.
+						</a>
 					</p>
 				</FAQuestion>
 				<FAQuestion
