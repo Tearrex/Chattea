@@ -1,10 +1,18 @@
 import { useNavigate } from "react-router";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { UserContext } from "../../Main/Contexts";
 import GithubButton from "../../GithubButton";
 import FAQuestion from "./FAQuestion";
 import { Link } from "react-router-dom";
 
+export function open_module(e, faqId) {
+	if (e) e.preventDefault();
+	let button = document.querySelector(faqId);
+	if (button && button.nextSibling.getAttribute("open") != "true") {
+		button.click();
+	}
+	button.scrollIntoView({ behavior: "smooth" });
+}
 function FAQPage(props) {
 	const navigate = useNavigate();
 	const { _user, _setUser } = useContext(UserContext);
@@ -16,14 +24,13 @@ function FAQPage(props) {
 		localStorage.setItem("guest", "true");
 		navigate("/main");
 	}
-	function open_module(e, faqId) {
-		e.preventDefault();
-		let button = document.querySelector(faqId);
-		if (button && button.nextSibling.getAttribute("open") != "true") {
-			button.click();
+	useEffect(() => {
+		document.getElementById("welcomer").style.display = "none";
+		if (window.location.href.includes("#faq")) {
+			document.querySelector("#faq").scrollIntoView({ behavior: "smooth" });
 		}
-		button.scrollIntoView();
-	}
+		document.body.style.overflow = null;
+	}, []);
 	return (
 		<footer id="faq">
 			<div className="faqNest">
@@ -45,9 +52,11 @@ function FAQPage(props) {
 						<Link to="#" onClick={(e) => open_module(e, "#visibility")}>
 							public and private pages
 						</Link>
-						. Post glimpses of your activities while adding some mystery ;) You
-						can check-in whenever you like and perhaps you'll get a laugh out of
-						some goofy post.
+						. Post glimpses of your activities while adding some mystery ;){" "}
+						<br />
+						<br />
+						You can check-in whenever you like and perhaps you'll get a laugh
+						out of some goofy post.
 					</p>
 				</FAQuestion>
 				<FAQuestion
@@ -67,12 +76,9 @@ function FAQPage(props) {
 						Public posts <u>can be seen by anyone</u> and are shown on the home
 						page by default.
 						<br />
-						Please keep the content appropriate for the general public, be kind
-						to others.
 						<br />
-						<br />
-						Private posts are <u>exclusive to your buddies</u> list. However we
-						still moderate the content that gets reported to us.
+						Private posts are <u>exclusive to your buddies</u> list. However, we
+						still moderate the content that gets reported by users. <br />
 						<br /> By adding someone on Chattea, you allow them to view the
 						private posts on your page & mention you in comments. They still
 						need to add you back before you can do the same.
@@ -82,7 +88,7 @@ function FAQPage(props) {
 						page.
 						<br />
 						<br />
-						<Link to="#" onClick={open_module}>
+						<Link to="#" onClick={(e) => open_module(e, "#modDiscretion")}>
 							Read more on moderation discretions.
 						</Link>
 						<br />
@@ -102,6 +108,7 @@ function FAQPage(props) {
 					<p>
 						Privacy concerns are a big deal, and as a community-based platform
 						we take it very seriously.
+						<br />
 					</p>
 					<h2>Information We Collect</h2>
 					<p>Basic account details upon sign up</p>
@@ -115,9 +122,11 @@ function FAQPage(props) {
 					<p>
 						This info is saved on our cloud database to keep track of every user
 						that exists on the website. <br />
-						<u>Your email is private from others</u>; It serves as an
-						authentication and recovery method for your account. <br />
-						You'll only be emailed per your request.{" "}
+						<u>Your email is kept private from others</u>; Used solely for
+						authentication and recovery of for your account. You'll only be
+						emailed per your request.
+						<br />
+						<br />
 						<u>We never share or sell this information with third parties.</u>
 					</p>
 					<p>The content you submit</p>
@@ -127,13 +136,8 @@ function FAQPage(props) {
 					</ul>
 					<p>
 						Any visual media you share will be uploaded to our cloud storage
-						bucket. We do not use this content for any purpose other than
-						providing you with Chattea's intended functionality, like displaying
-						personalized feeds.
-					</p>
-					<p>
-						When you delete a post we will also delete its traces of images from
-						the cloud before giving you the confirmation response.
+						bucket. When you delete a post we will also delete all traces of
+						images from the cloud before giving you the confirmation response.
 					</p>
 					<p>
 						Every user is assigned an <b>identifier</b> (ID) upon signing up.
@@ -143,7 +147,11 @@ function FAQPage(props) {
 					<h2>
 						<i className="fas fa-cog"></i> How we use your data
 					</h2>
-					<p>Your identifier is logged when you do one of the following</p>
+					<p>
+						We do not use this content for any purpose other than providing you
+						with Chattea's intended functionality, like displaying personalized
+						feeds. Your identifier is logged when you do one of the following
+					</p>
 					<ul
 						className="dataSection"
 						style={{ listStyleType: "decimal-leading-zero" }}
@@ -155,10 +163,10 @@ function FAQPage(props) {
 					</ul>
 					<p>
 						As you browse the website, the profile data you fetch about other
-						users will be cached locally on your device until you log out or
-						clear your browser cookies. <br />
-						This lowers the amount of requests your browser makes to the cloud;
-						Edits to your profile may not propagate for others right away.
+						users will be cached locally on your browser. <br />
+						This lowers the amount of requests your browser makes to our servers
+						by remembering the profiles of each user it retrieves; Edits to your
+						profile (username and bio) may not propagate for others right away.
 					</p>
 					<h2>
 						How we <u>DO NOT</u> use your data
@@ -174,6 +182,7 @@ function FAQPage(props) {
 						<li>Contact lists</li>
 						<li>Phone Numbers</li>
 						<li>GPS location</li>
+						<li>Other sensor data</li>
 					</ul>
 				</FAQuestion>
 				<FAQuestion question="But why tea?" emote="🤔">
@@ -233,15 +242,15 @@ function FAQPage(props) {
 				</FAQuestion>
 				<FAQuestion
 					question="Posting images"
+					buttonId="images"
 					emote={<i className="fas fa-image"></i>}
 				>
 					<p>
 						You must verify your email before posting images. <br />
 						<br />
-						Images over a certain file size are subject to lossy{" "}
-						<b>compression</b> prior to uploading to our cloud. This process is
-						done locally by your browser. The size limit (1megabyte) fluctuates
-						depending on storage demands.
+						Images over 1megabyte are subject to lossy <b>compression</b> prior
+						to uploading to our cloud. This process is done locally by your
+						browser.
 						<br />
 						<br />
 						We also offer an embedded browser tool for <b>cropping</b> images
@@ -267,8 +276,8 @@ function FAQPage(props) {
 						<br />
 						<i class="fas fa-shield-alt"></i> We protect your privacy by
 						stripping all metadata from the image before sending it back to you.
-						The binary data is processed in server memory instead of saving to
-						disk storage, for optimal security.
+						The binary data is also processed in server memory instead of disk
+						storage, for optimal security.
 					</p>
 				</FAQuestion>
 				<FAQuestion
