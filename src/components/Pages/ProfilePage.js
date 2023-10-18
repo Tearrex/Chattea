@@ -58,7 +58,7 @@ function ProfilePage(props) {
 	const bannerChanger = useRef();
 	const pfpChanger = useRef();
 	useEffect(() => {
-		profile_cleanup();
+		if(_user) profile_cleanup();
 	}, [_user, _users, user_id, profile]);
 
 	const [relatedUsers, setRelatedUsers] = useState([]); // list of users relevant
@@ -131,8 +131,16 @@ function ProfilePage(props) {
 			} else {
 				setProfile(user);
 			}
-			var suggs = [];
-			if (_user) {
+		}
+	}
+	useEffect(() => {
+		if (profile) {
+			setName(profile.username);
+			setRelatedUsers([]);
+			setUserPfp(profile.pfp);
+			setBio(profile.about);
+			let suggs = [];
+			if (profile.user_id !== _user.user_id) {
 				const buddies = _user.buddies;
 				// let the user know if some of their buddies are "following"
 				// the profile they are currently looking at, potential relations
@@ -149,15 +157,7 @@ function ProfilePage(props) {
 				)
 					suggs.push(_user.user_id);
 				setRelatedUsers(suggs);
-			}
-		}
-	}
-	useEffect(() => {
-		if (profile) {
-			setName(profile.username);
-			setRelatedUsers([]);
-			setUserPfp(profile.pfp);
-			setBio(profile.about);
+			} else setRelatedUsers([]);
 			if (profile["banner"] !== undefined) setBanner(profile.banner);
 			// console.log("Author's profile", profile);
 		}
@@ -334,7 +334,8 @@ function ProfilePage(props) {
 		document.body.style.overflow = focusPost !== null ? "hidden" : null;
 	}, [focusPost]);
 	function ban_user() {
-		if (!window.confirm(`Revoke ${profile.username}'s posting privileges?`)) return;
+		if (!window.confirm(`Revoke ${profile.username}'s posting privileges?`))
+			return;
 		const _doc = doc(_dbRef, "banned/" + profile.user_id);
 		try {
 			setDoc(_doc, {
@@ -462,7 +463,7 @@ function ProfilePage(props) {
 					style={{ width: "100%" }}
 				>
 					<div
-						className="niceClip"
+						className="niceClip banner"
 						style={{
 							backgroundImage: "url('" + userBanner + "')",
 							position: "relative",
@@ -523,7 +524,8 @@ function ProfilePage(props) {
 									onChange={(e) => change_name(e)}
 								/>
 								<p className="charCount">
-									{inputName ? inputName.length : "0"}/{nameCharLimit}
+									Char Limit: {inputName ? inputName.length : "0"}/
+									{nameCharLimit}
 								</p>
 							</div>
 						</div>
@@ -629,7 +631,6 @@ function ProfilePage(props) {
 						_user.role === "admin" &&
 						profile.user_id !== _user.user_id && (
 							<div className="modActions">
-								<i className="fas fa-shield-alt"></i>
 								<button className="banBtn" onClick={ban_user}>
 									<i className="fas fa-user-slash"></i> BAN
 								</button>
