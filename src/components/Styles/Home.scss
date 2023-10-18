@@ -1541,6 +1541,9 @@ p {
 	justify-content: center;
 	width: 100%;
 	overflow: hidden;
+	small {
+		color: $textMain;
+	}
 	.track {
 		display: flex;
 		flex-flow: row;
@@ -1689,6 +1692,8 @@ p {
 	padding: 10px;
 	border-radius: $boxRad $boxRad 0 0;
 	flex-shrink: 0;
+	flex-flow: column-reverse;
+	gap: 1rem;
 }
 .postActionScreen {
 	position: fixed;

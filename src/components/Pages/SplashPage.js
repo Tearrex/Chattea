@@ -148,10 +148,22 @@ function SplashPage() {
 					</div>
 					<p>Downtime? Have a glance at what other humans are up to.</p>
 					{_user && (
-						<button className="faqSignUp funky" onClick={() => navigate("/main")}>
-							<i className="fas fa-sign-in-alt"></i> Hey{" "}
-							<span>@{_user.username}</span>, jump in!
-						</button>
+						<div className="splashActions">
+							<button className="largeBtn" onClick={() => navigate("/main")}>
+								<i className="fas fa-sign-in-alt"></i> Hey{" "}
+								<span>@{_user.username}</span>, jump in!
+							</button>
+							<button
+								className="largeBtn faqJump"
+								onClick={() =>
+									document
+										.querySelector("#faq")
+										.scrollIntoView({ behavior: "smooth" })
+								}
+							>
+								<i className="fas fa-question-circle"></i> Read our new FAQ
+							</button>
+						</div>
 					)}
 				</div>
 				<div className="splashNet">

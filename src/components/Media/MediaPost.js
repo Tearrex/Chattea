@@ -401,41 +401,54 @@ function MediaPost(props) {
 				className="postUserInfo"
 				style={{ boxShadow: image_url === "" ? "none" : null }}
 			>
-				<div className="mediaContent">
-					<p style={{ marginBottom: 0, fontSize: "1.3rem" }}>{content}</p>
-					{track && (
-						<>
-							<div
-								className="track media"
-								active={"true"}
-								paused={playing ? "false" : "true"}
-								id="mainTrack"
-								onClick={() => switch_song(track.preview_url)}
-							>
-								<div className="info">
-									<div className="art">
-										<img src={track.album_art} />
+				{(content || track) && (
+					<div className="mediaContent">
+						<p
+							style={{ marginBottom: 0, fontSize: "1.3rem", textAlign: "left" }}
+						>
+							{content}
+						</p>
+						{track && (
+							<>
+								<div
+									className="track media"
+									active={"true"}
+									paused={playing ? "false" : "true"}
+									id="mainTrack"
+									onClick={() => switch_song(track.preview_url)}
+								>
+									<div className="info">
+										<div className="art">
+											<img src={track.album_art} />
+										</div>
+										<p>
+											{track.name} • <span>{track.artist}</span>
+										</p>
 									</div>
-									<p>
-										{track.name} • <span>{track.artist}</span>
-									</p>
+									{String(track.url).startsWith("https://open.spotify.com") && (
+										<a
+											href={track.url}
+											target="_blank"
+											rel="nonreferrer"
+											style={{ fontSize: "1.5rem" }}
+											onClick={(e) => prompt_tab(e, track.url)}
+										>
+											<i className="fab fa-spotify"></i>
+										</a>
+									)}
 								</div>
-								{String(track.url).startsWith("https://open.spotify.com") && (
-									<a
-										href={track.url}
-										target="_blank"
-										rel="nonreferrer"
-										style={{ fontSize: "1.5rem" }}
-										onClick={(e) => prompt_tab(e, track.url)}
-									>
-										<i className="fab fa-spotify"></i>
-									</a>
-								)}
-							</div>
-						</>
-					)}
-				</div>
-				<Link to={"/u/" + user_id} className="userAndPfp">
+								<small style={{ marginTop: "0.5rem" }}>
+									🔊 Mind your volume before playing songs
+								</small>
+							</>
+						)}
+					</div>
+				)}
+				<Link
+					to={"/u/" + user_id}
+					className="userAndPfp"
+					style={{ paddingLeft: isAuthor ? "0" : null }}
+				>
 					{!isAuthor && (
 						<p
 							className="username"

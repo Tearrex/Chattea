@@ -193,7 +193,36 @@
 		background-color: $mainOdd;
 		padding: 10px;
 	}
-
+	.faqSignUp {
+		width: 100%;
+		padding: 15px 10px;
+		cursor: pointer;
+		background-color: $niceOrange;
+		color: $lightText;
+		border: none;
+		font-size: 1.2rem;
+		span {
+			color: #000;
+		}
+	}
+	.largeBtn {
+		@extend .faqSignUp;
+		border-radius: 1rem;
+		&:has(.faqJump) {
+			background-color: $foreAlt;
+		}
+	}
+	.largeBtn.faqJump {
+		background-color: $foreAlt;
+		border-bottom: 7px solid $foreMain;
+	}
+	.faqSignUp.funky, .largeBtn.funky {
+		border-radius: 1rem;
+		border-bottom: 7px solid #de7d08;
+		&:active {
+			border-bottom: 2px solid #de7d08;
+		}
+	}
 	.catch {
 		font-weight: 300;
 		font-size: 1rem;
@@ -204,6 +233,12 @@
 		flex-flow: column;
 		align-items: center;
 		color: #aaa;
+		.splashActions {
+			width: 100%;
+			display: flex;
+			gap: 0.5rem;
+			flex-flow: column;
+		}
 		.chattea {
 			position: relative;
 			width: 100%;
@@ -232,25 +267,6 @@
 			margin-top: 0;
 			// font-size: 1.1rem;
 			max-width: 550px;
-		}
-	}
-	.faqSignUp {
-		width: 100%;
-		padding: 15px 10px;
-		cursor: pointer;
-		background-color: $niceOrange;
-		color: $lightText;
-		border: none;
-		font-size: 1.2rem;
-		span {
-			color: #000;
-		}
-	}
-	.faqSignUp.funky {
-		border-radius: 1rem;
-		border-bottom: 7px solid #de7d08;
-		&:active {
-			border-bottom: 2px solid #de7d08;
 		}
 	}
 	.splashNet {
