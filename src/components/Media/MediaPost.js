@@ -444,34 +444,42 @@ function MediaPost(props) {
 						)}
 					</div>
 				)}
-				<Link
-					to={"/u/" + user_id}
-					className="userAndPfp"
-					style={{ paddingLeft: isAuthor ? "0" : null }}
-				>
-					{!isAuthor && (
-						<p
-							className="username"
-							style={{
-								display:
-									_user && user_id === _user["user_id"] ? "none" : "block",
-								color: "#fff",
-							}}
-						>
-							{!_user && <i className="fas fa-user"></i>}
-							{_users[props.authorID] !== undefined
-								? _users[props.authorID].username
-								: "User"}
-						</p>
+				<div className="top">
+					{(!_user ||
+						(_user && (_user.user_id === user_id || _users[user_id]))) && (
+						<button className="pActions" onClick={() => props.setFocusPost()}>
+							<i class="fas fa-ellipsis-h"></i>
+						</button>
 					)}
-					<div
-						onClick={() => {
-							window.scrollTo(0, 0);
-						}}
-						style={{ backgroundImage: "url(" + pfp + ")" }}
-						className="profilePicture niceClip"
-					/>
-				</Link>
+					<Link
+						to={"/u/" + user_id}
+						className="userAndPfp"
+						style={{ paddingLeft: isAuthor ? "0" : null }}
+					>
+						{!isAuthor && (
+							<p
+								className="username"
+								style={{
+									display:
+										_user && user_id === _user["user_id"] ? "none" : "block",
+									color: "#fff",
+								}}
+							>
+								{!_user && <i className="fas fa-user"></i>}
+								{_users[props.authorID] !== undefined
+									? _users[props.authorID].username
+									: "User"}
+							</p>
+						)}
+						<div
+							onClick={() => {
+								window.scrollTo(0, 0);
+							}}
+							style={{ backgroundImage: "url(" + pfp + ")" }}
+							className="profilePicture niceClip"
+						/>
+					</Link>
+				</div>
 			</div>
 			<div className="mediaSecondary">
 				<div
@@ -494,9 +502,6 @@ function MediaPost(props) {
 						<div
 							className="imgOverlay"
 							style={{ opacity: captionInput !== "" ? null : "0" }}
-							onClick={() => {
-								if (track) switch_song(track.preview_url);
-							}}
 						>
 							<p>{filter.clean(captionInput)}</p>
 						</div>
@@ -600,12 +605,6 @@ function MediaPost(props) {
 						/>
 					</div>
 					<div className="timestamp">
-						{(!_user ||
-							(_user && (_user.user_id === user_id || _users[user_id]))) && (
-							<button className="pActions" onClick={() => props.setFocusPost()}>
-								<i class="fas fa-ellipsis-h"></i>
-							</button>
-						)}
 						<div
 							className="tooltip lock"
 							isauthor={_user && _user.user_id === user_id ? "true" : null}

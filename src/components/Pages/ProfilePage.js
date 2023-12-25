@@ -58,7 +58,7 @@ function ProfilePage(props) {
 	const bannerChanger = useRef();
 	const pfpChanger = useRef();
 	useEffect(() => {
-		if(_user) profile_cleanup();
+		if(_user || localStorage.getItem("guest") === "true") profile_cleanup();
 	}, [_user, _users, user_id, profile]);
 
 	const [relatedUsers, setRelatedUsers] = useState([]); // list of users relevant
@@ -140,7 +140,7 @@ function ProfilePage(props) {
 			setUserPfp(profile.pfp);
 			setBio(profile.about);
 			let suggs = [];
-			if (profile.user_id !== _user.user_id) {
+			if (_user && profile.user_id !== _user.user_id) {
 				const buddies = _user.buddies;
 				// let the user know if some of their buddies are "following"
 				// the profile they are currently looking at, potential relations

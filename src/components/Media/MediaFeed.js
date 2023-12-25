@@ -149,7 +149,7 @@ function MediaFeed(props) {
 		if (
 			((props.focus && props.focus !== lastUser && lastUser !== "") ||
 				(oldDoc &&
-					(oldDoc.data().private || false) != (props.private || false))) &&
+					(oldDoc.data().private) != (props.private) && props.focus) && oldDoc.data().user_id !== props.focus) &&
 			!switching
 		) {
 			console.log("DETECTED visiblity switch");
@@ -163,7 +163,7 @@ function MediaFeed(props) {
 			startFresh = true;
 		} else if (
 			(props.private && (!oldDoc || !oldDoc.data()["private"])) ||
-			(!props.private && (!oldDoc || oldDoc.data()["private"]))
+			(!props.private && (!oldDoc || oldDoc.data()["private"] === "true"))
 		) {
 			startFresh = true;
 			console.log("fresh batch now!");

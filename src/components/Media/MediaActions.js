@@ -214,7 +214,7 @@ function MediaActions(props) {
 								)}
 							{_user && (
 								<button className="high" onClick={() => setReport(true)}>
-									Report
+									<i className="fas fa-flag" /> Report Post
 								</button>
 							)}
 							{_user &&
