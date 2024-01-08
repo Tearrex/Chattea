@@ -132,9 +132,15 @@ function App() {
 		}
 	}, [currentUser]);
 	// check if the user has cached profile data in their browser
+	const day_millis = 1000 * 60 * 60 * 24;
 	useEffect(() => {
-		// it should probably be cleared when the user logs out
-		// otherwhise, refresh with new data every few days or so
+		// refresh the cached user list if its more than a week old
+		const last_cache = localStorage.getItem("last_cache");
+		if (!last_cache || (new Date() - new Date(last_cache)) / day_millis >= 7) {
+			localStorage.setItem("last_cache", new Date());
+			console.log("Refreshing user cache...");
+			return localStorage.removeItem("users");
+		}
 		const localUsers = localStorage.getItem("users");
 		if (localUsers) {
 			// if so, save the cache of the users
