@@ -157,7 +157,6 @@
 }
 .privateAlert.border {
 	// border: 4px dashed $niceOrange;
-	padding: 1rem;
 	margin: 0;
 }
 .privateAlert {
@@ -199,7 +198,6 @@
 	align-items: center;
 	text-align: right;
 	justify-content: right;
-	background-color: #000;
 	border-radius: 100vh;
 	padding-left: 1rem;
 	gap: 10px;
@@ -223,6 +221,16 @@
 }
 .niceClip:hover .bannerBtn {
 	opacity: 1;
+}
+.niceClip.banner .removeBanner {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	font-size: 2rem;
+	height: 50px;
+	aspect-ratio: 1/1;
+	background: none;
+	color: $niceOrange;
 }
 .bannerBtn {
 	width: 40px;

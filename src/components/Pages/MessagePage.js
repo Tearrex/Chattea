@@ -59,6 +59,7 @@ export default function MessagePage() {
 	const [privatePEM, setPrivatePEM] = useState(null); // base64 decryption key
 	const [privateKey, setPrivateKey] = useState(null); // holds cryptokey object for decryption operations
 	useEffect(async () => {
+		if(!user_id) setMessages([]);
 		if (_user && Object.entries(buddyList).length === 0) {
 			let buddies = _user.buddies;
 			let result = {}; // each succesful iteration will append to this object
@@ -194,7 +195,8 @@ export default function MessagePage() {
 
 	async function send_msg(e) {
 		e.preventDefault();
-		const content = text;
+		const content = text.trim();
+		if(content === "") return;
 		// before sending message, check for existing message channel
 		const _query = query(
 			collection(_dbRef, "messages"),

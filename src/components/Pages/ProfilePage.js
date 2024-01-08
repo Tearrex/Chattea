@@ -13,7 +13,13 @@ import {
 	setDoc,
 	serverTimestamp,
 } from "@firebase/firestore";
-import { uploadBytesResumable, ref, getDownloadURL } from "firebase/storage";
+import {
+	uploadBytesResumable,
+	ref,
+	getDownloadURL,
+	listAll,
+	deleteObject,
+} from "firebase/storage";
 
 import MediaFeed from "../Media/MediaFeed";
 import { MembersContext, UserContext } from "../Main/Contexts";
@@ -33,12 +39,10 @@ function ProfilePage(props) {
 	//profile picture
 	const [userPfp, setUserPfp] = useState("default_user.png");
 	const [pfpFile, setPfpFile] = useState(null);
-	const [origPfp, setOrigPfp] = useState("");
 	const [pfpSaved, setPfpSaved] = useState(false);
 	// banner
 	const [userBanner, setBanner] = useState("");
 	const [bannerFile, setBannerFile] = useState(null);
-	const [origBanner, setOrigBanner] = useState("");
 	const [bannerSaved, setBannerSaved] = useState(false);
 
 	const [profile, setProfile] = useState(null);
@@ -58,7 +62,7 @@ function ProfilePage(props) {
 	const bannerChanger = useRef();
 	const pfpChanger = useRef();
 	useEffect(() => {
-		if(_user || localStorage.getItem("guest") === "true") profile_cleanup();
+		if (_user || localStorage.getItem("guest") === "true") profile_cleanup();
 	}, [_user, _users, user_id, profile]);
 
 	const [relatedUsers, setRelatedUsers] = useState([]); // list of users relevant
@@ -200,6 +204,11 @@ function ProfilePage(props) {
 		setPfpFile(e.target.files[0]);
 		setUserPfp(URL.createObjectURL(e.target.files[0]));
 	}
+	function remove_banner() {
+		setBanner("");
+		setBannerFile(null);
+		setSave(true);
+	}
 	function update_banner(e) {
 		console.log(e.target.files[0]);
 		setSave(true);
@@ -249,6 +258,18 @@ function ProfilePage(props) {
 			);
 		} else setPfpSaved(true);
 		if (profile && userBanner !== profile.banner) {
+			if (userBanner === "") {
+				// delete user's banner
+				const bannersRef = ref(_storageRef, "banners/" + _user.user_id);
+				listAll(bannersRef).then((res) => {
+					res.items.forEach((itemRef) =>
+						deleteObject(itemRef).then(() => {
+							console.log("Deleted", itemRef.name);
+						})
+					);
+				});
+				return setBannerSaved(true);
+			}
 			// upload new banner
 			console.log("uploading banner");
 			setUploading(true);
@@ -292,14 +313,12 @@ function ProfilePage(props) {
 			if (inputName !== _user.username && inputName !== "") {
 				changesRef["username"] = inputName;
 			}
-			if (userPfp !== origPfp) {
+			if (userPfp !== profile.pfp) {
 				setUserPfp(userPfp);
-				setOrigPfp(userPfp);
 				changesRef["pfp"] = userPfp;
 			}
-			if (userBanner !== origBanner) {
-				setOrigBanner(userBanner);
-				changesRef["banner"] = userBanner;
+			if (userBanner !== profile.banner) {
+				changesRef["banner"] = userBanner || "";
 			}
 			if (profile && bioText !== profile.about) {
 				var trimmedBio = String(bioText).trimStart();
@@ -469,6 +488,14 @@ function ProfilePage(props) {
 							position: "relative",
 						}}
 					>
+						{_user &&
+							profile &&
+							profile.user_id === _user.user_id &&
+							userBanner !== "" && (
+								<button className="removeBanner" onClick={remove_banner}>
+									<i className="fas fa-times" />
+								</button>
+							)}
 						<label
 							ref={bannerChanger}
 							className="bannerBtn niceClip"
@@ -664,13 +691,13 @@ function ProfilePage(props) {
 						<p className="privateAlert profile border">
 							{privateView ? (
 								<>
-									<i className="fas fa-eye"></i> Only your buddies can see your
-									private page. <Link to="/#faq">Learn more.</Link>
+									Only your buddies can see your private page.{" "}
+									<Link to="/#faq">Learn more.</Link>
 								</>
 							) : (
 								<>
-									<i className="fas fa-eye"></i> Anyone can see your public
-									page. <Link to="/#faq">Learn more.</Link>
+									Anyone can see your public page.{" "}
+									<Link to="/#faq">Learn more.</Link>
 								</>
 							)}
 						</p>

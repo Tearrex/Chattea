@@ -462,7 +462,6 @@ function MediaPost(props) {
 								style={{
 									display:
 										_user && user_id === _user["user_id"] ? "none" : "block",
-									color: "#fff",
 								}}
 							>
 								{!_user && <i className="fas fa-user"></i>}

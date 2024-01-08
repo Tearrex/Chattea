@@ -24,7 +24,6 @@ function Home() {
 	const [mutuals, setMutuals] = useState([]);
 	const [cache, setCache] = useState([]);
 
-	const [acknowledged, setAcknowledged] = useState(false);
 	const [focusPost, setFocusPost] = useState(null);
 
 	const [privateView, setPrivateView] = useState(false);
@@ -154,18 +153,12 @@ function Home() {
 							</div>
 						</p>
 
-						{!privateView ? (
-							<>
-								<Submitter onMessageSend={postMessage} />
-								{!acknowledged && <small className="disclaimer">
-									ℹ️ User submissions are not endorsed by Chattea or reflect our views.{" "}
-									<a href="#" onClick={() => setAcknowledged(true)}>I understand.</a>
-								</small>}
-							</>
-						) : (
+						{privateView && (
 							<h2 style={{ color: "#fff" }} className="privatePrompt">
-								<Link to={"/u/" + _user.user_id}>Visit your profile</Link> to
-								post something private
+								<Link to={"/u/" + _user.user_id + "/p"}>
+									Visit your profile
+								</Link>{" "}
+								to post something private
 							</h2>
 						)}
 					</>
