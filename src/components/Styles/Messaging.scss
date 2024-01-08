@@ -1,0 +1,136 @@
+@import "utils.scss";
+
+button.crypto {
+	background-color: $niceOrange;
+	padding: 5px 10px;
+}
+#chatscontainer {
+	display: flex;
+	flex-flow: column;
+	width: clamp(300px, 100%, 600px);
+	justify-self: center;
+	.header {
+		background-color: #22262b;
+	}
+}
+@media screen and(min-width: 600px) {
+	#chatscontainer {
+		flex-flow: row;
+	}
+	.buddies {
+		flex-flow: column-reverse !important;
+		justify-content: flex-end;
+	}
+	.buddies .add {
+		margin: 10px auto !important;
+	}
+	.chatbox {
+		flex: 100%;
+	}
+}
+.buddies {
+	display: flex;
+	flex-flow: row;
+	background-color: $foreAlt;
+	.buddy,
+	.add {
+		height: 60px;
+		aspect-ratio: 1/1;
+		padding: 10px;
+	}
+	.add {
+		border-radius: 100vh;
+		border: 4px dashed $niceOrange !important;
+		background: none;
+		color: #fff;
+		margin: auto 10px;
+	}
+	.buddy[disabled] {
+		opacity: 0.5;
+		img {
+			filter: grayscale(1);
+		}
+	}
+	.buddy:not([disabled]):hover {
+		background-color: rgba($color: #fff, $alpha: 0.1);
+	}
+	.buddy img {
+		height: 100%;
+		width: 100%;
+		object-fit: cover;
+		border-radius: 100vh;
+		background-color: #000;
+	}
+}
+
+.chatbox .chats {
+	height: 300px;
+	background-color: $foreMain;
+	position: relative;
+	padding: 15px;
+	display: flex;
+	flex-flow: column;
+	align-items: flex-start;
+	gap: 5px;
+	overflow-y: scroll;
+	flex-direction: column-reverse;
+	.message {
+		padding: 5px 10px;
+		background-color: $alttext;
+		color: #fff;
+		max-width: 70%;
+		text-align: left;
+	}
+	.message[self="true"] {
+		align-self: flex-end !important;
+		background-color: $niceOrange;
+		text-align: right;
+	}
+	.tip {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		color: #fff;
+		span {
+			color: $niceOrange;
+		}
+	}
+}
+.chatbox .textfield {
+	background-color: $foreAlt;
+	padding: 10px;
+	display: flex;
+	flex-flow: row;
+	justify-content: stretch;
+	gap: 10px;
+	input[type="text"] {
+		flex: 100%;
+		background-color: $foreMain;
+		outline: none;
+		border: none;
+		padding: 10px;
+		color: #fff;
+	}
+	button {
+		flex-shrink: 0;
+		font-size: 1.5rem;
+		aspect-ratio: 1/1;
+		height: 50px;
+		background-color: $niceOrange;
+		color: #fff;
+		position: relative;
+		border-radius: 100vh;
+		::after {
+			content: "\f023";
+			font-size: 1.2rem;
+			position: absolute;
+			right: 0;
+			bottom: 0;
+			color: $mainEven;
+		}
+		&:disabled {
+			opacity: 0.5;
+		}
+	}
+}

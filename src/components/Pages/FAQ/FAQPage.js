@@ -34,9 +34,7 @@ function FAQPage(props) {
 	return (
 		<footer id="faq">
 			<div className="faqNest">
-				<h2>
-					<i class="fas fa-question-circle"></i> FAQ
-				</h2>
+				<h2>FAQ</h2>
 				<FAQuestion question="What is Chattea?" emote="☕">
 					<p>
 						Chattea is your home for making pocket-sized memories as you go
@@ -47,7 +45,7 @@ function FAQPage(props) {
 						</Link>
 					</p>
 					<p>
-						As people come along you can parley with those that share similar
+						As people come along, you can parley with those that share similar
 						interests and foster a split following with{" "}
 						<Link to="#" onClick={(e) => open_module(e, "#visibility")}>
 							public and private pages
@@ -62,45 +60,51 @@ function FAQPage(props) {
 				<FAQuestion
 					question="Who can see my posts?"
 					buttonId="visibility"
-					emote={<i className="fas fa-eye"></i>}
+					emote={<i className="fas fa-eye-slash"></i>}
 				>
 					<p>
 						Chattea offers the options of public & private visiblity for your
 						social media posts. <br />
 						<br />
-						The corresponding icons <i className="fas fa-globe-americas"></i>/
-						<i className="fas fa-lock"></i> are shown with the timestamp of each
-						post.
+						<i className="fas fa-globe-americas"></i> Public posts can be seen
+						by anyone and are shown on the home page by default.
 						<br />
 						<br />
-						Public posts <u>can be seen by anyone</u> and are shown on the home
-						page by default.
+						<i className="fas fa-eye"></i> Private posts are exclusive to your
+						buddies and are backed by database rules requiring user
+						authentication.
 						<br />
 						<br />
-						Private posts are <u>exclusive to your buddies</u> and enforced with
-						authentication. However, we still moderate the content that gets
-						reported by users.
-						<br />
-						<br /> By adding someone on Chattea, you allow them to view the
-						private posts on your page & mention you in comments. They still
-						need to add you back before you can do the same.
+						You can change the visibility at any time.
 						<br />
 						<br />
-						Removing a buddy will instantly revoke their access to your private
-						page.
-						<br />
-						<br />
+						However, we still moderate content reported by users.{" "}
 						<Link to="#" onClick={(e) => open_module(e, "#modDiscretion")}>
 							Read more on moderation discretions.
 						</Link>
+					</p>
+				</FAQuestion>
+				<FAQuestion
+					question="What are buddies?"
+					emote={<i className="fas fa-user-friends" />}
+				>
+					<p>
+						By adding someone on Chattea, you allow them to
+						<ul>
+							<li>View your private posts</li>
+							<li>Mention you in comments</li>
+							<li>Message you in secure chats</li>
+						</ul>
+						They still need to add you back before messaging each other.
 						<br />
+						<br />
+						Removing a buddy will instantly revoke their access to these
+						elements.
 						<br />
 					</p>
 				</FAQuestion>
 				<FAQuestion question="Can I edit my posts?" emote="✏️">
-					<p>
-						You can only <i>delete</i> your posts and comments on your posts.
-					</p>
+					<p>You can only delete your posts along with associated comments.</p>
 				</FAQuestion>
 				<FAQuestion
 					question="What about my data?"
@@ -125,8 +129,8 @@ function FAQPage(props) {
 						This info is saved on our cloud database to keep track of every user
 						that exists on the website. <br />
 						<u>Your email is kept private from others</u>; Used solely for
-						authentication and recovery of your account. You'll only be emailed
-						per your request.
+						authentication and account recovery. You're only emailed upon
+						request.
 						<br />
 						<br />
 						<u>We never share or sell this information with third parties.</u>
@@ -214,13 +218,33 @@ function FAQPage(props) {
 					<i class="fas fa-info-circle"></i> App Discretions
 				</h2>
 				<FAQuestion
-					question="Opting for a feature"
-					emote={<i className="fas fa-star" />}
+					question="Secure chats"
+					emote={<i className="fas fa-comment"></i>}
 				>
 					<p>
-						This is a proof of concept until our userbase grows large enough to
-						host polls and contests, your public profile should be in
-						goodstanding with our transparent policies defined thus far.
+						You can now send direct messages to your buddies. These messages are{" "}
+						<span>end-to-end encrypted</span>, meaning only you and your message
+						recipient will be able to decipher the conversation going on between
+						you two.
+						<br />
+						<br />
+						Existing users must generate a <span>
+							cryptographic key pair
+						</span>{" "}
+						from their browser before engaging in secure chats. Your public key
+						will be uploaded to our cloud database so your buddies can send you
+						encrypted messages. Public keys are intended to be shared for mutual
+						transactions. <br />
+						<u>We do not store your private key</u>. Your private key remains in
+						your browser's local storage for decrypting your buddies' messages.
+						This, however, may pose an inconvenience when using multiple devices
+						for the same account since each will need to generate an independent
+						key-pair that will overwrite your existing public key and deem
+						previous messages indecipherable.
+						<br /> <br />
+						The feature is <u>limited to text-only conversations</u>; You can
+						cease to receive further messages from buddies by removing them. You
+						also have the option of purging your message channels.
 					</p>
 				</FAQuestion>
 				<FAQuestion question="Profanity filter" emote="###">
@@ -299,12 +323,10 @@ function FAQPage(props) {
 						preview URL cannot be played and will not be shown.
 						<br />
 						<br />
-						Before using this service, <u>keep in mind</u>:
-						<br />
 						<i className="fas fa-cog"></i> Your initial use will make a secure
-						HTTP request to an intermediate cloud API in order to retrieve a
-						temporary access token for search results. This creates a seamless
-						experience for you by not prompting for log in through Spotify.{" "}
+						HTTP request to an intermediate cloud API for a temporary access
+						token for search results. This creates a seamless experience for you
+						by not prompting for log in through Spotify.{" "}
 						<a
 							href="https://github.com/Tearrex/Chattea/blob/main/serverless/functions/index.js"
 							target="_blank"
@@ -320,10 +342,10 @@ function FAQPage(props) {
 					emote={<i className="fas fa-user-shield"></i>}
 				>
 					<p>
-						All user-generated content is contingent to inspection or deletion
-						at moderator discretion without prior notice. We do our best to keep
-						our small community civil and we ask that you help us achieve the
-						same by not abusing this platform. <br />
+						All user-generated content (<span>except secure chats</span>) is
+						subject to inspection or deletion at moderator discretion. We do our
+						best to keep our small community civil and we ask that you help us
+						achieve the same by not abusing this platform. <br />
 						<br />
 						Repeat offenders will be blocked permanently from further
 						interaction within Chattea.

@@ -124,7 +124,7 @@ function SplashPage() {
 		window.scrollTo(0, jump.getBoundingClientRect().top - window.innerHeight);
 	}
 	function feature_jump() {
-		document.querySelector(".features").scrollIntoView({ behavior: "smooth" });
+		document.querySelector("#faq").scrollIntoView({ behavior: "smooth" });
 	}
 	function redirect_user() {
 		if (_user) navigate("/main");
@@ -246,7 +246,7 @@ function SplashPage() {
 					</div>
 				</div>
 			</section>
-			<section className="features">
+			{/* <section className="features">
 				<h1 id="featureHead">
 					<i class="fas fa-star"></i> Feature your cat{" "}
 					<i class="fas fa-chevron-down down"></i>
@@ -274,7 +274,7 @@ function SplashPage() {
 					</h1>
 					<p>Pair a snapshot with your favorite music from Spotify.</p>
 				</header>
-			</section>
+			</section> */}
 			<FAQPage />
 		</div>
 	);

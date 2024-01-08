@@ -156,7 +156,7 @@
 	}
 }
 .privateAlert.border {
-	border: 4px dashed $niceOrange;
+	// border: 4px dashed $niceOrange;
 	padding: 1rem;
 	margin: 0;
 }
@@ -354,7 +354,6 @@
 	}
 }
 .aboutSection {
-	box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5);
 	position: relative;
 	z-index: 1;
 	@keyframes abouthover {

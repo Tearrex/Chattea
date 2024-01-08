@@ -149,7 +149,7 @@ function Home() {
 									active={privateView && "true"}
 									onClick={() => setPrivateView(true)}
 								>
-									<i className="fas fa-lock"></i> Private
+									<i className="fas fa-eye"></i> Private
 								</button>
 							</div>
 						</p>

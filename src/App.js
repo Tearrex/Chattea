@@ -24,6 +24,7 @@ import "./components/Styles/Splash.scss";
 import "./components/Styles/UserProfile.scss";
 
 import * as filter from "profanity-filter";
+import MessagePage from "./components/Pages/MessagePage";
 
 export function setCaretPosition(caretPos) {
 	// caret attribute should be set by function caller prior
@@ -190,6 +191,8 @@ function App() {
 									element={<ProfilePage />}
 								/>
 								<Route exact path="/post/:post_id" element={<BriefPost />} />
+								<Route exact path="/chats" element={<MessagePage />} />
+								<Route exact path="/chats/:user_id" element={<MessagePage />} />
 							</Routes>
 						</div>
 					</showLogin.Provider>

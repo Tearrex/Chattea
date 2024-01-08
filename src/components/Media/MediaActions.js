@@ -275,7 +275,7 @@ function MediaActions(props) {
 											onClick={() => setPickedPrivateVis(true)}
 											disabled={!_user || _user.user_id != focusPost[1].user_id}
 										>
-											<i className="fas fa-lock"></i> Private
+											<i className="fas fa-eye"></i> Private
 										</button>
 									</div>
 								</>
@@ -304,8 +304,6 @@ function MediaActions(props) {
 								<>
 									{!pickedPrivateVis ? (
 										<p className="private">
-											<i className="fas fa-eye"></i>
-											<br />
 											Anyone can see{" "}
 											{(_users[focusPost[1].user_id] &&
 												_users[focusPost[1].user_id].username + "'s ") ||
@@ -318,8 +316,6 @@ function MediaActions(props) {
 										</p>
 									) : (
 										<p className="private">
-											<i className="fas fa-eye-slash"></i>
-											<br />
 											Only{" "}
 											{(_users[focusPost[1].user_id] &&
 												_users[focusPost[1].user_id].username + "'s ") ||

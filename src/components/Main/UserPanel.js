@@ -88,19 +88,15 @@ function UserPanel(props) {
 						</button>
 					</div>
 				</div>
+				{props.notifCount > 0 && (
+					<button attention="true" onClick={props.notifEvent}>
+						<i className="fas fa-bell"></i>
+					</button>
+				)}
+				<button onClick={() => navigate("/chats")}>
+					<i className="fas fa-comment"></i>
+				</button>
 			</div>
-			{props.notifCount > 0 && (
-				<div className="notifMain" onClick={props.notifEvent}>
-					<p>🔔</p>
-					<span
-						style={{
-							backgroundColor: props.notifCount === 0 ? "#8f8f8f" : "#E74C3C",
-						}}
-					>
-						{props.notifCount}
-					</span>
-				</div>
-			)}
 		</div>
 	);
 }
