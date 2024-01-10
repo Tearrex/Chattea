@@ -38,20 +38,8 @@ function FAQPage(props) {
 				<FAQuestion question="What is Chattea?" emote="☕">
 					<p>
 						Chattea is your home for making pocket-sized memories as you go
-						about your days. Peep into what's happening across the cyberverse
-						without pushy ads or invasive tracking policies.{" "}
-						<Link to="#" onClick={(e) => open_module(e, "#privacy")}>
-							Details.
-						</Link>
-					</p>
-					<p>
-						As people come along, you can parley with those that share similar
-						interests and foster a split following with{" "}
-						<Link to="#" onClick={(e) => open_module(e, "#visibility")}>
-							public and private pages
-						</Link>
-						. Post glimpses of your activities while adding some mystery ;){" "}
-						<br />
+						about your days. Post glimpses of your activities while adding some
+						mystery ;) <br />
 						<br />
 						You can check-in whenever you like and perhaps you'll get a laugh
 						out of some goofy post.
@@ -202,7 +190,7 @@ function FAQPage(props) {
 								<i class="fas fa-angle-double-up"></i> Sign up!
 							</button>
 							<button onClick={guest_mode} className="guestMode">
-								<i className="fas fa-eye"></i> Try guest mode
+								<i className="fas fa-user"></i> Try guest mode
 							</button>
 						</>
 					) : (
@@ -288,11 +276,8 @@ function FAQPage(props) {
 							<i class="fas fa-compress-alt"></i> Large images are still
 							compressed before cropping
 							<br />
-							<i class="fas fa-cloud-upload-alt"></i>{" "}
-							<u>
-								Cropping involves intermediate upload of image for cloud
-								processing.
-							</u>
+							<i class="fas fa-cloud-upload-alt"></i> Cropping involves
+							intermediate upload of image for cloud processing.
 						</p>
 						<br />
 						<br />
@@ -309,7 +294,7 @@ function FAQPage(props) {
 						<br />
 						<i class="fas fa-shield-alt"></i> We protect your privacy by
 						stripping all metadata from the image before sending it back to you.
-						The binary data is also processed in server memory instead of disk
+						The binary data is also processed in memory instead of disk
 						storage, for optimal security.
 					</p>
 				</FAQuestion>
