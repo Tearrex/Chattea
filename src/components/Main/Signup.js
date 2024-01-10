@@ -420,7 +420,7 @@ function Signup(props) {
 										<i class="fas fa-envelope"></i> Link Sent
 									</h2>
 									<p>Please check your spam folder for</p>
-									<small>noreply@reactback-1cf7d.firebaseapp.com</small>
+									<small>no-reply@chattea.app</small>
 								</div>
 							)}
 							<input
@@ -468,9 +468,9 @@ function Signup(props) {
 						{!_user ? (
 							!resetPassword ? (
 								<>
-									<i className="fas fa-walking"></i> New here?{" "}
+									New here?{" "}
 									<Link to="/" onClick={signup_redirect}>
-										Gossip awaits you!
+										Create an account
 									</Link>
 									<br />
 									<i class="fas fa-key"></i>{" "}

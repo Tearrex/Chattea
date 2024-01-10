@@ -815,7 +815,7 @@ function Submitter(props) {
 				!currentUser.emailVerified && (
 					<h4 className="verify complete">
 						<i className="fas fa-check" /> Link sent, check your spam for{" "}
-						<span>noreply@reactback-1cf7d.firebaseapp.com</span>
+						<span>no-reply@chattea.app</span>
 					</h4>
 				)
 			)}

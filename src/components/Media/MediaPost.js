@@ -464,7 +464,6 @@ function MediaPost(props) {
 										_user && user_id === _user["user_id"] ? "none" : "block",
 								}}
 							>
-								{!_user && <i className="fas fa-user"></i>}
 								{_users[props.authorID] !== undefined
 									? _users[props.authorID].username
 									: "User"}
