@@ -167,12 +167,6 @@ function SplashPage() {
 					)}
 				</div>
 				<div className="splashNet">
-					{!_user && (
-						<div
-							className="splash"
-							style={{ backgroundImage: "url('network.png')" }}
-						></div>
-					)}
 					<div
 						className="splashRegister flashForm"
 						style={{ display: _user === undefined ? null : "none" }}

@@ -25,7 +25,7 @@ function FAQPage(props) {
 		navigate("/main");
 	}
 	useEffect(() => {
-		document.getElementById("welcomer").style.display = "none";
+		// document.getElementById("welcomer").style.display = "none";
 		if (window.location.href.includes("#faq")) {
 			document.querySelector("#faq").scrollIntoView({ behavior: "smooth" });
 		}
@@ -77,6 +77,7 @@ function FAQPage(props) {
 					emote={<i className="fas fa-user-friends" />}
 				>
 					<p>
+						Buddies are your online friends. <br />
 						By adding someone on Chattea, you allow them to
 						<ul>
 							<li>View your private posts</li>
@@ -131,7 +132,7 @@ function FAQPage(props) {
 					<p>
 						Any visual media you share will be uploaded to our cloud storage
 						bucket. When you delete a post we will also delete all traces of
-						images from the cloud before giving you the confirmation response.
+						images from the cloud before receiving the confirmation response.
 					</p>
 					<p>
 						Every user is assigned an <b>identifier</b> (ID) upon signing up.
@@ -154,11 +155,12 @@ function FAQPage(props) {
 						<li>Like a post</li>
 						<li>Add a comment</li>
 						<li>Add a buddy</li>
+						<li>Message a buddy</li>
 					</ul>
 					<p>
 						As you browse the website, the profile data you fetch about other
 						users will be cached locally on your browser. <br />
-						This lowers the amount of requests your browser makes to our servers
+						This lowers the amount of requests your device makes to our servers
 						by remembering the profiles of each user it retrieves; Edits to your
 						profile (username and bio) may not propagate for others right away.
 					</p>
@@ -168,21 +170,20 @@ function FAQPage(props) {
 					The only data we collect that can personally identify you is..... your
 					email. That's it—and maybe a smiley profile picture of your face. Keep
 					in mind what other social medias are (probably) collecting from you
-					that we strictly do not.
+					already that we strictly do not.
 					<ul className="dataSection" style={{ listStyleType: "circle" }}>
 						<li>Public IP addresses</li>
-						<li>Browser info (User-Agent)</li>
+						<li>Browser info (User-Agent, Cookies)</li>
 						<li>Device info (MAC address, etc..)</li>
 						<li>Contact lists</li>
 						<li>Phone Numbers</li>
 						<li>GPS location</li>
-						<li>Other sensor data</li>
+						<li>Other sensor data (like Bluetooth)</li>
 					</ul>
 				</FAQuestion>
 				<FAQuestion question="But why tea?" emote="🤔">
 					<p>It's just catchy...</p>
 				</FAQuestion>
-				<hr style={{ width: "100%" }} />
 				<div className="faqactions">
 					{_user === undefined ? (
 						<>
@@ -202,7 +203,7 @@ function FAQPage(props) {
 				</div>
 
 				<hr style={{ width: "100%" }} />
-				<h2>
+				<h2 id="discretions">
 					<i class="fas fa-info-circle"></i> App Discretions
 				</h2>
 				<FAQuestion
@@ -246,6 +247,10 @@ function FAQPage(props) {
 						<br />
 						Your browser will process user-generated text before displaying it
 						to you. This can be toggled later.
+						<br />
+						<br />
+						Please don't try circumventing this feature, keep provokative
+						language in private pages...
 					</p>
 				</FAQuestion>
 				<FAQuestion question="Mentioning users" emote="@">
@@ -294,8 +299,8 @@ function FAQPage(props) {
 						<br />
 						<i class="fas fa-shield-alt"></i> We protect your privacy by
 						stripping all metadata from the image before sending it back to you.
-						The binary data is also processed in memory instead of disk
-						storage, for optimal security.
+						The binary data is also processed in memory instead of disk storage,
+						for optimal security.
 					</p>
 				</FAQuestion>
 				<FAQuestion
