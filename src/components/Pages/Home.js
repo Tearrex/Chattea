@@ -135,8 +135,8 @@ function Home() {
 				{_user ? (
 					<>
 						<p className="privateAlert border">
-							✨ New private pages for Chattea users.{" "}
-							<Link to="/#faq">Learn more</Link>
+							✨ New secure chats for Chattea users.{" "}
+							<Link to="/chats">Go to Chats</Link>
 							<div className="privacyModes" style={{ marginTop: "1rem" }}>
 								<button
 									active={!privateView && "true"}

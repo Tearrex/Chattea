@@ -62,7 +62,12 @@ function ProfilePage(props) {
 	const bannerChanger = useRef();
 	const pfpChanger = useRef();
 	useEffect(() => {
-		if (_user || localStorage.getItem("guest") === "true") profile_cleanup();
+		if (
+			(user_id && _users[user_id]) ||
+			(user_id.startsWith("@") && !profile) ||
+			(_user && _user.user_id === user_id)
+		)
+			profile_cleanup();
 	}, [_user, _users, user_id, profile]);
 
 	const [relatedUsers, setRelatedUsers] = useState([]); // list of users relevant
@@ -612,11 +617,6 @@ function ProfilePage(props) {
 								)}
 							</p>
 							<div className="buddyInfo">
-								{privateView && (
-									<span>
-										<i className="fas fa-eye"></i>
-									</span>
-								)}
 								<div className="stack">
 									<UserList users={profile ? profile.buddies : []} buddies />
 									{relatedUsers.length > 0 && (
@@ -645,11 +645,20 @@ function ProfilePage(props) {
 									)}
 								</div>
 								{_user &&
-								profile != null &&
-								_user.user_id !== profile.user_id &&
-								_users[profile.user_id] ? (
-									<BuddyButton buddy={(profile && profile.user_id) || ""} />
-								) : null}
+									profile != null &&
+									_user.user_id !== profile.user_id &&
+									_users[profile.user_id] && (
+										<div className="interact">
+											{Array.from(_user.buddies).includes(user_id) && (
+												<Link to={"/chats/" + user_id}>
+													<button className="chatBtn stealthBtn">
+														<i className="fas fa-comment" /> Chat
+													</button>
+												</Link>
+											)}
+											<BuddyButton buddy={(profile && profile.user_id) || ""} />
+										</div>
+									)}
 							</div>
 						</div>
 					)}

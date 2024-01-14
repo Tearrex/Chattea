@@ -103,7 +103,9 @@ function UserList(props) {
 									buddy={buddy}
 									key={buddy}
 									toggle={setOpen}
-									smile={!props.buddies}
+									onSelect={props.onSelect}
+									smile={!props.buddies && !props.chat}
+									chat={props.chat ? true : false}
 								/>
 							);
 						})}

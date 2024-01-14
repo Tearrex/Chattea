@@ -2,10 +2,11 @@ import { useContext, useEffect, useState } from "react";
 import { MembersContext, UserContext } from "../Main/Contexts";
 import "../Styles/Messaging.scss";
 import { useParams } from "react-router";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { _dbRef } from "../Main/firebase";
 import {
 	collection,
+	deleteDoc,
 	doc,
 	getDoc,
 	getDocs,
@@ -16,6 +17,7 @@ import {
 	setDoc,
 	where,
 } from "firebase/firestore";
+import UserList from "../Buddies/UserList";
 
 // keys from plaintext password....
 function str2ab(str) {
@@ -52,14 +54,19 @@ export default function MessagePage() {
 	const { _user, _setUser } = useContext(UserContext);
 	const { _users, _setUsers } = useContext(MembersContext);
 
+	const [nudging, setNudging] = useState(false); // toggle buddy selection modal for creating channel
 	const [buddyList, setBuddyList] = useState({});
 
 	const [publicPEM, setPublicPEM] = useState(null); // base64 encryption key
 	const [publicKey, setPublicKey] = useState(null); // holds cryptokey object for encryption operations
 	const [privatePEM, setPrivatePEM] = useState(null); // base64 decryption key
 	const [privateKey, setPrivateKey] = useState(null); // holds cryptokey object for decryption operations
+
+	// lazy-load cache for referencing message channel ID's of each buddy for the current user
+	const [chatChannels, setChatChannels] = useState({}); // { [buddy_id]: channel_id }
 	useEffect(async () => {
-		if(!user_id) setMessages([]);
+		if (!user_id || !chatChannels[user_id]) setMessages([]);
+		// fetch public keys of each buddy for the current user
 		if (_user && Object.entries(buddyList).length === 0) {
 			let buddies = _user.buddies;
 			let result = {}; // each succesful iteration will append to this object
@@ -84,23 +91,49 @@ export default function MessagePage() {
 			setBuddyList(result);
 			console.log("result", result);
 		}
-		// only fetch messages when user's private key is ready
-		if (_user && user_id && privateKey && publicKey) {
-			// fetch message history of selected channel (if any)
-			const _channelQuery = query(
+		// fetch list of message channel ID's that the current user appears in
+		if (_user && Object.entries(chatChannels).length === 0) {
+			const _channelsQuery = query(
 				collection(_dbRef, "messages"),
-				limit(1),
-				where("users", "==", [_user.user_id, user_id].sort())
+				where("users", "array-contains", _user.user_id)
 			);
-			const channels = await getDocs(_channelQuery);
-			if (channels.empty) return;
-			const _chatsRef = collection(
-				_dbRef,
-				"messages",
-				channels.docs[0].id,
-				"safechats"
-			); // nest of messages
-			const _chatsQuery = query(_chatsRef, limit(5), orderBy("date", "desc"));
+			const channels = await getDocs(_channelsQuery);
+			let _chatChannels = {};
+			for (let i = 0; i < channels.docs.length; i++) {
+				const channel = channels.docs[i];
+				const buddy_id = Object.values(channel.data().users).find(
+					(a) => a !== _user.user_id
+				);
+				_chatChannels[buddy_id] = channel.id;
+			}
+			setChatChannels(_chatChannels);
+		}
+		// only fetch messages when user's private key and buddy's public key is ready
+		if (
+			_user &&
+			user_id &&
+			privateKey &&
+			buddyList[user_id] &&
+			buddyList[user_id].available
+		) {
+			// fetch message history (if any) of selected channel (if any)
+			let channel_id = null;
+			if (!chatChannels[user_id]) {
+				const _channelQuery = query(
+					collection(_dbRef, "messages"),
+					limit(1),
+					where("users", "==", [_user.user_id, user_id].sort())
+				);
+				const channels = await getDocs(_channelQuery);
+				if (channels.empty) return;
+				channel_id = channels.docs[0].id;
+				// write fresh data into state of temp cache
+				let _chatChannels = { ...chatChannels };
+				_chatChannels[user_id] = channel_id;
+				setChatChannels(_chatChannels);
+			} else channel_id = chatChannels[user_id];
+			const _chatsRef = collection(_dbRef, "messages", channel_id, "safechats"); // nest of messages
+			const _chatsQuery = query(_chatsRef, limit(5), orderBy("date", "desc")); // add batch loading later on....
 			const chats = await getDocs(_chatsQuery);
 			let chats_data = [];
 			// chats.docs.forEach((d) =>
@@ -119,6 +152,14 @@ export default function MessagePage() {
 		}
 	}, [_user, user_id, privateKey]);
 
+	// read base64 keypair from localstorage into component state
+	useEffect(() => {
+		let private_key = localStorage.getItem("privateKey");
+		let public_key = localStorage.getItem("publicKey");
+		if (private_key) setPrivatePEM(private_key);
+		if (public_key) setPublicPEM(public_key);
+	}, []);
+	// convert base64 private key into crypto object
 	useEffect(async () => {
 		if (privatePEM && !privateKey) {
 			// import private key for first time
@@ -134,8 +175,10 @@ export default function MessagePage() {
 				["decrypt"]
 			);
 			setPrivateKey(privKey);
+			console.log("Generated private key!");
 		}
 	}, [privatePEM, privateKey]);
+	// convert base64 public key into crypto object
 	useEffect(async () => {
 		if (publicPEM && !publicKey) {
 			// import public key for first time
@@ -151,8 +194,11 @@ export default function MessagePage() {
 				["encrypt"]
 			);
 			setPublicKey(pubKey);
+			console.log("Generated public key!");
 		}
 	}, [publicPEM, publicKey]);
+	// use private key crypto object to decrypt ciphertext
+	// then return document data in plaintext
 	async function decrypt_message(message) {
 		if (
 			!privateKey ||
@@ -184,49 +230,45 @@ export default function MessagePage() {
 	}
 
 	const [messages, setMessages] = useState([]); // hold array of messages for selected channel
-	const [text, setText] = useState("");
-
-	useEffect(() => {
-		let private_key = localStorage.getItem("privateKey");
-		let public_key = localStorage.getItem("publicKey");
-		if (private_key) setPrivatePEM(private_key);
-		if (public_key) setPublicPEM(public_key);
-	}, []);
+	const [text, setText] = useState(""); // hold input field value in plaintext for encryption
 
 	async function send_msg(e) {
 		e.preventDefault();
 		const content = text.trim();
-		if(content === "") return;
+		if (content === "") return;
 		// before sending message, check for existing message channel
-		const _query = query(
-			collection(_dbRef, "messages"),
-			limit(1),
-			where("users", "==", [_user.user_id, user_id].sort())
-		);
-		let channel = null; // hold reference for placement of subcollection
-		const channels = await getDocs(_query);
-		if (channels.empty) {
-			console.log("Creating new message channel...");
-			const _channel = doc(collection(_dbRef, "messages"));
-			await setDoc(_channel, {
-				users: [_user.user_id, user_id].sort(), // uniform sorting for single array clause
-			});
-			channel = _channel; // new message will go in new channel
-		} else {
-			console.log("Appending to existing message channel...");
-			channel = channels.docs[0]; // new message will go in existing channel
-		}
+		let channel_id = null; // hold reference id for placement of subcollection
+		if (!chatChannels[user_id]) {
+			const _query = query(
+				collection(_dbRef, "messages"),
+				limit(1),
+				where("users", "==", [_user.user_id, user_id].sort())
+			);
+			const channels = await getDocs(_query);
+			if (channels.empty) {
+				console.log("Creating new message channel...");
+				const _channel = doc(collection(_dbRef, "messages"));
+				await setDoc(_channel, {
+					users: [_user.user_id, user_id].sort(), // uniform sorting for single array clause
+				});
+				channel_id = _channel.id; // new message will go in new channel
+			} else {
+				console.log("Appending to existing message channel...");
+				channel_id = channels.docs[0].id; // new message will go in existing channel
+			}
+			// write fresh data into state of temp cache
+			let _chatChannels = { ...chatChannels };
+			_chatChannels[user_id] = channel_id;
+			setChatChannels(_chatChannels);
+		} else channel_id = chatChannels[user_id];
 
-		const _chatsRef = collection(_dbRef, "messages", channel.id, "safechats"); // nest of messages
+		const _chatsRef = collection(_dbRef, "messages", channel_id, "safechats"); // nest of messages
 		const _newChat = doc(_chatsRef);
 
 		// convert the recipient's public key string to the necessary crypto object format
 		const r_keyContent = buddyList[user_id].public_key; // base64 string
-		console.log(r_keyContent);
 		const r_binaryString = [window.atob(r_keyContent)]; // to binary string
-		console.log(r_binaryString);
 		const r_binaryAB = str2ab(r_binaryString[0]); // to array buffer
-		console.log(r_binaryAB);
 		let _publicKey = null;
 		try {
 			_publicKey = await window.crypto.subtle.importKey(
@@ -241,19 +283,18 @@ export default function MessagePage() {
 			);
 		} catch (e) {
 			console.log("error occured", e);
-			console.error(e);
 			return;
 		}
 		console.log("key improted");
 		let encoded_content = new TextEncoder().encode(content);
 		console.log("encoded", encoded_content);
-		// ciphertext for recipient
+		// ciphertext for recipient (encrypt plaintext with buddy's public key)
 		let r_secure_content = await window.crypto.subtle.encrypt(
 			{ name: "RSA-OAEP" },
 			_publicKey, // recipient's public key
 			encoded_content
 		);
-		// ciphertext for author readback
+		// ciphertext for author readback (encrypt same plaintext with user's public key...)
 		let a_secure_content = await window.crypto.subtle.encrypt(
 			{ name: "RSA-OAEP" },
 			publicKey, // author's public key
@@ -277,6 +318,25 @@ export default function MessagePage() {
 		});
 		setText("");
 	}
+	// delete all chats within current message channel
+	async function purge_channel() {
+		if (
+			!window.confirm(
+				`This will delete ALL messages between you and ${_users[user_id].username}. Continue?`
+			)
+		)
+			return;
+		if (!chatChannels[user_id]) return; // weird edge case, unlikely
+		const chatsQuery = query(
+			collection(_dbRef, "messages", chatChannels[user_id], "safechats")
+		);
+		const chats = await getDocs(chatsQuery);
+		for (let i = 0; i < chats.docs.length; i++) {
+			const chat = chats.docs[i];
+			await deleteDoc(chat.ref);
+		}
+		setMessages([]);
+	}
 	async function genkeys() {
 		let keys = await generateKeys();
 		console.log("keys", keys);
@@ -290,40 +350,89 @@ export default function MessagePage() {
 		setPrivatePEM(keys.private);
 		setPublicPEM(keys.public);
 	}
+	async function regen_keys() {
+		if (
+			!window.confirm(
+				`This will overwrite your existing crypto keys.\n` +
+					`Previous messages will become indecipherable on this device. Continue?`
+			)
+		)
+			return;
+		setPrivateKey(null);
+		setPublicKey(null);
+		await genkeys();
+	}
 	return (
-		<div className="homeWrapper">
-			<div id="home" className="clamper" style={{ alignItems: "center" }}>
-				<h3 style={{ color: "#fff", marginBottom: 0 }}>
-					<i className="fas fa-lock" /> Secure chats
-				</h3>
-				<p style={{ color: "#fff", opacity: 0.7, marginTop: 0 }}>
+		<div className="homeWrapper" style={{ height: "100vh" }}>
+			<div
+				id="home"
+				className="clamper"
+				style={{ alignItems: "center", marginBottom: 0 }}
+			>
+				{nudging && (
+					<UserList
+						users={Object.values(_user.buddies).filter(
+							(buddy) =>
+								!Object.keys(chatChannels)
+									.map((channel_buddy) => channel_buddy)
+									.includes(buddy)
+						)}
+						open
+						chat
+						onClose={() => setNudging(false)}
+						onSelect={(buddy_id) => {
+							navigate("/chats/" + buddy_id);
+							setNudging(false);
+						}}
+					/>
+				)}
+				<h2 style={{ color: "#fff", margin: 0 }}>
+					Secure chats <small>BETA</small>
+				</h2>
+				<p style={{ color: "#fff", opacity: 0.7, margin: 0 }}>
 					Only you and your intended recipient can decipher messages sent to
-					each other over the Internet.
+					each other over the Internet.{" "}
+					<Link to="/#discretions">Learn more.</Link>
 					<br />
 					<br />
-					<u>Switching devices will make chat history unrecoverable!</u>
+					<b>Switching devices will make chat history unrecoverable!</b>
 				</p>
 				<div id="chatscontainer">
 					<div className="buddies">
 						{_user &&
-							Object.entries(buddyList).map((buddy, index) => {
+							Object.entries(chatChannels).map((channel, index) => {
 								return (
 									<div
 										className="buddy"
 										key={index}
-										onClick={() => {
-											if (buddy[1].available) navigate("/chats/" + buddy[0]);
-										}}
-										disabled={!buddy[1].available}
+										onClick={() => navigate("/chats/" + channel[0])}
 									>
 										<img
-											src={_users[buddy[0]].pfp}
-											style={{ borderRadius: user_id === buddy[0] ? 0 : null }}
+											src={_users[channel[0]].pfp}
+											style={{
+												borderRadius: user_id === channel[0] ? 0 : null,
+											}}
 										/>
 									</div>
 								);
 							})}
-						<button className="add">
+						{buddyList[user_id] && !chatChannels[user_id] && (
+							<div
+								className="buddy"
+								onClick={() => navigate("/chats/" + user_id)}
+							>
+								<img
+									src={_users[user_id].pfp}
+									style={{
+										borderRadius: 0,
+										filter: !buddyList[user_id].available
+											? "grayscale(1)"
+											: null,
+									}}
+								/>
+							</div>
+						)}
+						<button className="add" onClick={() => setNudging(true)}>
 							<i className="fas fa-plus" />
 						</button>
 					</div>
@@ -332,6 +441,17 @@ export default function MessagePage() {
 							{!user_id && privateKey && (
 								<div className="tip">Choose a buddy to chat with</div>
 							)}
+							{user_id &&
+								buddyList[user_id] &&
+								!buddyList[user_id].available &&
+								privateKey && (
+									<div className="tip">
+										<Link to={"/u/" + user_id}>
+											@{_users[user_id].username}
+										</Link>{" "}
+										does not have a public key.
+									</div>
+								)}
 							{!privateKey && (
 								<div className="tip">
 									<p>
@@ -360,23 +480,39 @@ export default function MessagePage() {
 									);
 								})}
 						</div>
-						{user_id && (
-							<form className="textfield" onSubmit={send_msg}>
-								<input
-									type="text"
-									disabled={!user_id}
-									placeholder={`Chat with ${
-										_users[user_id] ? _users[user_id].username : "a user..."
-									}`}
-									value={text}
-									onChange={(e) => setText(e.target.value)}
-								/>
-								<button disabled={!user_id}>
-									<i className="fas fa-paper-plane"></i>
-								</button>
-							</form>
-						)}
+						{user_id &&
+							privateKey &&
+							(chatChannels[user_id] ||
+								(buddyList[user_id] && buddyList[user_id].available)) && (
+								<form className="textfield" onSubmit={send_msg}>
+									<input
+										type="text"
+										placeholder={`Chat with ${
+											_users[user_id] ? _users[user_id].username : "a user..."
+										}`}
+										value={text}
+										onChange={(e) => setText(e.target.value)}
+									/>
+									<button>
+										<i className="fas fa-paper-plane"></i>
+									</button>
+								</form>
+							)}
 					</div>
+				</div>
+				<div className="chatOptions">
+					{privatePEM && (
+						<button className="crypto alt" onClick={regen_keys}>
+							<i className="fas fa-sync" /> Regenerate Keys
+						</button>
+					)}
+					{messages.length > 0 ? (
+						<button className="crypto alt" onClick={purge_channel}>
+							<i className="fas fa-fire" /> Purge Channel
+						</button>
+					) : (
+						<span></span>
+					)}
 				</div>
 			</div>
 		</div>

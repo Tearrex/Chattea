@@ -638,6 +638,18 @@
 		margin: 0;
 	}
 }
+.interact {
+	display: flex;
+	gap: 10px;
+	justify-content: stretch;
+	.chatBtn {
+		background-color: #b76d13;
+		height: 100%;
+		padding: 0 10px;
+		font-size: 1.2rem;
+		color: #fff;
+	}
+}
 .actions {
 	display: flex;
 	z-index: 2;

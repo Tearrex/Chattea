@@ -1,12 +1,25 @@
 @import "utils.scss";
 
+h2 small {
+	font-weight: normal;
+	color: #f00;
+	font-size: 0.8rem;
+}
+a {
+	color: $niceOrange;
+}
 button.crypto {
 	background-color: $niceOrange;
 	padding: 5px 10px;
 }
+button.crypto.alt {
+	background-color: $foreMain;
+	color: #fff;
+}
 #chatscontainer {
 	display: flex;
 	flex-flow: column;
+	flex: 100%;
 	width: clamp(300px, 100%, 600px);
 	justify-self: center;
 	.header {
@@ -21,9 +34,9 @@ button.crypto {
 		flex-flow: column-reverse !important;
 		justify-content: flex-end;
 	}
-	.buddies .add {
-		margin: 10px auto !important;
-	}
+	// .buddies .add {
+	// 	margin: 10px auto !important;
+	// }
 	.chatbox {
 		flex: 100%;
 	}
@@ -31,7 +44,7 @@ button.crypto {
 .buddies {
 	display: flex;
 	flex-flow: row;
-	background-color: $foreAlt;
+	background-color: #111;
 	.buddy,
 	.add {
 		height: 60px;
@@ -43,7 +56,10 @@ button.crypto {
 		border: 4px dashed $niceOrange !important;
 		background: none;
 		color: #fff;
-		margin: auto 10px;
+		margin: 10px;
+		&:hover i {
+			transform: scale(2);
+		}
 	}
 	.buddy[disabled] {
 		opacity: 0.5;
@@ -63,8 +79,13 @@ button.crypto {
 	}
 }
 
+.chatbox {
+	display: flex;
+	flex-flow: column;
+	flex: 100%;
+}
 .chatbox .chats {
-	height: 300px;
+	flex: 100%;
 	background-color: $foreMain;
 	position: relative;
 	padding: 15px;
@@ -88,12 +109,22 @@ button.crypto {
 	}
 	.tip {
 		position: absolute;
+		width: 100%;
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
 		color: #fff;
 		span {
 			color: $niceOrange;
+		}
+		p {
+			width: 100%;
+		}
+		a {
+			text-decoration: none;
+		}
+		&:hover  a {
+			text-decoration: underline;
 		}
 	}
 }
@@ -132,5 +163,13 @@ button.crypto {
 		&:disabled {
 			opacity: 0.5;
 		}
+	}
+}
+.chatOptions {
+	width: 100%;
+	display: flex;
+	gap: 10px;
+	& > * {
+		flex: 50%;
 	}
 }

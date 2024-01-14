@@ -23,6 +23,9 @@ function UserListItem(props) {
 		}
 	}, [_user, _users, props]);
 	function go_to_profile() {
+		if (props.chat) {
+			return props.onSelect(props.buddy);
+		}
 		navigate("/u/" + props.buddy);
 		props.toggle();
 	}
@@ -32,12 +35,14 @@ function UserListItem(props) {
 				<div
 					className="pfp niceClip"
 					style={{ backgroundImage: "url(" + pfp + ")" }}
+					onClick={(e) => e.preventDefault()}
 				/>
-				@{name}{props.smile && " 🙂"}
+				@{name}
+				{props.smile && " 🙂"}
 			</div>
-			{_user && props.buddy !== _user.user_id ? (
+			{_user && props.buddy !== _user.user_id && !props.chat && (
 				<BuddyButton buddy={props.buddy} />
-			) : null}
+			)}
 		</div>
 	);
 }
