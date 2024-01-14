@@ -194,7 +194,7 @@ body {
 }
 
 .welcomer {
-	justify-content: right;
+	justify-content: space-between;
 	flex-shrink: 0;
 	top: 0;
 	padding: 10px 0;
@@ -216,7 +216,7 @@ body {
 	flex-shrink: 0;
 	margin-right: 10px;
 	gap: 10px;
-	/*width: 100%; position: absolute;*/
+	flex: 100%;
 	color: #fff;
 	flex-flow: row-reverse;
 	// font-size: 1.2rem;
@@ -255,8 +255,6 @@ body {
 		display: flex;
 		flex-flow: row-reverse;
 		align-items: stretch;
-		// background-color: rgba(0, 0, 0, 0.7);
-		border-radius: 100vh;
 		position: relative;
 		span {
 			margin: auto 0;
@@ -339,8 +337,6 @@ body {
 .chattea {
 	white-space: nowrap;
 	display: flex;
-	flex: 100%;
-	/*width: 100%;*/
 	transition: transform 2s ease, left 2s ease-in-out;
 	color: $darkText;
 	font-size: 1.3rem;
@@ -460,7 +456,7 @@ body {
 .notification {
 	display: flex;
 	padding: 10px;
-	background-color: $mainOdd;
+	background-color: #111;
 	align-items: stretch;
 	flex-basis: content;
 	transition: max-height 0.5s ease-in;
