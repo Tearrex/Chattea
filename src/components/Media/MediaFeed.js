@@ -19,6 +19,7 @@ import {
 } from "@firebase/firestore";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Link, useNavigate } from "react-router-dom";
+import MediaActions from "./MediaActions";
 function MediaFeed(props) {
 	const { _user, _setUser } = useContext(UserContext);
 	const { _users, _setUsers } = useContext(MembersContext);
@@ -117,6 +118,11 @@ function MediaFeed(props) {
 		}
 	}, [newDoc, oldDoc, switching]);
 
+	const [focusPost, setFocusPost] = useState(null);
+	const [changeVisibility, setChangeVisibility] = useState(false);
+	useEffect(() => {
+		document.body.style.overflow = focusPost ? "hidden" : null;
+	}, [focusPost]);
 	const [posts, _setPosts] = useState({}); // mapped to MediaPost components
 	const [fetchError, setFetchError] = useState(false);
 
@@ -149,7 +155,9 @@ function MediaFeed(props) {
 		if (
 			((props.focus && props.focus !== lastUser && lastUser !== "") ||
 				(oldDoc &&
-					(oldDoc.data().private) != (props.private) && props.focus) && oldDoc.data().user_id !== props.focus) &&
+					oldDoc.data().private != props.private &&
+					props.focus &&
+					oldDoc.data().user_id !== props.focus)) &&
 			!switching
 		) {
 			console.log("DETECTED visiblity switch");
@@ -323,73 +331,86 @@ function MediaFeed(props) {
 		return (
 			<MediaPost
 				toCache={(e) => send_commenters_to_cache(e)}
-				onDelete={(e) => delete_post(post[0])}
 				key={post[0]}
 				msg={post[1]}
 				postID={post[0]}
-				setFocusPost={(vis = false) => props.setFocusPost(post, vis)}
+				setFocusPost={(vis = false) => {
+					setFocusPost(post);
+					setChangeVisibility(vis);
+				}}
 				authorID={post[1].user_id}
 			/>
 		);
 	}
 	return (
-		<InfiniteScroll
-			dataLength={Object.entries(posts).length}
-			next={next_batch}
-			hasMore={more}
-			scrollThreshold={"100%"}
-			loader={<div className="loader" />}
-			endMessage={
-				<>
-					{_user ? (
-						!fetchError ? (
-							<h2
-								style={{
-									textAlign: "center",
-									color: "#FFF",
-									fontWeight: "normal",
-									gridColumn: "1/-1",
-								}}
-							>
-								☕ There is no more tea down here...
-							</h2>
-						) : (
-							<div className="privateAlert" style={{ gridColumn: "1/-1" }}>
-								<h2>
-									<i className="fas fa-exclamation-circle"></i> That didn't work
+		<>
+			{focusPost && (
+				<MediaActions
+					focusPost={focusPost}
+					onDelete={delete_post}
+					setFocusPost={setFocusPost}
+					visibilityContext={{ changeVisibility, setChangeVisibility }}
+				/>
+			)}
+			<InfiniteScroll
+				dataLength={Object.entries(posts).length}
+				next={next_batch}
+				hasMore={more}
+				scrollThreshold={"100%"}
+				loader={<div className="loader" />}
+				endMessage={
+					<>
+						{_user ? (
+							!fetchError ? (
+								<h2
+									style={{
+										textAlign: "center",
+										color: "#FFF",
+										fontWeight: "normal",
+										gridColumn: "1/-1",
+									}}
+								>
+									☕ There is no more tea down here...
 								</h2>
-								<p>
-									{(_users[props.focus] && _users[props.focus].username) ||
-										"The user"}{" "}
-									may have removed you as a buddy
-								</p>
-								<br />
-								<Link to="/#faq">Learn more</Link>
+							) : (
+								<div className="privateAlert" style={{ gridColumn: "1/-1" }}>
+									<h2>
+										<i className="fas fa-exclamation-circle"></i> That didn't
+										work
+									</h2>
+									<p>
+										{(_users[props.focus] && _users[props.focus].username) ||
+											"The user"}{" "}
+										may have removed you as a buddy
+									</p>
+									<br />
+									<Link to="/#faq">Learn more</Link>
+								</div>
+							)
+						) : (
+							<div className="brochure">
+								<h4>
+									<i className="fas fa-smile-beam"></i>
+									<br />
+									<br />
+									Chattea is better with you.
+								</h4>
+								<div className="buttons">
+									<button onClick={splash_page}>Sign Up</button>
+									or
+									<button onClick={() => setLogin(true)}>Log In</button>
+								</div>
+								<p>to keep browsing</p>
 							</div>
-						)
-					) : (
-						<div className="brochure">
-							<h4>
-								<i className="fas fa-smile-beam"></i>
-								<br />
-								<br />
-								Chattea is better with you.
-							</h4>
-							<div className="buttons">
-								<button onClick={splash_page}>Sign Up</button>
-								or
-								<button onClick={() => setLogin(true)}>Log In</button>
-							</div>
-							<p>to keep browsing</p>
-						</div>
-					)}
-				</>
-			}
-		>
-			{Object.entries(posts).length === 0
-				? null
-				: Object.entries(posts).map((msg) => cache_user(msg))}
-		</InfiniteScroll>
+						)}
+					</>
+				}
+			>
+				{Object.entries(posts).length === 0
+					? null
+					: Object.entries(posts).map((msg) => cache_user(msg))}
+			</InfiniteScroll>
+		</>
 	);
 }
 export default MediaFeed;

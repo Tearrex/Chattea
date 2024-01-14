@@ -32,7 +32,7 @@ function MediaActions(props) {
 		if (setFocusPost) setFocusPost(null);
 	}
 	async function delete_post() {
-		var role = "yourself";
+		let role = "yourself";
 		if (_user.user_id !== focusPost[1].user_id) role = "moderator";
 		if (!window.confirm(`Delete this post as ${role}?`)) return;
 
@@ -44,7 +44,7 @@ function MediaActions(props) {
 			focusPost[0],
 			"comments"
 		);
-		const commentsQuery = query(commentsRef, orderBy("date", "asc"));
+		const commentsQuery = query(commentsRef);
 
 		try {
 			const snap = await getDocs(commentsQuery);
@@ -78,7 +78,7 @@ function MediaActions(props) {
 				console.log(e);
 			}
 		}
-		alert("Removed post " + focusPost[0]);
+		if (props.onDelete) props.onDelete(focusPost[0]);
 		if (setFocusPost) setFocusPost(null); // close modal
 	}
 	function buddify() {
@@ -189,6 +189,7 @@ function MediaActions(props) {
 			}, 1000);
 	}, [mergeStatus]);
 	function start_merge() {
+		console.log([pickedPrivateVis, focusPost[1].private]);
 		if (
 			(pickedPrivateVis && focusPost[1].private) ||
 			(!pickedPrivateVis && !focusPost[1].private)
@@ -214,7 +215,7 @@ function MediaActions(props) {
 								)}
 							{_user && (
 								<button className="high" onClick={() => setReport(true)}>
-									<i className="fas fa-flag" /> Report Post
+									Report Post
 								</button>
 							)}
 							{_user &&
@@ -247,7 +248,7 @@ function MediaActions(props) {
 							<button
 								onClick={() =>
 									copy_text(
-										"https://chattea.me/post/" + focusPost[0],
+										window.location.origin + "/post/" + focusPost[0],
 										closeModal
 									)
 								}

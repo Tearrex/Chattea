@@ -142,55 +142,6 @@ function MediaPost(props) {
 		}
 		return () => abort.abort();
 	}, [image_url]);
-	const deleteOptions = useRef();
-	const deleteOverlay = useRef();
-	function toggle_options(show) {
-		if (show === false) {
-			deleteOptions.current.style.display = "none";
-			deleteOverlay.current.style.maxWidth = "0%";
-		} else {
-			deleteOptions.current.style.display = "flex";
-			deleteOverlay.current.style.maxWidth = "100%";
-		}
-	}
-	async function delete_post() {
-		const commentsRef = collection(_dbRef, "posts", props.postID, "comments");
-		const commentsQuery = query(commentsRef); // hopefully its not a massive batch...
-
-		// delete comments
-		const snap = await getDocs(commentsQuery);
-		if (snap.docs.length > 0) {
-			console.log("deleting comments...");
-			for (let i = 0; i < snap.docs.length; i++) {
-				const doc = snap.docs[i];
-				try {
-					await deleteDoc(doc.ref);
-				} catch (e) {
-					return alert("failed to delete comment", e);
-				}
-			}
-		}
-		// delete smiles
-		const smilesRef = doc(
-			_dbRef,
-			"users/" + props.authorID + "/smiles/" + props.postID
-		);
-		await deleteDoc(smilesRef);
-		// delete the image (if any)
-		if (image_url !== "") {
-			const imgRef = ref(_storageRef, "images/" + user_id + "/" + props.postID);
-			try {
-				await deleteObject(imgRef);
-			} catch (e) {
-				console.log(e);
-			}
-		}
-		// finally, delete original document
-		const postRef = doc(_dbRef, "posts", props.postID);
-		await deleteDoc(postRef);
-		props.onDelete();
-		console.log("Removed post " + props.postID);
-	}
 	const commentBox = useRef();
 	const textInput = useRef();
 	const [mentioning, setMentioning] = useState(false);
@@ -508,11 +459,6 @@ function MediaPost(props) {
 				) : null}
 				<div>
 					<div className="postActions">
-						<div
-							ref={deleteOverlay}
-							className="deleteOverlay"
-							style={{ maxWidth: "0%" }}
-						/>
 						<div className="actionBundle">
 							<SmileButton
 								canSmile={(_user && _user.user_id != user_id) || !_user}
@@ -525,14 +471,6 @@ function MediaPost(props) {
 						<button className="stealthBtn" onClick={toggle_textbox}>
 							💬 {commentCount === 0 ? "Comment" : commentCount}
 						</button>
-					</div>
-					<div
-						ref={deleteOptions}
-						className="actions"
-						style={{ flexFlow: "row-reverse", display: "none" }}
-					>
-						<button onClick={delete_post}>Delete</button>
-						<button onClick={(e) => toggle_options(false)}>Cancel</button>
 					</div>
 					<div className="commentNest">
 						{_user && (
@@ -606,7 +544,7 @@ function MediaPost(props) {
 						<div
 							className="tooltip lock"
 							isauthor={_user && _user.user_id === user_id ? "true" : null}
-							onClick={() => props.setFocusPost(true)}
+							onClick={() => props.setFocusPost(true, true)}
 						>
 							{_private === true ? (
 								<>

@@ -24,12 +24,7 @@ function Home() {
 	const [mutuals, setMutuals] = useState([]);
 	const [cache, setCache] = useState([]);
 
-	const [focusPost, setFocusPost] = useState(null);
-
 	const [privateView, setPrivateView] = useState(false);
-	useEffect(() => {
-		document.body.style.overflow = focusPost !== null ? "hidden" : null;
-	}, [focusPost]);
 	async function check_cache() {
 		var _toCache = {};
 		for (let i = 0; i < cache.length; i++) {
@@ -118,18 +113,8 @@ function Home() {
 		document.getElementById("welcomer").style.display = null;
 		localStorage.removeItem("tc");
 	}, []);
-	// state passed down to mediaactions and mediafeed components to bounce between
-	// different modal tabs of the post management menu
-	const [changeVisibility, setChangeVisibility] = useState(false);
 	return (
 		<div className="homeWrapper">
-			{focusPost !== null && (
-				<MediaActions
-					focusPost={focusPost}
-					setFocusPost={setFocusPost}
-					visibilityContext={{ changeVisibility, setChangeVisibility }}
-				/>
-			)}
 			<div id="home" className="clamper">
 				<div id="audionest"></div>
 				{_user ? (
@@ -171,12 +156,7 @@ function Home() {
 				{(_user || localStorage.getItem("guest")) &&
 					(!privateView ? (
 						<MediaFeed
-							setFocusPost={(f, v) => {
-								setFocusPost(f);
-								setChangeVisibility(v || false);
-							}}
 							private={false}
-							visibilityContext={{ changeVisibility, setChangeVisibility }}
 						/>
 					) : (
 						<div className="infinite-scroll-component">
