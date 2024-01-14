@@ -176,7 +176,7 @@ function MediaActions(props) {
 				try {
 					await setDoc(_newDoc, {
 						...focusPost[1],
-						private: !focusPost[1].private,
+						private: !(focusPost[1].private || false),
 					});
 				} catch (e) {
 					alert("failed to duplicate", e.message);
@@ -191,8 +191,8 @@ function MediaActions(props) {
 	function start_merge() {
 		console.log([pickedPrivateVis, focusPost[1].private]);
 		if (
-			(pickedPrivateVis && focusPost[1].private) ||
-			(!pickedPrivateVis && !focusPost[1].private)
+			(pickedPrivateVis && focusPost[1].private === true) ||
+			(!pickedPrivateVis && !focusPost[1].private !== true)
 		)
 			return;
 		setMergeStatus(1);
