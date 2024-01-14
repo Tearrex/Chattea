@@ -381,6 +381,7 @@ export default function MessagePage() {
 						chat
 						onClose={() => setNudging(false)}
 						onSelect={(buddy_id) => {
+							document.body.style.overflow = null;
 							navigate("/chats/" + buddy_id);
 							setNudging(false);
 						}}
