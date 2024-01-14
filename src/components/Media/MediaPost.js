@@ -438,7 +438,7 @@ function MediaPost(props) {
 									)}
 								</div>
 								<small style={{ marginTop: "0.5rem" }}>
-									🔊 Mind your volume before playing songs.
+									🔊 Mind your volume before playback!
 								</small>
 							</>
 						)}

@@ -1610,12 +1610,13 @@ p {
 		}
 		a {
 			aspect-ratio: 1/1;
-			background-color: #aaa;
+			background-color: #111;
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			color: #fff;
+			color: #1DB954;
 			text-decoration: none;
+			flex-shrink: 0;
 		}
 	}
 }
