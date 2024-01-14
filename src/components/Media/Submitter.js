@@ -158,8 +158,6 @@ function Submitter(props) {
 			);
 			return;
 		}
-		if (!pickingTrack && filter.clean(_text) !== _text)
-			return alert("Please refrain from using provokative language.");
 		if (pickingTrack) {
 			return search_song();
 		}
