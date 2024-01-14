@@ -133,18 +133,21 @@ function Home() {
 									active={privateView && "true"}
 									onClick={() => setPrivateView(true)}
 								>
-									<i className="fas fa-eye"></i> Private
+									<i className="fas fa-eye"></i> Private <small>BETA</small>
 								</button>
 							</div>
 						</p>
-
-						{privateView && (
-							<h2 style={{ color: "#fff" }} className="privatePrompt">
-								<Link to={"/u/" + _user.user_id + "/p"}>
-									Visit your profile
-								</Link>{" "}
-								to post something private
-							</h2>
+						{!privateView ? (
+							<Submitter onMessageSend={postMessage} />
+						) : (
+							privateView && (
+								<h2 style={{ color: "#fff" }} className="privatePrompt">
+									<Link to={"/u/" + _user.user_id + "/p"}>
+										Visit your profile
+									</Link>{" "}
+									to post something private
+								</h2>
+							)
 						)}
 					</>
 				) : (
@@ -162,7 +165,7 @@ function Home() {
 						<div className="infinite-scroll-component">
 							<div className="privateAlert" style={{ gridColumn: "1/-1" }}>
 								<p>
-									We can't show a summary of all your buddies' posts yet, <br />
+									<span style={{color: "#f00"}}>BETA FEATURE</span> We can't show a summary of all your buddies' posts yet, <br />
 									but you can browse their private pages individually.
 								</p>
 								<br />
@@ -209,9 +212,6 @@ function Home() {
 								>
 									<div
 										className="bRelation"
-										style={{
-											overflowX: "scroll",
-										}}
 									>
 										{suggestions &&
 											Object.values(suggestions).map((x, i) => (
