@@ -180,6 +180,7 @@ function App() {
 								<Route path="/" element={<SplashPage />} />
 								{/* make a whole page component for the main feed */}
 								<Route path="/main" element={<Home />} />
+								<Route path="/private" element={<Home privateView={true} />} />
 								<Route
 									exact
 									path="/profile/:user_id"
