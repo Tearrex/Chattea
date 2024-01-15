@@ -72,13 +72,14 @@ export default function MessagePage() {
 		where("users", "array-contains", _user ? _user.user_id : "null")
 	);
 	const [channelUpdates] = useCollection(updateQuery, { idField: "id" });
-	useEffect(() => {
+	useEffect(async () => {
 		if (channelUpdates && channelUpdates.docChanges().length > 0) {
 			console.log(
 				"channel updates",
 				channelUpdates.docChanges().map((d) => d.doc.data())
 			);
 			let _chatChannels = chatChannels ? { ...chatChannels } : {};
+			let _toCache = {}; // list of user profiles to append to local cache in bulk
 			for (let i = 0; i < channelUpdates.docChanges().length; i++) {
 				const _updated = channelUpdates.docChanges()[i];
 				const _updatedDoc = _updated.doc;
@@ -94,7 +95,19 @@ export default function MessagePage() {
 					channel_id: _updatedDoc.id,
 					activity_date: _updatedDoc.data().activity_date,
 				};
+
+				// lazy-load buddy's profile in local user cache
+				if (!_users[buddy_id]) {
+					const userRef = doc(_dbRef, "users", buddy_id);
+					const _doc = await getDoc(userRef);
+					if (_doc.exists()) {
+						_toCache[buddy_id] = _doc.data(); // buddy's data from firestore
+						console.log(`Caching user ${buddy_id} from channel list`);
+					}
+				}
 			}
+			if (Object.entries(_toCache).length > 0)
+				_setUsers({ ..._users, ..._toCache });
 			setChatChannels(_chatChannels);
 		}
 	}, [channelUpdates]);
@@ -153,6 +166,13 @@ export default function MessagePage() {
 			// chats.docs.forEach((d) =>
 			// 	decrypt_message(d.data()).then((msg) => chats_data.push(msg))
 			// );
+			if (chats.docs.length === 0)
+				return setChannelReads({
+					...channelReads,
+					[chatChannels[user_id].channel_id]: new Date(
+						chatChannels[user_id].activity_date.seconds * 1000
+					),
+				});
 			for (let i = 0; i < chats.docs.length; i++) {
 				const message = chats.docs[i].data();
 				decrypt_message(message).then((msg) => {
@@ -430,121 +450,127 @@ export default function MessagePage() {
 					each other over the Internet.{" "}
 					<Link to="/#discretions">Learn more.</Link>
 				</p>
-				<div id="chatscontainer">
-					<div className="buddies">
-						{_user &&
-							Object.entries(chatChannels).map((channel, index) => {
-								return (
-									<div
-										className="buddy"
-										key={index}
-										onClick={() => navigate("/chats/" + channel[0])}
-									>
-										{user_id !== channel[0] &&
-											(!channelReads[channel[1].channel_id] ||
-												new Date(channelReads[channel[1].channel_id]) <
-													new Date(
-														channel[1].activity_date.seconds * 1000
-													)) && (
-												<span className="hint">
-													<i className="fas fa-comment" />
-												</span>
-											)}
-										<img
-											src={_users[channel[0]].pfp}
-											style={{
-												borderRadius: user_id === channel[0] ? 0 : null,
-											}}
-										/>
-									</div>
-								);
-							})}
-						{buddyList[user_id] && !chatChannels[user_id] && (
-							<div
-								className="buddy"
-								onClick={() => navigate("/chats/" + user_id)}
-							>
-								<img
-									src={_users[user_id].pfp}
-									style={{
-										borderRadius: 0,
-										filter: !buddyList[user_id].available
-											? "grayscale(1)"
-											: null,
-									}}
-								/>
-							</div>
-						)}
-						<button className="add" onClick={() => setNudging(true)}>
-							<i className="fas fa-plus" />
-						</button>
-					</div>
-					<div className="chatbox">
-						<div className="chats">
-							{!user_id && privateKey && (
-								<div className="tip">Choose a buddy to chat with</div>
-							)}
-							{user_id &&
-								buddyList[user_id] &&
-								!buddyList[user_id].available &&
-								privateKey && (
-									<div className="tip">
-										<Link to={"/u/" + user_id}>
-											@{_users[user_id].username}
-										</Link>{" "}
-										does not have a public key.
-									</div>
-								)}
-							{!privateKey && (
-								<div className="tip">
-									<p>
-										You must generate <span>crypto keys</span> to use secure
-										chats!
-									</p>
-									<button onClick={genkeys} className="crypto">
-										<i className="fas fa-key" /> Generate Keys
-									</button>
-								</div>
-							)}
-							{messages
-								.sort((a, b) => (a.date < b.date ? 1 : -1))
-								.map((msg, i) => {
+				{_user && (
+					<div id="chatscontainer">
+						<div className="buddies">
+							{_user &&
+								Object.entries(chatChannels).map((channel, index) => {
 									return (
 										<div
-											className="message"
-											key={i}
-											self={msg.author === _user.user_id ? "true" : "false"}
+											className="buddy"
+											key={index}
+											onClick={() => navigate("/chats/" + channel[0])}
 										>
-											{!msg.encrypted ? (
-												msg.content
-											) : (
-												<i>[Encrypted message]</i>
-											)}
+											{user_id !== channel[0] &&
+												(!channelReads[channel[1].channel_id] ||
+													new Date(channelReads[channel[1].channel_id]) <
+														new Date(
+															channel[1].activity_date.seconds * 1000
+														)) && (
+													<span className="hint">
+														<i className="fas fa-comment" />
+													</span>
+												)}
+											<img
+												src={
+													_users[channel[0]]
+														? _users[channel[0]].pfp
+														: "/default_user.png"
+												}
+												style={{
+													borderRadius: user_id === channel[0] ? 0 : null,
+												}}
+											/>
 										</div>
 									);
 								})}
-						</div>
-						{user_id &&
-							privateKey &&
-							(chatChannels[user_id] ||
-							buddyList[user_id] &&
-							buddyList[user_id].available) && (
-								<form className="textfield" onSubmit={send_msg}>
-									<input
-										type="text"
-										placeholder={`Chat with ${
-											_users[user_id] ? _users[user_id].username : "a user..."
-										}`}
-										value={text}
-										onChange={(e) => setText(e.target.value)}
+							{buddyList[user_id] && !chatChannels[user_id] && (
+								<div
+									className="buddy"
+									onClick={() => navigate("/chats/" + user_id)}
+								>
+									<img
+										src={_users[user_id].pfp}
+										style={{
+											borderRadius: 0,
+											filter: !buddyList[user_id].available
+												? "grayscale(1)"
+												: null,
+										}}
 									/>
-									<button>
-										<i className="fas fa-paper-plane"></i>
-									</button>
-								</form>
+								</div>
 							)}
+							<button className="add" onClick={() => setNudging(true)}>
+								<i className="fas fa-plus" />
+							</button>
+						</div>
+						<div className="chatbox">
+							<div className="chats">
+								{!user_id && privateKey && (
+									<div className="tip">Choose a buddy to chat with</div>
+								)}
+								{user_id &&
+									buddyList[user_id] &&
+									!buddyList[user_id].available &&
+									privateKey && (
+										<div className="tip">
+											<Link to={"/u/" + user_id}>
+												@{_users[user_id].username}
+											</Link>{" "}
+											does not have a public key.
+										</div>
+									)}
+								{!privateKey && (
+									<div className="tip">
+										<p>
+											You must generate <span>crypto keys</span> to use secure
+											chats!
+										</p>
+										<button onClick={genkeys} className="crypto">
+											<i className="fas fa-key" /> Generate Keys
+										</button>
+									</div>
+								)}
+								{messages
+									.sort((a, b) => (a.date < b.date ? 1 : -1))
+									.map((msg, i) => {
+										return (
+											<div
+												className="message"
+												key={i}
+												self={msg.author === _user.user_id ? "true" : "false"}
+											>
+												{!msg.encrypted ? (
+													msg.content
+												) : (
+													<i>[Encrypted message]</i>
+												)}
+											</div>
+										);
+									})}
+							</div>
+							{user_id &&
+								privateKey &&
+								chatChannels[user_id] &&
+								buddyList[user_id] &&
+								buddyList[user_id].available && (
+									<form className="textfield" onSubmit={send_msg}>
+										<input
+											type="text"
+											placeholder={`Chat with ${
+												_users[user_id] ? _users[user_id].username : "a user..."
+											}`}
+											value={text}
+											onChange={(e) => setText(e.target.value)}
+										/>
+										<button>
+											<i className="fas fa-paper-plane"></i>
+										</button>
+									</form>
+								)}
+						</div>
 					</div>
-				</div>
+				)}
 				<div className="chatOptions">
 					{privatePEM && (
 						<button className="crypto alt" onClick={regen_keys}>
