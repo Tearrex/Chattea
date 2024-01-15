@@ -15,9 +15,11 @@ import {
 	query,
 	serverTimestamp,
 	setDoc,
+	updateDoc,
 	where,
 } from "firebase/firestore";
 import UserList from "../Buddies/UserList";
+import { useCollection } from "react-firebase-hooks/firestore";
 
 // keys from plaintext password....
 function str2ab(str) {
@@ -63,9 +65,45 @@ export default function MessagePage() {
 	const [privateKey, setPrivateKey] = useState(null); // holds cryptokey object for decryption operations
 
 	// lazy-load cache for referencing message channel ID's of each buddy for the current user
-	const [chatChannels, setChatChannels] = useState({}); // { [buddy_id]: channel_id }
+	const [chatChannels, setChatChannels] = useState({}); // { [buddy_id]: {channel_id, activity_date} }
+
+	const updateQuery = query(
+		collection(_dbRef, "messages"),
+		where("users", "array-contains", _user ? _user.user_id : "null")
+	);
+	const [channelUpdates] = useCollection(updateQuery, { idField: "id" });
+	useEffect(() => {
+		if (channelUpdates && channelUpdates.docChanges().length > 0) {
+			console.log(
+				"channel updates",
+				channelUpdates.docChanges().map((d) => d.doc.data())
+			);
+			let _chatChannels = chatChannels ? { ...chatChannels } : {};
+			for (let i = 0; i < channelUpdates.docChanges().length; i++) {
+				const _updated = channelUpdates.docChanges()[i];
+				const _updatedDoc = _updated.doc;
+				const buddy_id = Array.from(_updatedDoc.data().users).find(
+					(a) => a !== _user.user_id
+				);
+				if (_updated.type === "removed") {
+					delete _chatChannels[buddy_id];
+					continue;
+				}
+
+				_chatChannels[buddy_id] = {
+					channel_id: _updatedDoc.id,
+					activity_date: _updatedDoc.data().activity_date,
+				};
+			}
+			setChatChannels(_chatChannels);
+		}
+	}, [channelUpdates]);
+	const [channelReads, setChannelReads] = useState({}); // hold latest opened/read timestamp for each channel
+	useEffect(() => {
+		if (Object.entries(channelReads).length > 0)
+			localStorage.setItem("channel_reads", JSON.stringify(channelReads));
+	}, [channelReads]);
 	useEffect(async () => {
-		if (!user_id || !chatChannels[user_id]) setMessages([]);
 		// fetch public keys of each buddy for the current user
 		if (_user && Object.entries(buddyList).length === 0) {
 			let buddies = _user.buddies;
@@ -91,48 +129,24 @@ export default function MessagePage() {
 			setBuddyList(result);
 			console.log("result", result);
 		}
-		// fetch list of message channel ID's that the current user appears in
-		if (_user && Object.entries(chatChannels).length === 0) {
-			const _channelsQuery = query(
-				collection(_dbRef, "messages"),
-				where("users", "array-contains", _user.user_id)
-			);
-			const channels = await getDocs(_channelsQuery);
-			let _chatChannels = {};
-			for (let i = 0; i < channels.docs.length; i++) {
-				const channel = channels.docs[i];
-				const buddy_id = Object.values(channel.data().users).find(
-					(a) => a !== _user.user_id
-				);
-				_chatChannels[buddy_id] = channel.id;
-			}
-			setChatChannels(_chatChannels);
-		}
-		// only fetch messages when user's private key and buddy's public key is ready
+	}, [_user, user_id, privateKey, buddyList]);
+	useEffect(async () => {
+		if (!user_id || !chatChannels[user_id]) setMessages([]);
+		// only fetch channel messages when user's private key and channel id is ready
 		if (
 			_user &&
 			user_id &&
 			privateKey &&
-			buddyList[user_id] &&
-			buddyList[user_id].available
+			chatChannels[user_id] &&
+			messages.length === 0
 		) {
 			// fetch message history (if any) of selected channel (if any)
-			let channel_id = null;
-			if (!chatChannels[user_id]) {
-				const _channelQuery = query(
-					collection(_dbRef, "messages"),
-					limit(1),
-					where("users", "==", [_user.user_id, user_id].sort())
-				);
-				const channels = await getDocs(_channelQuery);
-				if (channels.empty) return;
-				channel_id = channels.docs[0].id;
-				// write fresh data into state of temp cache
-				let _chatChannels = { ...chatChannels };
-				_chatChannels[user_id] = channel_id;
-				setChatChannels(_chatChannels);
-			} else channel_id = chatChannels[user_id];
-			const _chatsRef = collection(_dbRef, "messages", channel_id, "safechats"); // nest of messages
+			const _chatsRef = collection(
+				_dbRef,
+				"messages",
+				chatChannels[user_id].channel_id,
+				"safechats"
+			); // nest of messages
 			const _chatsQuery = query(_chatsRef, limit(5), orderBy("date", "desc")); // add batch loading later on....
 			const chats = await getDocs(_chatsQuery);
 			let chats_data = [];
@@ -145,12 +159,18 @@ export default function MessagePage() {
 					chats_data.push(msg);
 					if (i == chats.docs.length - 1) {
 						setMessages(chats_data);
+						setChannelReads({
+							...channelReads,
+							[chatChannels[user_id].channel_id]: new Date(
+								chatChannels[user_id].activity_date.seconds * 1000
+							),
+						});
 						console.log("messages", chats_data);
 					}
 				});
 			}
 		}
-	}, [_user, user_id, privateKey]);
+	}, [_user, user_id, privateKey, chatChannels]);
 
 	// read base64 keypair from localstorage into component state
 	useEffect(() => {
@@ -158,6 +178,10 @@ export default function MessagePage() {
 		let public_key = localStorage.getItem("publicKey");
 		if (private_key) setPrivatePEM(private_key);
 		if (public_key) setPublicPEM(public_key);
+
+		// load read timestamps for each message channel from local cache
+		let channel_reads = localStorage.getItem("channel_reads");
+		if (channel_reads) setChannelReads(JSON.parse(channel_reads));
 	}, []);
 	// convert base64 private key into crypto object
 	useEffect(async () => {
@@ -257,10 +281,10 @@ export default function MessagePage() {
 				channel_id = channels.docs[0].id; // new message will go in existing channel
 			}
 			// write fresh data into state of temp cache
-			let _chatChannels = { ...chatChannels };
-			_chatChannels[user_id] = channel_id;
-			setChatChannels(_chatChannels);
-		} else channel_id = chatChannels[user_id];
+			// let _chatChannels = { ...chatChannels };
+			// _chatChannels[user_id] = channel_id;
+			// setChatChannels(_chatChannels);
+		} else channel_id = chatChannels[user_id].channel_id;
 
 		const _chatsRef = collection(_dbRef, "messages", channel_id, "safechats"); // nest of messages
 		const _newChat = doc(_chatsRef);
@@ -308,7 +332,13 @@ export default function MessagePage() {
 			content: window.btoa(final_content[0]),
 			content_back: window.btoa(final_content[1]),
 			author: _user.user_id,
+			recipient: user_id,
 			date: serverTimestamp(),
+		});
+
+		const channelDoc = doc(_dbRef, "messages/" + channel_id);
+		updateDoc(channelDoc, {
+			activity_date: serverTimestamp(),
 		});
 		let msgs = messages;
 		msgs.push({
@@ -328,7 +358,12 @@ export default function MessagePage() {
 			return;
 		if (!chatChannels[user_id]) return; // weird edge case, unlikely
 		const chatsQuery = query(
-			collection(_dbRef, "messages", chatChannels[user_id], "safechats")
+			collection(
+				_dbRef,
+				"messages",
+				chatChannels[user_id].channel_id,
+				"safechats"
+			)
 		);
 		const chats = await getDocs(chatsQuery);
 		for (let i = 0; i < chats.docs.length; i++) {
@@ -394,9 +429,6 @@ export default function MessagePage() {
 					Only you and your intended recipient can decipher messages sent to
 					each other over the Internet.{" "}
 					<Link to="/#discretions">Learn more.</Link>
-					<br />
-					<br />
-					<b>Switching devices will make chat history unrecoverable!</b>
 				</p>
 				<div id="chatscontainer">
 					<div className="buddies">
@@ -408,6 +440,16 @@ export default function MessagePage() {
 										key={index}
 										onClick={() => navigate("/chats/" + channel[0])}
 									>
+										{user_id !== channel[0] &&
+											(!channelReads[channel[1].channel_id] ||
+												new Date(channelReads[channel[1].channel_id]) <
+													new Date(
+														channel[1].activity_date.seconds * 1000
+													)) && (
+												<span className="hint">
+													<i className="fas fa-comment" />
+												</span>
+											)}
 										<img
 											src={_users[channel[0]].pfp}
 											style={{
@@ -470,6 +512,7 @@ export default function MessagePage() {
 									return (
 										<div
 											className="message"
+											key={i}
 											self={msg.author === _user.user_id ? "true" : "false"}
 										>
 											{!msg.encrypted ? (
@@ -483,8 +526,9 @@ export default function MessagePage() {
 						</div>
 						{user_id &&
 							privateKey &&
-							(chatChannels[user_id] ||
-								(buddyList[user_id] && buddyList[user_id].available)) && (
+							chatChannels[user_id] &&
+							buddyList[user_id] &&
+							buddyList[user_id].available && (
 								<form className="textfield" onSubmit={send_msg}>
 									<input
 										type="text"

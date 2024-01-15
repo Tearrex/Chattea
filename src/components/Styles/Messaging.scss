@@ -50,6 +50,27 @@ button.crypto.alt {
 		height: 60px;
 		aspect-ratio: 1/1;
 		padding: 10px;
+		position: relative;
+	}
+	.hint {
+		bottom: 80%;
+		padding: 0.5rem;
+		left: 50%;
+		animation: abouthover 2s linear infinite;
+		background-color: $mainEven;
+		transform: translateX(-50%);
+		color: $niceOrange;
+		z-index: 2;
+		&:hover {
+			text-decoration: none;
+		}
+		&::after {
+			bottom: unset;
+			top: 95%;
+			border-color: $mainEven transparent transparent transparent;
+			right: 50%;
+			transform: translateX(50%);
+		}
 	}
 	.add {
 		border-radius: 100vh;
@@ -123,7 +144,7 @@ button.crypto.alt {
 		a {
 			text-decoration: none;
 		}
-		&:hover  a {
+		&:hover a {
 			text-decoration: underline;
 		}
 	}

@@ -366,20 +366,20 @@
 		bottom: 0;
 	}
 }
+@keyframes abouthover {
+	0% {
+		transform: translateY(0%);
+	}
+	50% {
+		transform: translateY(-10%);
+	}
+	100% {
+		transform: translateY(0%);
+	}
+}
 .aboutSection {
 	position: relative;
-	z-index: 1;
-	@keyframes abouthover {
-		0% {
-			transform: translateY(0%);
-		}
-		50% {
-			transform: translateY(-10%);
-		}
-		100% {
-			transform: translateY(0%);
-		}
-	}
+	z-index: 1;	
 	.hint {
 		bottom: calc(100% + 0.5rem);
 		border-radius: 100vh;
