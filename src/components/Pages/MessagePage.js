@@ -526,9 +526,9 @@ export default function MessagePage() {
 						</div>
 						{user_id &&
 							privateKey &&
-							chatChannels[user_id] &&
+							(chatChannels[user_id] ||
 							buddyList[user_id] &&
-							buddyList[user_id].available && (
+							buddyList[user_id].available) && (
 								<form className="textfield" onSubmit={send_msg}>
 									<input
 										type="text"
