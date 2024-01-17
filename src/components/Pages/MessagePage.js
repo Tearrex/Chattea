@@ -241,6 +241,8 @@ export default function MessagePage() {
 			console.log("Generated public key!");
 		}
 	}, [publicPEM, publicKey]);
+
+	const decoder = new TextDecoder();
 	// use private key crypto object to decrypt ciphertext
 	// then return document data in plaintext
 	async function decrypt_message(message) {
@@ -264,10 +266,11 @@ export default function MessagePage() {
 				privateKey,
 				str2ab(content[0])
 			);
-			content = ab2str(content);
+			content = decoder.decode(content);
 			message.content = content;
 			return message;
 		} catch (e) {
+			console.log("error", e);
 			message.encrypted = true;
 			return message;
 		}
