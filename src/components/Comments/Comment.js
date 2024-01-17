@@ -11,19 +11,10 @@ function Comment(props) {
 	const { _users, _setUsers } = useContext(MembersContext);
 	const { date, content, user_id, id, mentions } = props.comment;
 
-	const [pfp, setPfp] = useState("/default_user.png");
-	const [username, setUsername] = useState("LOADING");
+	const [author, setAuthor] = useState(null);
 	useEffect(() => {
-		let suffix = "";
-		if (_user && user_id === _user["user_id"]) {
-			setPfp(_user.pfp);
-			if (_user.role === "admin") suffix = " ";
-			setUsername(_user.username + suffix);
-		} else if (_users[user_id] !== undefined) {
-			setPfp(_users[user_id].pfp);
-			if (_users[user_id].role === "admin") suffix = " ";
-			setUsername(_users[user_id].username + suffix);
-		}
+		if (_user && user_id === _user["user_id"]) setAuthor(_user);
+		else if (_users[user_id] !== undefined) setAuthor(_users[user_id]);
 	}, [_users, _user]);
 	async function delete_comment() {
 		console.log(props.postID + " comment id: " + id);
@@ -33,9 +24,6 @@ function Comment(props) {
 		if (!confirm) return;
 		const commentRef = doc(_dbRef, "posts/" + props.postID + "/comments/" + id);
 		await deleteDoc(commentRef);
-	}
-	function visit_user() {
-		navigate("/u/" + user_id);
 	}
 	// this function must return array of elements to map properly
 	function render_comment(comment) {
@@ -90,13 +78,20 @@ function Comment(props) {
 				</span>
 			) : null}
 			<Link
-				to={"/u/" + user_id}
+				to={author ? "/u/" + author.user_id : "#"}
 				className="ubadge"
 				style={{ flexShrink: 0 }}
 			>
-				<img src={pfp} alt="pfp" />
-				<span className="cUser" onClick={visit_user}>
-					{username}
+				<img
+					src={author ? author.pfp : "/default_user.png"}
+					alt="pfp"
+					style={{ opacity: !author ? 0.5 : null }}
+				/>
+				<span
+					className="cUser"
+					style={{ fontWeight: !author ? "normal" : null }}
+				>
+					{author ? author.username : <i>Lost User</i>}
 				</span>
 			</Link>
 			<span className="content">
