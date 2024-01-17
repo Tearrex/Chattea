@@ -65,6 +65,7 @@ function ProfilePage(props) {
 		if (
 			(user_id && _users[user_id]) ||
 			(user_id.startsWith("@") && !profile) ||
+			(!user_id.startsWith("@") && !profile) ||
 			(_user && _user.user_id === user_id)
 		)
 			profile_cleanup();
@@ -353,10 +354,6 @@ function ProfilePage(props) {
 	const inputRef = useRef();
 	const bannerRef = useRef();
 
-	const [focusPost, setFocusPost] = useState(null);
-	useEffect(() => {
-		document.body.style.overflow = focusPost !== null ? "hidden" : null;
-	}, [focusPost]);
 	function ban_user() {
 		if (!window.confirm(`Revoke ${profile.username}'s posting privileges?`))
 			return;
@@ -462,23 +459,12 @@ function ProfilePage(props) {
 	}, []);
 	const [latestPost, setLatestPost] = useState(null);
 
-	// state passed down to mediaactions and mediafeed components to bounce between
-	// different modal tabs of the post management menu
-	const [changeVisibility, setChangeVisibility] = useState(false);
-
 	// state for conditionally showing tips and tricks for new users
 	// like encouraging them to make a first post
 	const [postCount, setPostCount] = useState(0);
 	return (
 		<div className="homeWrapper">
 			<div id="audionest"></div>
-			{focusPost !== null && (
-				<MediaActions
-					focusPost={focusPost}
-					setFocusPost={setFocusPost}
-					visibilityContext={{ changeVisibility, setChangeVisibility }}
-				/>
-			)}
 			<div id="home" className="clamper">
 				<div
 					ref={profileCard}
@@ -719,20 +705,17 @@ function ProfilePage(props) {
 					</>
 				)}
 				{!privateView ? (
-					profile && (
+					profile &&
+					profile.user_id && (
 						<MediaFeed
 							focus={profile.user_id}
 							private={false}
-							setFocusPost={(f, v) => {
-								setFocusPost(f);
-								setChangeVisibility(v || false);
-							}}
 							postInjection={latestPost}
-							visibilityContext={{ changeVisibility, setChangeVisibility }}
 							postCountContext={{ postCount, setPostCount }}
 						/>
 					)
 				) : !profile ||
+				  !profile.user_id ||
 				  !_user ||
 				  (_user.user_id != profile.user_id &&
 						_users[profile.user_id] &&
@@ -749,12 +732,7 @@ function ProfilePage(props) {
 					<MediaFeed
 						focus={profile.user_id}
 						private={true}
-						setFocusPost={(f, v) => {
-							setFocusPost(f);
-							setChangeVisibility(v || false);
-						}}
 						postInjection={latestPost}
-						visibilityContext={{ changeVisibility, setChangeVisibility }}
 						postCountContext={{ postCount, setPostCount }}
 					/>
 				)}

@@ -225,7 +225,7 @@ body {
 	transition: opacity 0.4s ease-in;
 	-webkit-transition: opacity 0.4s ease-in;
 	align-items: stretch;
-	button {
+	.profile > button {
 		font-size: 1.5rem;
 		background: none;
 		color: #fff;
@@ -431,6 +431,10 @@ body {
 		margin: 0;
 		width: 100%;
 		color: #3e3e3e;
+	}
+	.settings {
+		background-color: $darkText;
+		color: #fff;
 	}
 	.mpContent {
 		margin-top: 0;
@@ -1614,7 +1618,7 @@ p {
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			color: #1DB954;
+			color: #1db954;
 			text-decoration: none;
 			flex-shrink: 0;
 		}
@@ -1806,6 +1810,27 @@ p {
 		margin: 0;
 		color: rgba(255, 255, 255, 0.5);
 		background: #22262b;
+	}
+	.repBody {
+		padding: 10px 20px;
+		display: flex;
+		flex-flow: column;
+		color: $mainFore;
+		align-items: center;
+		ul li {
+			text-align: left;
+		}
+		p {
+			margin: 0;
+		}
+	}
+	.repBody .setting {
+		display: flex;
+		color: $mainFore;
+		justify-content: space-between;
+	}
+	.repBody .deleteAcc {
+		color: $teaColor;
 	}
 	.subText {
 		color: rgba(255, 255, 255, 0.5);
