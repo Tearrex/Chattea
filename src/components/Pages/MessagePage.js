@@ -5,6 +5,7 @@ import { useParams } from "react-router";
 import { Link, useNavigate } from "react-router-dom";
 import { _dbRef } from "../Main/firebase";
 import {
+	Timestamp,
 	collection,
 	deleteDoc,
 	doc,
@@ -67,11 +68,14 @@ export default function MessagePage() {
 	// lazy-load cache for referencing message channel ID's of each buddy for the current user
 	const [chatChannels, setChatChannels] = useState({}); // { [buddy_id]: {channel_id, activity_date} }
 
-	const updateQuery = query(
+	const [latestMsgTimestamp, setLatestMsgTimestamp] = useState(null);
+	const channelsUpdateQuery = query(
 		collection(_dbRef, "messages"),
 		where("users", "array-contains", _user ? _user.user_id : "null")
 	);
-	const [channelUpdates] = useCollection(updateQuery, { idField: "id" });
+	const [channelUpdates] = useCollection(channelsUpdateQuery, {
+		idField: "id",
+	});
 	useEffect(async () => {
 		if (channelUpdates && channelUpdates.docChanges().length > 0) {
 			console.log(
@@ -96,6 +100,17 @@ export default function MessagePage() {
 					activity_date: _updatedDoc.data().activity_date,
 				};
 
+				// if the open channel matches this updated document, save read receipt timestamp
+				if (buddy_id === user_id) {
+					if (latestMsgTimestamp) fetch_new_messages();
+					setChannelReads({
+						...channelReads,
+						[_updatedDoc.id]: new Date(
+							_chatChannels[buddy_id].activity_date.seconds * 1000
+						),
+					});
+				}
+
 				// lazy-load buddy's profile in local user cache
 				if (!_users[buddy_id]) {
 					const userRef = doc(_dbRef, "users", buddy_id);
@@ -111,6 +126,30 @@ export default function MessagePage() {
 			setChatChannels(_chatChannels);
 		}
 	}, [channelUpdates]);
+	async function fetch_new_messages() {
+		if (!latestMsgTimestamp) return;
+		const _query = query(
+			collection(
+				_dbRef,
+				"messages/" + chatChannels[user_id].channel_id + "/safechats"
+			),
+			where("date", ">", latestMsgTimestamp),
+			orderBy("date", "desc")
+		);
+		const _newChats = await getDocs(_query);
+		if (_newChats.empty) return; // unlikely...
+		let _chats = [...messages];
+		for (let i = 0; i < _newChats.docs.length; i++) {
+			const _chat = _newChats.docs[i].data();
+			_chats.unshift(await decrypt_message(_chat));
+			if (i == _newChats.docs.length - 1) setLatestMsgTimestamp(_chat.date);
+		}
+		console.log(
+			"new messages",
+			_newChats.docs.map((a) => a.data())
+		);
+		setMessages(_chats);
+	}
 	const [channelReads, setChannelReads] = useState({}); // hold latest opened/read timestamp for each channel
 	useEffect(() => {
 		if (Object.entries(channelReads).length > 0)
@@ -125,6 +164,12 @@ export default function MessagePage() {
 			// to find their corresponding public key from firestore
 			for (let b = 0; b < buddies.length; b++) {
 				const buddyID = buddies[b];
+				// can only message buddies with mutual friendships
+				if (
+					!_users[buddyID] ||
+					!Array.from(_users[buddyID].buddies).includes(_user.user_id)
+				)
+					continue;
 				const buddyRef = doc(_dbRef, "pkeys", buddyID);
 				let snap = await getDoc(buddyRef);
 				if (snap.exists()) {
@@ -142,7 +187,7 @@ export default function MessagePage() {
 			setBuddyList(result);
 			console.log("result", result);
 		}
-	}, [_user, user_id, privateKey, buddyList]);
+	}, [_user, user_id, privateKey]);
 	useEffect(async () => {
 		if (!user_id || !chatChannels[user_id]) setMessages([]);
 		// only fetch channel messages when user's private key and channel id is ready
@@ -151,7 +196,7 @@ export default function MessagePage() {
 			user_id &&
 			privateKey &&
 			chatChannels[user_id] &&
-			messages.length === 0
+			messages.length == 0
 		) {
 			// fetch message history (if any) of selected channel (if any)
 			const _chatsRef = collection(
@@ -166,19 +211,22 @@ export default function MessagePage() {
 			// chats.docs.forEach((d) =>
 			// 	decrypt_message(d.data()).then((msg) => chats_data.push(msg))
 			// );
-			if (chats.docs.length === 0)
+			if (chats.docs.length === 0 && chatChannels[user_id]) {
+				setMessages([]);
 				return setChannelReads({
 					...channelReads,
 					[chatChannels[user_id].channel_id]: new Date(
 						chatChannels[user_id].activity_date.seconds * 1000
 					),
 				});
+			}
 			for (let i = 0; i < chats.docs.length; i++) {
 				const message = chats.docs[i].data();
 				decrypt_message(message).then((msg) => {
 					chats_data.push(msg);
 					if (i == chats.docs.length - 1) {
 						setMessages(chats_data);
+						setLatestMsgTimestamp(chatChannels[user_id].activity_date);
 						setChannelReads({
 							...channelReads,
 							[chatChannels[user_id].channel_id]: new Date(
@@ -283,34 +331,9 @@ export default function MessagePage() {
 		e.preventDefault();
 		const content = text.trim();
 		if (content === "") return;
-		// before sending message, check for existing message channel
-		let channel_id = null; // hold reference id for placement of subcollection
-		if (!chatChannels[user_id]) {
-			const _query = query(
-				collection(_dbRef, "messages"),
-				limit(1),
-				where("users", "==", [_user.user_id, user_id].sort())
-			);
-			const channels = await getDocs(_query);
-			if (channels.empty) {
-				console.log("Creating new message channel...");
-				const _channel = doc(collection(_dbRef, "messages"));
-				await setDoc(_channel, {
-					users: [_user.user_id, user_id].sort(), // uniform sorting for single array clause
-				});
-				channel_id = _channel.id; // new message will go in new channel
-			} else {
-				console.log("Appending to existing message channel...");
-				channel_id = channels.docs[0].id; // new message will go in existing channel
-			}
-			// write fresh data into state of temp cache
-			// let _chatChannels = { ...chatChannels };
-			// _chatChannels[user_id] = channel_id;
-			// setChatChannels(_chatChannels);
-		} else channel_id = chatChannels[user_id].channel_id;
 
-		const _chatsRef = collection(_dbRef, "messages", channel_id, "safechats"); // nest of messages
-		const _newChat = doc(_chatsRef);
+		let msg_date = new Date();
+		setLatestMsgTimestamp(Timestamp.fromDate(msg_date));
 
 		// convert the recipient's public key string to the necessary crypto object format
 		const r_keyContent = buddyList[user_id].public_key; // base64 string
@@ -332,9 +355,7 @@ export default function MessagePage() {
 			console.log("error occured", e);
 			return;
 		}
-		console.log("key improted");
 		let encoded_content = new TextEncoder().encode(content);
-		console.log("encoded", encoded_content);
 		// ciphertext for recipient (encrypt plaintext with buddy's public key)
 		let r_secure_content = await window.crypto.subtle.encrypt(
 			{ name: "RSA-OAEP" },
@@ -349,33 +370,60 @@ export default function MessagePage() {
 		);
 
 		let final_content = [ab2str(r_secure_content), ab2str(a_secure_content)];
-		console.log("final", final_content);
+
+		// before sending message, check for existing message channel
+		let channel_id = null; // hold reference id for placement of subcollection
+		if (!chatChannels[user_id]) {
+			const _query = query(
+				collection(_dbRef, "messages"),
+				limit(1),
+				where("users", "==", [_user.user_id, user_id].sort())
+			);
+			const channels = await getDocs(_query);
+			if (channels.empty) {
+				console.log("Creating new message channel...");
+				const _channel = doc(collection(_dbRef, "messages"));
+				await setDoc(_channel, {
+					users: [_user.user_id, user_id].sort(), // uniform sorting for single array clause
+					activity_date: Timestamp.fromDate(msg_date),
+				});
+				channel_id = _channel.id; // new message will go in new channel
+			}
+		} else {
+			console.log("Appending to existing message channel...");
+			channel_id = chatChannels[user_id].channel_id;
+			const channelDoc = doc(_dbRef, "messages/" + channel_id);
+			updateDoc(channelDoc, {
+				activity_date: Timestamp.fromDate(msg_date),
+			});
+		}
+
+		const _chatsRef = collection(_dbRef, "messages", channel_id, "safechats"); // nest of messages
+		const _newChat = doc(_chatsRef);
+
 		await setDoc(_newChat, {
 			// now convert array buffer to base64 encoding
 			content: window.btoa(final_content[0]),
 			content_back: window.btoa(final_content[1]),
 			author: _user.user_id,
 			recipient: user_id,
-			date: serverTimestamp(),
+			date: msg_date,
 		});
 
-		const channelDoc = doc(_dbRef, "messages/" + channel_id);
-		updateDoc(channelDoc, {
-			activity_date: serverTimestamp(),
-		});
-		let msgs = messages;
-		msgs.push({
+		let msgs = [...messages];
+		msgs.unshift({
 			content: content,
 			author: _user.user_id,
-			date: new Date(),
+			date: msg_date,
 		});
+		setMessages(msgs);
 		setText("");
 	}
 	// delete all chats within current message channel
 	async function purge_channel() {
 		if (
 			!window.confirm(
-				`This will delete ALL messages between you and ${_users[user_id].username}. Continue?`
+				`This will delete ALL messages between you and @${_users[user_id].username}. Continue?`
 			)
 		)
 			return;
@@ -487,7 +535,7 @@ export default function MessagePage() {
 										</div>
 									);
 								})}
-							{buddyList[user_id] && !chatChannels[user_id] && (
+							{user_id && !chatChannels[user_id] && (
 								<div
 									className="buddy"
 									onClick={() => navigate("/chats/" + user_id)}
@@ -496,14 +544,19 @@ export default function MessagePage() {
 										src={_users[user_id].pfp}
 										style={{
 											borderRadius: 0,
-											filter: !buddyList[user_id].available
-												? "grayscale(1)"
-												: null,
+											filter:
+												!buddyList[user_id] || !buddyList[user_id].available
+													? "grayscale(1)"
+													: null,
 										}}
 									/>
 								</div>
 							)}
 							<button className="add" onClick={() => setNudging(true)}>
+								{_user &&
+									Array.from(_user.buddies).length > 0 &&
+									Object.entries(chatChannels).length === 0 &&
+									!user_id && <span className="hint">Buddy list</span>}
 								<i className="fas fa-plus" />
 							</button>
 						</div>
@@ -511,6 +564,14 @@ export default function MessagePage() {
 							<div className="chats">
 								{!user_id && privateKey && (
 									<div className="tip">Choose a buddy to chat with</div>
+								)}
+								{user_id && !buddyList[user_id] && (
+									<div className="tip">
+										<Link to={"/u/" + user_id}>
+											@{_users[user_id].username}
+										</Link>{" "}
+										must add you as a buddy.
+									</div>
 								)}
 								{user_id &&
 									buddyList[user_id] &&
@@ -535,7 +596,6 @@ export default function MessagePage() {
 									</div>
 								)}
 								{messages
-									.sort((a, b) => (a.date < b.date ? 1 : -1))
 									.map((msg, i) => {
 										return (
 											<div
