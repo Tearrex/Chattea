@@ -537,7 +537,7 @@ function Submitter(props) {
 							id="subTxt"
 							placeholder={
 								!pickingTrack
-									? `What's up ${(_user && _user.username) || ""}?`
+									? `What's up, ${(_user && _user.username) || ""}?`
 									: "Search for a song name..."
 							}
 							autoComplete="off"
@@ -826,7 +826,7 @@ function Submitter(props) {
 						onChange={(e) => setTargetEmail(e.target.value)}
 					/>
 					<button onClick={send_link}>
-						<i class="fas fa-paper-plane"></i>
+						<i class="fas fa-envelope"></i>
 					</button>
 				</div>
 			)}

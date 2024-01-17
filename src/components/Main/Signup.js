@@ -200,12 +200,11 @@ function Signup(props) {
 		switcheroo(false);
 		disable_inputs(false);
 		saucerRef.current.style.transform = "translate(-50%,-50%)";
-		saucerRef.current.style.opacity = "1";
 		saucerRef.current.style.display = "block";
+		saucerRef.current.style.opacity = "1";
 		overlayBG.current.style.display = "block";
 		emailRef.current.focus();
 	}
-	const emailWindow = useRef();
 	function switcheroo(yes) {
 		if (yes) {
 			// show welcome banner
@@ -216,14 +215,7 @@ function Signup(props) {
 			avatarRef.current.style.transform = "translate(-50%, -50%)";
 			//navigate("/main");
 			setTimeout(function () {
-				if (verified === true) dismiss_verification(true);
-				else {
-					setEmail(currentUser.email); // autofill link destination
-					emailWindow.current.style.zIndex = "11";
-					emailWindow.current.style.transform =
-						"scale(1) translate(-50%, -50%)";
-					emailWindow.current.style.opacity = "1";
-				}
+				dismiss_verification();
 			}, 3000);
 		} else {
 			// show login form
@@ -240,62 +232,25 @@ function Signup(props) {
 			if (currentUser.emailVerified === true) setVerified(true);
 		}
 	}, [currentUser]);
-	function dismiss_verification(wasEmailVerified) {
-		if (wasEmailVerified === false) saucerRef.current.style.display = "none";
+	function dismiss_verification() {
 		let redirect = localStorage.getItem("redirect");
 		navigate(redirect || "/main");
 		localStorage.removeItem("redirect");
 		setTimeout(() => {
 			overlayBG.current.style.opacity = "0";
-			if (wasEmailVerified) {
-				saucerRef.current.style.transform = "translate(-150vw, -50%)";
-				setTransition(false);
-			} else {
-				emailWindow.current.style.transform = "scale(0) translate(-50%,-50%)";
-				overlayBG.current.style.display = "none";
-			}
+			saucerRef.current.style.transform = "translate(-150vw, -50%)";
+			setTransition(false);
 			setLock(true);
 		}, 2000);
 	}
 	function finish_transition(e) {
-		if ((linkSent === false && !skip) || transitioning) return;
-		saucerRef.current.style.display = "none";
+		if (!focus || transitioning) return;
+		// saucerRef.current.style.display = "none";
 		setFocus(false);
 		setTransition(false);
-		setSkip(false);
 		console.log("transition finished");
 	}
-	const [verifying, setVerifying] = useState(false);
 	const [linkSent, setLinkSent] = useState(false);
-	const emailInput = useRef();
-	async function handle_email(e) {
-		e.preventDefault();
-		if (linkSent === true) {
-			dismiss_verification(false);
-			return;
-		}
-		setVerifying(true);
-		if (email !== currentUser.email) {
-			try {
-				await updateEmail(currentUser, email);
-			} catch (e) {
-				alert("Failed to update email: " + e);
-				setVerifying(false);
-				return;
-			}
-			console.log("email updated!");
-		}
-		try {
-			await sendEmailVerification(currentUser);
-			emailInput.current.disabled = true;
-		} catch (e) {
-			alert("Failed to send verification link: " + e);
-			setVerifying(false);
-			dismiss_verification(false);
-			return;
-		}
-		setLinkSent(true);
-	}
 	useEffect(() => {
 		if (transitioning) {
 			console.log("switcheroo!");
@@ -307,17 +262,6 @@ function Signup(props) {
 			setLogin(false);
 		}
 	}, [locked]);
-	const [skip, setSkip] = useState(false);
-	function skip_email(e) {
-		e.preventDefault();
-		setSkip(true);
-	}
-	useEffect(() => {
-		if (skip) {
-			dismiss_verification(false);
-			console.log("skip email");
-		}
-	}, [skip]);
 	useEffect(() => {
 		if (_showLogin && !focus) {
 			show();
@@ -339,6 +283,7 @@ function Signup(props) {
         */
 		if (!_showLogin) {
 			setTransition(false);
+			overlayBG.current.style.display = "none";
 		} else {
 			setFocus(true);
 			overlayBG.current.style.display = "block";
@@ -348,11 +293,9 @@ function Signup(props) {
 		if (focus) {
 			if (!transitioning) overlayBG.current.style.opacity = "0.7";
 		} else {
-			if (overlayBG.current.style.opacity !== "0")
-				overlayBG.current.style.opacity = "0";
-			else overlayBG.current.style.display = "none";
+			overlayBG.current.style.opacity = "0";
 		}
-	}, [focus, skip]);
+	}, [focus]);
 	function signup_redirect() {
 		setLogin(false);
 		setTimeout(() => document.getElementById("nameInput").focus(), 400);
@@ -494,46 +437,6 @@ function Signup(props) {
 						)}
 					</div>
 				</div>
-			</div>
-			<div
-				ref={emailWindow}
-				className="verifyWindow"
-				style={{ transform: "scale(0) translate(-50%, -50%)", zIndex: "-2" }}
-				onTransitionEnd={(e) => finish_transition(e)}
-			>
-				{linkSent === false ? (
-					<div>
-						<h1>Email Verification</h1>
-						<p>
-							This is required for password resets and uploading images to our
-							community.
-						</p>
-					</div>
-				) : (
-					<div>
-						<h1>✓ Email Sent</h1>
-						<p>A verification link has been tossed to your email.</p>
-					</div>
-				)}
-				<form onSubmit={(e) => handle_email(e)}>
-					<input
-						ref={emailInput}
-						type="email"
-						value={email}
-						placeholder="Email address"
-						onChange={(e) => setEmail(e.target.value)}
-					/>
-					<input
-						type="submit"
-						value={linkSent === false ? "Send Link" : "Dismiss"}
-					/>
-					<input
-						type="submit"
-						value={"Later"}
-						style={{ backgroundColor: "#747474" }}
-						onClick={(e) => skip_email(e)}
-					/>
-				</form>
 			</div>
 		</div>
 	);
