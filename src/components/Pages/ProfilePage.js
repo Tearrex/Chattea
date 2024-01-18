@@ -685,16 +685,16 @@ function ProfilePage(props) {
 					<>
 						<p className="privateAlert profile border">
 							{privateView ? (
-								<>
-									Only your buddies can see your private page.{" "}
-									<Link to="/#faq">Learn more.</Link>
-								</>
+								<>Only your buddies can see your private page.</>
 							) : (
-								<>
-									Anyone can see your public page.{" "}
-									<Link to="/#faq">Learn more.</Link>
-								</>
-							)}
+								<>Anyone can see your public page.</>
+							)}{" "}
+							<Link
+								to="/#faq"
+								onClick={() => localStorage.setItem("faq_jump", "#visibility")}
+							>
+								Learn more.
+							</Link>
 						</p>
 
 						<Submitter

@@ -11,7 +11,7 @@ export function open_module(e, faqId) {
 	if (button && button.nextSibling.getAttribute("open") != "true") {
 		button.click();
 	}
-	button.scrollIntoView({ behavior: "smooth" });
+	setTimeout(() => button.scrollIntoView({ behavior: "smooth" }), 600);
 }
 function FAQPage(props) {
 	const navigate = useNavigate();
@@ -28,6 +28,12 @@ function FAQPage(props) {
 		// document.getElementById("welcomer").style.display = "none";
 		if (window.location.href.includes("#faq")) {
 			document.querySelector("#faq").scrollIntoView({ behavior: "smooth" });
+			let jumpQuestion = localStorage.getItem("faq_jump");
+			if (jumpQuestion) {
+				console.log("jumping", jumpQuestion);
+				open_module(null, jumpQuestion);
+				localStorage.removeItem("faq_jump");
+			}
 		}
 		document.body.style.overflow = null;
 	}, []);
@@ -74,15 +80,31 @@ function FAQPage(props) {
 				</FAQuestion>
 				<FAQuestion
 					question="What are buddies?"
+					buttonId="buddies"
 					emote={<i className="fas fa-user-friends" />}
 				>
 					<p>
 						Buddies are your online friends. <br />
 						By adding someone on Chattea, you allow them to
 						<ul>
-							<li>View your private posts</li>
-							<li>Mention you in comments</li>
-							<li>Message you in secure chats</li>
+							<li>
+								View your{" "}
+								<Link to="#" onClick={() => open_module(null, "#visibility")}>
+									private posts
+								</Link>
+							</li>
+							<li>
+								<Link to="#" onClick={() => open_module(null, "#mentions")}>
+									Mention
+								</Link>{" "}
+								you in comments
+							</li>
+							<li>
+								Message you in{" "}
+								<Link to="#" onClick={() => open_module(null, "#chats")}>
+									secure chats
+								</Link>
+							</li>
 						</ul>
 						They still need to add you back before messaging each other.
 						<br />
@@ -208,55 +230,68 @@ function FAQPage(props) {
 				</h2>
 				<FAQuestion
 					question="Secure chats"
+					buttonId="chats"
 					emote={<i className="fas fa-comment"></i>}
 				>
 					<p>
-						You can now send direct messages to your buddies. These messages are{" "}
-						<span>end-to-end encrypted</span>, meaning only you and your message
-						recipient will be able to decipher the conversation going on between
-						you two.
+						You can now send direct messages to your{" "}
+						<Link to="#" onClick={() => open_module(null, "#buddies")}>
+							buddies
+						</Link>
+						. These messages are end-to-end encrypted, meaning only you and your
+						message recipient will be able to decipher the conversation going on
+						between you two.
 						<br />
 						<br />
-						Existing users must generate a <span>
-							cryptographic key pair
-						</span>{" "}
-						from their browser before engaging in secure chats. Your public key
-						will be uploaded to our cloud database so your buddies can send you
+						Existing users must generate a cryptographic key pair from their
+						browser before engaging in secure chats. Your public key will be
+						uploaded to our cloud database so your buddies can send you
 						encrypted messages. Public keys are intended to be shared for mutual
 						transactions. <br />
 						<u>We do not store your private key</u>. Your private key remains in
-						your browser's local storage for decrypting your buddies' messages.
+						your browser's local storage for decryption of incoming messages.
 						This, however, may pose an inconvenience when using multiple devices
 						for the same account since each will need to generate an independent
-						key-pair that will overwrite your existing public key and deem
+						key-pair which will overwrite your existing public key and deem
 						previous messages indecipherable.
 						<br /> <br />
-						The feature is <u>limited to text-only conversations</u>; You can
-						cease to receive further messages from buddies by removing them. You
-						also have the option of purging your message channels.
+						You can cease to receive further messages from buddies by removing
+						them. You also have the option of purging your message channels.
+						<br />
+						<br />
+						Secure chats is a <span className="beta">BETA</span> feature with
+						the following limitations:
+						<ul>
+							<li>Text-only realtime conversations</li>
+							<li>No read receipts</li>
+							<li>No typing indicators</li>
+							<li>No private key syncing</li>
+						</ul>
+						Logging out will delete your private key from your browser, losing
+						access to old messages. This is expected behavior of the security
+						constraints.
 					</p>
 				</FAQuestion>
 				<FAQuestion question="Profanity filter" emote="###">
 					<p>
-						<i className="fas fa-cog"></i> Upon opening Chattea's feed for the
-						first time, your browser will make a secure HTTP request to{" "}
+						Upon opening Chattea's feed for the first time, your browser will
+						fetch a blacklist of words from{" "}
 						<a href="https://github.com/Tearrex/Chattea" target="_blank">
 							our public code repository
 						</a>{" "}
-						for a list of blacklisted words and save it to local storage. <br />
+						and save it to local storage. <br />
 						<br />
-						Your browser will process user-generated text before displaying it
-						to you. This can be toggled later.
-						<br />
-						<br />
-						Please don't try circumventing this feature, keep provokative
-						language in private pages...
+						The blacklist is used to process user-generated text before
+						displaying it to you. This can be toggled later.
 					</p>
 				</FAQuestion>
-				<FAQuestion question="Mentioning users" emote="@">
+				<FAQuestion question="Mentioning users" emote="@" buttonId="mentions">
 					<p>
-						You can only mention your buddies. They will be notified only if
-						they have you added as well.
+						You can only mention your{" "}
+						<Link to="#" onClick={() => open_module(null, "#buddies")}>
+							buddies
+						</Link>
+						. They will be notified only if they have you added as well.
 					</p>
 				</FAQuestion>
 				<FAQuestion
@@ -267,19 +302,17 @@ function FAQPage(props) {
 					<p>
 						You must verify your email before posting images. <br />
 						<br />
-						Images over 1megabyte are subject to lossy <b>compression</b> prior
-						to uploading to our cloud. This process is done locally by your
-						browser.
+						Images over 1megabyte will be compressed prior to uploading. This
+						process is done locally by your browser.
 						<br />
 						<br />
-						We also offer an embedded browser tool for <b>cropping</b> images
-						into squares to provide the best viewing experience for all users.
-						We encourage you to use it, but here's what you must know:
+						We also offer an embedded browser tool for cropping images into
+						squares to provide the best viewing experience for all users.
 						<br />
 						<br />
 						<p style={{ textAlign: "center", width: "100%" }}>
 							<i class="fas fa-compress-alt"></i> Large images are still
-							compressed before cropping
+							compressed before cropping.
 							<br />
 							<i class="fas fa-cloud-upload-alt"></i> Cropping involves
 							intermediate upload of image for cloud processing.
@@ -297,10 +330,9 @@ function FAQPage(props) {
 						</a>
 						<br />
 						<br />
-						<i class="fas fa-shield-alt"></i> We protect your privacy by
-						stripping all metadata from the image before sending it back to you.
-						The binary data is also processed in memory instead of disk storage,
-						for optimal security.
+						We protect your privacy by stripping all metadata from the image
+						before posting. The binary data is also processed in memory instead
+						of disk storage, for optimal security.
 					</p>
 				</FAQuestion>
 				<FAQuestion
@@ -310,7 +342,8 @@ function FAQPage(props) {
 					<p>
 						Our website integrates with Spotify's Web API to show off previews
 						of your favorite songs on a post. Tracks that do not have a valid
-						preview URL cannot be played and will not be shown.
+						preview URL cannot be played and will not be shown in search
+						results.
 						<br />
 						<br />
 						<i className="fas fa-cog"></i> Your initial use will make a secure
@@ -332,10 +365,13 @@ function FAQPage(props) {
 					emote={<i className="fas fa-user-shield"></i>}
 				>
 					<p>
-						All user-generated content (<span>except secure chats</span>) is
-						subject to inspection or deletion at moderator discretion. We do our
-						best to keep our small community civil and we ask that you help us
-						achieve the same by not abusing this platform. <br />
+						All user-generated content (
+						<Link to="#" onClick={(e) => open_module(e, "#chats")}>
+							except secure chats
+						</Link>
+						) is subject to inspection or deletion at moderator discretion. We
+						do our best to keep our small community civil and we ask that you
+						help us achieve the same by not abusing this platform. <br />
 						<br />
 						Repeat offenders will be blocked permanently from further
 						interaction within Chattea.

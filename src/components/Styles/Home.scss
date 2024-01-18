@@ -28,6 +28,7 @@ footer {
 	background-color: #2b3137;
 	bottom: 0;
 	padding: 1rem;
+	scroll-margin-top: 80px; // compensate for navbar
 }
 .centered {
 	top: 50%;
@@ -140,6 +141,9 @@ footer {
 				opacity: 1;
 			}
 		}
+		button {
+			scroll-margin-top: 90px;
+		}
 		.expandable {
 			text-align: left;
 			// background-color: $mainEven;
@@ -165,6 +169,9 @@ footer {
 				a,
 				span {
 					color: $niceOrange;
+				}
+				span.beta {
+					color: #f00;
 				}
 			}
 		}

@@ -497,9 +497,13 @@ export default function MessagePage() {
 					Secure chats <small>BETA</small>
 				</h2>
 				<p style={{ color: "#fff", opacity: 0.7, margin: 0 }}>
-					Only you and your intended recipient can decipher messages sent to
-					each other over the Internet.{" "}
-					<Link to="/#discretions">Learn more.</Link>
+					Send encrypted messages to your buddies.{" "}
+					<Link
+						to="/#faq"
+						onClick={() => localStorage.setItem("faq_jump", "#chats")}
+					>
+						Learn more.
+					</Link>
 				</p>
 				{_user && (
 					<div id="chatscontainer">
@@ -595,22 +599,21 @@ export default function MessagePage() {
 										</button>
 									</div>
 								)}
-								{messages
-									.map((msg, i) => {
-										return (
-											<div
-												className="message"
-												key={i}
-												self={msg.author === _user.user_id ? "true" : "false"}
-											>
-												{!msg.encrypted ? (
-													msg.content
-												) : (
-													<i>[Encrypted message]</i>
-												)}
-											</div>
-										);
-									})}
+								{messages.map((msg, i) => {
+									return (
+										<div
+											className="message"
+											key={i}
+											self={msg.author === _user.user_id ? "true" : "false"}
+										>
+											{!msg.encrypted ? (
+												msg.content
+											) : (
+												<i>[Encrypted message]</i>
+											)}
+										</div>
+									);
+								})}
 							</div>
 							{user_id &&
 								privateKey &&
