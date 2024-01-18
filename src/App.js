@@ -178,6 +178,7 @@ function App() {
 							<Signup />
 							<Routes>
 								<Route path="/" element={<SplashPage />} />
+								<Route path="/recover/:email" element={<SplashPage recovery/>} />
 								{/* make a whole page component for the main feed */}
 								<Route path="/main" element={<Home />} />
 								<Route path="/private" element={<Home privateView={true} />} />

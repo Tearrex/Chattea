@@ -15,7 +15,7 @@ function TeaBar ()
     const {_users, _setUsers} = useContext(MembersContext);
     const currentUser = useAuth();
 
-    const _col = collection(_dbRef, 'users/'+(_user !== undefined ? _user["user_id"] : "n")+"/notifications");
+    const _col = collection(_dbRef, 'users/'+(_user ? _user["user_id"] : "n")+"/notifications");
     const _query = query(_col, orderBy('date','desc'));
     const [notifs] = useCollectionData(_query, {idField: 'id'});
     const [notifCount, setNotifCount] = useState(0);
@@ -30,7 +30,7 @@ function TeaBar ()
             var _toCache = {};
             for (let i = 0; i < cache.length; i++)
             {
-                if(_users[cache[i]] === undefined && cache[i] !== _user.user_id)
+                if(_users[cache[i]] === undefined && (!_user || cache[i] !== _user.user_id))
                 {
                     if (_toCache[cache[i]] !== undefined) continue;
                     const userRef = doc(_dbRef, "users", cache[i]);

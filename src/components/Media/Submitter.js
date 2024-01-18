@@ -813,7 +813,7 @@ function Submitter(props) {
 				!currentUser.emailVerified && (
 					<h4 className="verify complete">
 						<i className="fas fa-check" /> Link sent, check your spam for{" "}
-						<span>no-reply@chattea.app</span>
+						<span>support@chattea.app</span>
 					</h4>
 				)
 			)}

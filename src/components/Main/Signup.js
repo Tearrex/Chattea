@@ -14,7 +14,6 @@ import { is_email } from "../Pages/SplashPage";
 function Signup(props) {
 	const navigate = useNavigate();
 	const currentUser = useAuth();
-	const [message, setMessage] = useState("Welcome back!");
 	const [error, setError] = useState(null);
 	const { _showLogin, setLogin } = useContext(showLogin);
 	const { _user, _setUser } = useContext(UserContext);
@@ -27,7 +26,6 @@ function Signup(props) {
 	function closePopup() {
 		if (!focus && showLogin) return;
 		setResetPassword(false);
-		setMessage("Welcome back!");
 		overlayBG.current.style.opacity = "0";
 		if (_user === undefined) {
 			saucerRef.current.style.transform = "translate(-50%, -50%) scale(0)";
@@ -80,6 +78,15 @@ function Signup(props) {
 	// _user has to be defined first
 	const [shouldLoad, setShouldLoad] = useState(false);
 	const pictureNest = useRef();
+
+	useEffect(() => {
+		let recovery_email = localStorage.getItem("recovery_email");
+		if (recovery_email && showLogin) {
+			localStorage.removeItem("recovery_email");
+			setResetPassword(true);
+			setTimeout(() => setEmail(String(recovery_email).toLowerCase()), 500);
+		}
+	}, [_showLogin]);
 
 	/*
     When the user logs in succesfully, create an image element with their picture
@@ -188,7 +195,6 @@ function Signup(props) {
 			failed = true;
 		}
 		if (!failed) {
-			setMessage("Welcome back!");
 			setShouldLoad(true); // load the user's profile pic
 		}
 		setLoading(false);
@@ -308,7 +314,6 @@ function Signup(props) {
 		}
 	}, [linkSent, acknowledged]);
 	function reset_pass() {
-		setMessage("Account Recovery");
 		setResetPassword(true);
 		document.querySelector("#loginEmail").focus();
 	}
@@ -322,8 +327,10 @@ function Signup(props) {
 						focus &&
 						document.body.style.overflow === "hidden" &&
 						!transitioning
-					)
+					) {
 						setLogin(false);
+						setLinkSent(false);
+					}
 				}}
 				style={{ display: "none", opacity: "0", zIndex: "5" }}
 				onTransitionEnd={(e) => dismiss_overlay(e)}
@@ -339,7 +346,9 @@ function Signup(props) {
 				<div ref={popupRef} className="popup flashForm">
 					<div style={{ position: "relative" }} className="banner">
 						<h2>
-							<span>{message}</span>
+							<span>
+								{!resetPassword ? "Welcome back!" : "Account Recovery"}
+							</span>
 						</h2>
 						<div
 							className="teamatrix"
@@ -363,7 +372,8 @@ function Signup(props) {
 										<i class="fas fa-envelope"></i> Link Sent
 									</h2>
 									<p>Please check your spam folder for</p>
-									<small>no-reply@chattea.app</small>
+									<br />
+									<small>support@chattea.app</small>
 								</div>
 							)}
 							<input

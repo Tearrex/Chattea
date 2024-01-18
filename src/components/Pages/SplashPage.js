@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useContext } from "react";
 import { sendEmailVerification } from "@firebase/auth";
 import { signup } from "../Main/firebase";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { UserContext, showLogin } from "../Main/Contexts";
 import GithubButton from "../GithubButton";
 import FAQPage, { open_module } from "./FAQ/FAQPage";
@@ -12,11 +12,12 @@ export function is_email(text) {
 		else return false;
 	} else return false;
 }
-function SplashPage() {
+function SplashPage(props) {
 	const [loading, setLoading] = useState(true);
 	const { _user, _setUser } = useContext(UserContext);
 	const navigate = useNavigate();
 	const expandForm = useRef();
+	const { email } = useParams();
 	const { _showLogin, setLogin } = useContext(showLogin);
 	const nameField = useRef();
 	const [nameInput, setName] = useState("");
@@ -39,6 +40,12 @@ function SplashPage() {
 	function swap_border(_ref, newClass) {
 		_ref.current.classList = [newClass];
 	}
+	useEffect(() => {
+		if (props.recovery && email && !_user) {
+			localStorage.setItem("recovery_email", email);
+			setLogin(true);
+		}
+	}, [_user]);
 	useEffect(() => {
 		if (nameInput && nameInput.length >= 3) swap_border(nameField, null);
 	}, [nameInput]);
