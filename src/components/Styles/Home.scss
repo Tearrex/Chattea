@@ -219,6 +219,23 @@ body {
 		margin-left: 10px;
 	}
 }
+@keyframes hot {
+	0% {
+		color: #fff;
+	}
+	30% {
+		color: $niceOrange;
+	}
+	70% {
+		color: $niceOrange;
+	}
+	100% {
+		color: #fff;
+	}
+}
+.hoticon {
+	animation: hot 1s linear infinite;
+}
 .welcome {
 	flex-shrink: 0;
 	margin-right: 10px;
@@ -240,20 +257,6 @@ body {
 		outline: none;
 		aspect-ratio: 1/1;
 		height: 100%;
-	}
-	@keyframes hot {
-		0% {
-			color: #fff;
-		}
-		30% {
-			color: $niceOrange;
-		}
-		70% {
-			color: $niceOrange;
-		}
-		100% {
-			color: #fff;
-		}
 	}
 	button[attention="true"] > i {
 		animation: hot 1s linear infinite;
@@ -1784,7 +1787,8 @@ p {
 		color: $richSmile;
 	}
 	.featureStar a,
-	.private a {
+	.private a,
+	span {
 		color: $niceOrange;
 	}
 	button {

@@ -84,8 +84,8 @@ function FAQPage(props) {
 					emote={<i className="fas fa-user-friends" />}
 				>
 					<p>
-						Buddies are your online friends. <br />
-						By adding someone on Chattea, you allow them to
+						Buddies are your online friends. By adding someone on Chattea, you
+						allow them to
 						<ul>
 							<li>
 								View your{" "}
@@ -106,7 +106,7 @@ function FAQPage(props) {
 								</Link>
 							</li>
 						</ul>
-						They still need to add you back before messaging each other.
+						Note: Buddies must add you back before messaging each other.
 						<br />
 						<br />
 						Removing a buddy will instantly revoke their access to these
@@ -229,6 +229,21 @@ function FAQPage(props) {
 					<i class="fas fa-info-circle"></i> App Discretions
 				</h2>
 				<FAQuestion
+					question="Notifications"
+					emote={<i className="fas fa-bell" />}
+				>
+					<p>
+						We have the following icons flash on the navigation bar to display
+						realtime notifications:
+						<br />
+						<br />
+						<i className="fas fa-bell hoticon" /> New comments, mentions, or
+						buddies
+						<br />
+						<i className="fas fa-comment hoticon" /> New chat message
+					</p>
+				</FAQuestion>
+				<FAQuestion
 					question="Secure chats"
 					buttonId="chats"
 					emote={<i className="fas fa-comment"></i>}
@@ -321,13 +336,6 @@ function FAQPage(props) {
 						<br />
 						Unlike compression, your image is cropped by an automated HTTP
 						server for a cost-effective computing approach.{" "}
-						<a
-							href="https://github.com/Tearrex/Chattea/blob/main/serverless/functions/index.js"
-							target="_blank"
-							rel="noreferrer"
-						>
-							See the code for this feature.
-						</a>
 						<br />
 						<br />
 						We protect your privacy by stripping all metadata from the image
@@ -346,17 +354,9 @@ function FAQPage(props) {
 						results.
 						<br />
 						<br />
-						<i className="fas fa-cog"></i> Your initial use will make a secure
-						HTTP request to an intermediate cloud API for a temporary access
-						token for search results. This creates a seamless experience for you
-						by not prompting for log in through Spotify.{" "}
-						<a
-							href="https://github.com/Tearrex/Chattea/blob/main/serverless/functions/index.js"
-							target="_blank"
-							rel="noreferrer"
-						>
-							See the code for this feature.
-						</a>
+						This tool will make a secure HTTP request to our intermediate cloud
+						API for a temporary access token, creating a seamless experience for
+						you by not prompting for Spotify credentials.
 					</p>
 				</FAQuestion>
 				<FAQuestion
@@ -365,16 +365,18 @@ function FAQPage(props) {
 					emote={<i className="fas fa-user-shield"></i>}
 				>
 					<p>
-						All user-generated content (
+						All user-generated content (except{" "}
 						<Link to="#" onClick={(e) => open_module(e, "#chats")}>
-							except secure chats
+							secure chats
 						</Link>
 						) is subject to inspection or deletion at moderator discretion. We
-						do our best to keep our small community civil and we ask that you
-						help us achieve the same by not abusing this platform. <br />
+						ask that you help us keep our community civil by not abusing this
+						platform. <br />
 						<br />
-						Repeat offenders will be blocked permanently from further
-						interaction within Chattea.
+						Moderators can send chat messages to users without having to add
+						them. These messages are sent in plaintext for auditing purposes and
+						are used to warn troublesome members before resorting to
+						adminstrative actions, including bans or loss of privileges.
 					</p>
 				</FAQuestion>
 			</div>
