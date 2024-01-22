@@ -218,31 +218,28 @@ function MediaActions(props) {
 									Report Post
 								</button>
 							)}
-							{_user &&
-								_user.role === "admin" &&
-								focusPost[1].private != true && (
-									<button className="feature">
-										<i className="fas fa-star" /> Feature Post
-									</button>
-								)}
 							{_user && _user.user_id === focusPost[1].user_id && (
 								<button>
 									<i class="fas fa-thumbtack"></i> Pin post
 								</button>
 							)}
+							{_user && _users[focusPost[1].user_id] && (
+								<button
+									onClick={() => navigate("/chats/" + focusPost[1].user_id)}
+								>
+									Message <span>@{_users[focusPost[1].user_id].username}</span>
+								</button>
+							)}
 							{_user && focusPost[1].user_id !== _user.user_id && (
 								<button onClick={buddify}>
-									{!_user.buddies.includes(focusPost[1].user_id) ? (
-										<>
-											<i class="fas fa-user-plus"></i> Add
-										</>
-									) : (
-										<>
-											<i class="fas fa-user-minus"></i> Remove
-										</>
-									)}{" "}
-									{_users[focusPost[1].user_id] &&
-										_users[focusPost[1].user_id].username}
+									{!_user.buddies.includes(focusPost[1].user_id)
+										? "Add"
+										: "Remove"}{" "}
+									<span>
+										@
+										{_users[focusPost[1].user_id] &&
+											_users[focusPost[1].user_id].username}
+									</span>
 								</button>
 							)}
 							<button
