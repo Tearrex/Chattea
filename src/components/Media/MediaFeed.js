@@ -171,7 +171,7 @@ function MediaFeed(props) {
 			startFresh = true;
 		} else if (
 			(props.private && (!oldDoc || !oldDoc.data()["private"])) ||
-			(!props.private && (!oldDoc || oldDoc.data()["private"] === "true"))
+			(!props.private && (!oldDoc || oldDoc.data()["private"] === true))
 		) {
 			startFresh = true;
 			console.log("fresh batch now!");
@@ -187,6 +187,7 @@ function MediaFeed(props) {
 				_query = query(
 					postsRef,
 					where("user_id", "==", props.focus),
+					orderBy("date", "desc"),
 					limit(_limit)
 				);
 		} else {
@@ -202,6 +203,7 @@ function MediaFeed(props) {
 				_query = query(
 					postsRef,
 					where("user_id", "==", props.focus),
+					orderBy("date", "desc"),
 					startAfter(oldDoc),
 					limit(_limit)
 				);
