@@ -127,6 +127,16 @@ button.crypto.alt {
 	gap: 5px;
 	overflow-y: scroll;
 	flex-direction: column-reverse;
+	.timetravel {
+		width: 100%;
+		padding: 0.5rem;
+		margin-bottom: 10px;
+		background: none;
+		color: $niceOrange;
+		&:hover {
+			color: #fff;
+		}
+	}
 	.message {
 		padding: 5px 10px;
 		background-color: $alttext;

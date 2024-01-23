@@ -68,7 +68,9 @@ export default function MessagePage() {
 	// lazy-load cache for referencing message channel ID's of each buddy for the current user
 	const [chatChannels, setChatChannels] = useState({}); // { [buddy_id]: {channel_id, activity_date} }
 
-	const [latestMsgTimestamp, setLatestMsgTimestamp] = useState(null);
+	const [oldestMsgTimestamp, setOldestMsgTimestamp] = useState(null); // for scrolling back
+	const [latestMsgTimestamp, setLatestMsgTimestamp] = useState(null); // for scrolling forward
+
 	const channelsUpdateQuery = query(
 		collection(_dbRef, "messages"),
 		where("users", "array-contains", _user ? _user.user_id : "null")
@@ -102,7 +104,12 @@ export default function MessagePage() {
 
 				// if the open channel matches this updated document, save read receipt timestamp
 				if (buddy_id === user_id) {
-					if (latestMsgTimestamp) fetch_new_messages();
+					if (
+						latestMsgTimestamp &&
+						latestMsgTimestamp.seconds <
+							_chatChannels[buddy_id].activity_date.seconds
+					)
+						fetch_new_messages();
 					setChannelReads({
 						...channelReads,
 						[_updatedDoc.id]: new Date(
@@ -126,6 +133,32 @@ export default function MessagePage() {
 			setChatChannels(_chatChannels);
 		}
 	}, [channelUpdates]);
+	async function fetch_old_messages() {
+		if (!oldestMsgTimestamp) return;
+		const _query = query(
+			collection(
+				_dbRef,
+				"messages/" + chatChannels[user_id].channel_id + "/safechats"
+			),
+			where("date", "<", oldestMsgTimestamp),
+			limit(5),
+			orderBy("date", "desc")
+		);
+		const _oldChats = await getDocs(_query);
+		if (_oldChats.empty) return setOldestMsgTimestamp(null);
+		let _chats = [...messages];
+		for (let i = 0; i < _oldChats.docs.length; i++) {
+			const _chat = _oldChats.docs[i].data();
+			_chats.push(await decrypt_message(_chat));
+			if (i == _oldChats.docs.length - 1)
+				setOldestMsgTimestamp(_oldChats.docs.length >= 5 ? _chat.date : null);
+		}
+		console.log(
+			"old messages",
+			_oldChats.docs.map((a) => a.data())
+		);
+		setMessages(_chats);
+	}
 	async function fetch_new_messages() {
 		if (!latestMsgTimestamp) return;
 		const _query = query(
@@ -142,7 +175,9 @@ export default function MessagePage() {
 		for (let i = 0; i < _newChats.docs.length; i++) {
 			const _chat = _newChats.docs[i].data();
 			_chats.unshift(await decrypt_message(_chat));
-			if (i == _newChats.docs.length - 1) setLatestMsgTimestamp(_chat.date);
+			if (i == 0 && messages.length == 0) setOldestMsgTimestamp(_chat.date);
+			else if (i == _newChats.docs.length - 1)
+				setLatestMsgTimestamp(_chat.date);
 		}
 		console.log(
 			"new messages",
@@ -187,7 +222,7 @@ export default function MessagePage() {
 			setBuddyList(result);
 			console.log("result", result);
 		}
-	}, [_user, user_id, privateKey]);
+	}, [_user]);
 	useEffect(async () => {
 		if (!user_id || !chatChannels[user_id]) setMessages([]);
 		// only fetch channel messages when user's private key and channel id is ready
@@ -196,7 +231,8 @@ export default function MessagePage() {
 			user_id &&
 			privateKey &&
 			chatChannels[user_id] &&
-			messages.length == 0
+			messages.length == 0 &&
+			!latestMsgTimestamp
 		) {
 			// fetch message history (if any) of selected channel (if any)
 			const _chatsRef = collection(
@@ -226,6 +262,7 @@ export default function MessagePage() {
 					chats_data.push(msg);
 					if (i == chats.docs.length - 1) {
 						setMessages(chats_data);
+						setOldestMsgTimestamp(msg.date);
 						setLatestMsgTimestamp(chatChannels[user_id].activity_date);
 						setChannelReads({
 							...channelReads,
@@ -505,6 +542,14 @@ export default function MessagePage() {
 						Learn more.
 					</Link>
 				</p>
+				<p style={{ color: "#fff", opacity: 0.7, margin: 0 }}>
+					old{" "}
+					{oldestMsgTimestamp &&
+						new Date(oldestMsgTimestamp.seconds * 1000).toLocaleString()}
+					new{" "}
+					{latestMsgTimestamp &&
+						new Date(latestMsgTimestamp.seconds * 1000).toLocaleString()}
+				</p>
 				{_user && (
 					<div id="chatscontainer">
 						<div className="buddies">
@@ -559,8 +604,10 @@ export default function MessagePage() {
 							<button className="add" onClick={() => setNudging(true)}>
 								{_user &&
 									Array.from(_user.buddies).length > 0 &&
-									Object.entries(chatChannels).length === 0 &&
-									!user_id && <span className="hint">Buddy list</span>}
+									(Object.entries(chatChannels).length === 0 ||
+										(user_id && !buddyList[user_id])) && (
+										<span className="hint">Buddy list</span>
+									)}
 								<i className="fas fa-plus" />
 							</button>
 						</div>
@@ -614,6 +661,12 @@ export default function MessagePage() {
 										</div>
 									);
 								})}
+								{oldestMsgTimestamp && (
+									<button className="timetravel" onClick={fetch_old_messages}>
+										<i className="fas fa-cloud-download-alt"></i> Load older
+										messages
+									</button>
+								)}
 							</div>
 							{user_id &&
 								privateKey &&
@@ -622,8 +675,8 @@ export default function MessagePage() {
 									<form className="textfield" onSubmit={send_msg}>
 										<input
 											type="text"
-											placeholder={`Chat with ${
-												_users[user_id] ? _users[user_id].username : "a user..."
+											placeholder={`💬 Chat with @${
+												_users[user_id] ? _users[user_id].username : "null"
 											}`}
 											value={text}
 											onChange={(e) => setText(e.target.value)}
@@ -639,7 +692,7 @@ export default function MessagePage() {
 				<div className="chatOptions">
 					{privatePEM && (
 						<button className="crypto alt" onClick={regen_keys}>
-							<i className="fas fa-sync" /> Regenerate Keys
+							<i className="fas fa-key" /> Regenerate Keys
 						</button>
 					)}
 					{messages.length > 0 ? (
