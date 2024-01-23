@@ -263,8 +263,8 @@ function FAQPage(props) {
 						uploaded to our cloud database so your buddies can send you
 						encrypted messages. Public keys are intended to be shared for mutual
 						transactions. <br />
-						<u>We do not store your private key</u>. Your private key remains in
-						your browser's local storage for decryption of incoming messages.
+						<u>We do not save your private key</u>. Your private key remains in
+						your browser's local storage for decryption of incoming message ciphertext.
 						This, however, may pose an inconvenience when using multiple devices
 						for the same account since each will need to generate an independent
 						key-pair which will overwrite your existing public key and deem
@@ -282,7 +282,7 @@ function FAQPage(props) {
 							<li>No typing indicators</li>
 							<li>No private key syncing</li>
 						</ul>
-						Logging out will delete your private key from your browser, losing
+						Note: Logging out will delete your private key from your browser, losing
 						access to old messages. This is expected behavior of the security
 						constraints.
 					</p>
