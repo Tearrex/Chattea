@@ -240,7 +240,12 @@ function Signup(props) {
 	}, [currentUser]);
 	function dismiss_verification() {
 		let redirect = localStorage.getItem("redirect");
-		navigate(redirect || "/main");
+		if (!redirect) {
+			if (_user.pfp === "/default_user.png") redirect = "/u/" + _user.user_id;
+			else if (Array.from(_user.buddies).length > 0) redirect = "/private";
+			else redirect = "/main";
+		}
+		navigate(redirect);
 		localStorage.removeItem("redirect");
 		setTimeout(() => {
 			overlayBG.current.style.opacity = "0";
