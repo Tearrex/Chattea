@@ -7,6 +7,7 @@ My own social media website, offering:
 - ☁️ Serverless functions
 
 Visit the live version https://chattea.app/
+[![Netlify Status](https://api.netlify.com/api/v1/badges/ff431b82-f1fd-4551-b55d-e9db14f3a3a4/deploy-status)](https://app.netlify.com/sites/chattea/deploys)
 
 ### Frontend
 During COVID, I fancied learning a new frontend framework with my underlying knowledge of vanilla JavaScript from previous programming endeavors. Growing up, I was irresponsibly given a Facebook account— So I figured React would be a great candidate for exploring the rabbit hole! I was drawn to the idea of showing off the finished product to friends and it has kept me engaged throughout this learning curve—the satisfaction of solving headaches beats the sorrow of being stuck!
