@@ -15,6 +15,21 @@ During COVID, I fancied learning a new frontend framework with my underlying kno
 ### Backend
 With Firebase as the backend, I faced limitations that I had to work around—like how Firestore databases are queried differently from typical SQL. Being the first cloud service I used in my projects, the billing showed me how crucial it is to optimize bandwidth usage and general app performance. I consequently learned about the concept of data caching and applied it here by locally storing profile data fetched from Firebase in the browser for a set amount of time. This was especially handy considering I would later allow clients to browse the app through "guest mode" without having to log in. For the most part this performance measure has kept my billable metrics within the free tier, atleast during my testing phases.
 
+#### Spotify Web API token function
+![search_token](https://github.com/Tearrex/Chattea/assets/26557969/c3139e4b-61a4-48ef-bd63-86aaba53a7a2)
+![spot_func](https://github.com/Tearrex/Chattea/assets/26557969/f7f9af41-8b6a-4c21-81a4-7fa9c03ebc0b)
+
+In order for users to search for Spotify songs through Chattea, they must first get a temporary access token for the API. This is done by sending an HTTP GET request to a cloud function that holds secret client credentials to my Spotify app and retrieves a new token through an intermittent API request that the client does not see. The client browser simply waits for the cloud function to respond with the token that it will save to local storage for subsequent search queries.
+#### Spotify Web API search function
+![search_func](https://github.com/Tearrex/Chattea/assets/26557969/df0432b1-afd8-4f8d-90e2-18344768ef83)
+
+After retrieving and storing a temporary access token, the client can query the Spotify Web API directly for search results. The access token is added to the request headers with each API request.
+
+![search_action](https://github.com/Tearrex/Chattea/assets/26557969/cd5284b9-2ae4-4ec5-809e-954aaf0e75c7)
+
+#### Image cropping function
+![image_func](https://github.com/Tearrex/Chattea/assets/26557969/fcc28a48-3f43-4b8f-add6-ddf4a627378a)
+
 ### Firestore Database Schema
 Below is a comprehensive list of all the collections and subcollections that save user data for the app
 
