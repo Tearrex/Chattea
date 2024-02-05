@@ -264,11 +264,11 @@ function FAQPage(props) {
 						encrypted messages. Public keys are intended to be shared for mutual
 						transactions. <br />
 						<u>We do not save your private key</u>. Your private key remains in
-						your browser's local storage for decryption of incoming message ciphertext.
-						This, however, may pose an inconvenience when using multiple devices
-						for the same account since each will need to generate an independent
-						key-pair which will overwrite your existing public key and deem
-						previous messages indecipherable.
+						your browser's local storage for decryption of incoming message
+						ciphertext. This, however, may pose an inconvenience when using
+						multiple devices for the same account since each will need to
+						generate an independent key-pair which will overwrite your existing
+						public key and deem previous messages indecipherable.
 						<br /> <br />
 						You can cease to receive further messages from buddies by removing
 						them. You also have the option of purging your message channels.
@@ -282,9 +282,9 @@ function FAQPage(props) {
 							<li>No typing indicators</li>
 							<li>No private key syncing</li>
 						</ul>
-						Note: Logging out will delete your private key from your browser, losing
-						access to old messages. This is expected behavior of the security
-						constraints.
+						Note: Logging out will delete your private key from your browser,
+						losing access to old messages. This is expected behavior of the
+						security constraints.
 					</p>
 				</FAQuestion>
 				<FAQuestion question="Profanity filter" emote="###">
@@ -334,9 +334,11 @@ function FAQPage(props) {
 						</p>
 						<br />
 						<br />
-						Unlike compression, your image is cropped by an automated HTTP
-						server for a cost-effective computing approach.{" "}
+						<img src="https://github.com/Tearrex/Chattea/assets/26557969/fcc28a48-3f43-4b8f-add6-ddf4a627378a" />
 						<br />
+						<br />
+						Unlike compression, your image is cropped by an automated HTTP
+						server for a cost-effective computing approach. <br />
 						<br />
 						We protect your privacy by stripping all metadata from the image
 						before posting. The binary data is also processed in memory instead
@@ -354,9 +356,15 @@ function FAQPage(props) {
 						results.
 						<br />
 						<br />
+						<img src="https://private-user-images.githubusercontent.com/26557969/302143082-df0432b1-afd8-4f8d-90e2-18344768ef83.jpg?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MDcwOTY0ODEsIm5iZiI6MTcwNzA5NjE4MSwicGF0aCI6Ii8yNjU1Nzk2OS8zMDIxNDMwODItZGYwNDMyYjEtYWZkOC00ZjhkLTkwZTItMTgzNDQ3NjhlZjgzLmpwZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDAyMDUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwMjA1VDAxMjMwMVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWUyYjRlMmI2YWJlMjFkYTZiZDJlMGM1NmQ4ODQ4NmEyNzM0Mjk3ZmVjZTg1NzA5MjMxYzFkOWM4MDMyYjQ5ODYmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0._FHntvEfnu_nUkH6joz2gV6DdS_P9t7GSBswKDlUieg" />
+						<br />
+						<br />
 						This tool will make a secure HTTP request to our intermediate cloud
 						API for a temporary access token, creating a seamless experience for
 						you by not prompting for Spotify credentials.
+						<br />
+						<br />
+						<img src="https://private-user-images.githubusercontent.com/26557969/302141015-f7f9af41-8b6a-4c21-81a4-7fa9c03ebc0b.jpg?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MDcwOTYyNTMsIm5iZiI6MTcwNzA5NTk1MywicGF0aCI6Ii8yNjU1Nzk2OS8zMDIxNDEwMTUtZjdmOWFmNDEtOGI2YS00YzIxLTgxYTQtN2ZhOWMwM2ViYzBiLmpwZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDAyMDUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwMjA1VDAxMTkxM1omWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTdjYmM2YTJkMmFmYTcxZWI0NjZjZjQ2ODc2YmUyNmZhZjAwMGI4MWE3NTdjNzg4NTg5MDk3ZjlkMDYyNDY2YzAmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.5B6BZ_w7CJ5aeojnBKQR7ENlO6Q-W4PwF7raFmsV0x4" />
 					</p>
 				</FAQuestion>
 				<FAQuestion
