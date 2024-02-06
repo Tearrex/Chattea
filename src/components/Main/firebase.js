@@ -5,12 +5,12 @@ import { getStorage } from "firebase/storage";
 import { getFirestore, addDoc, collection, setDoc, doc } from 'firebase/firestore';
 import { useNavigate } from "react-router";
 const firebaseConfig = {
-    apiKey: "AIzaSyCYecan39TTLGkW4xuk4ez616Fttt3SBuo",
-    authDomain: "reactback-1cf7d.firebaseapp.com",
-    projectId: "reactback-1cf7d",
-    storageBucket: "reactback-1cf7d.appspot.com",
-    messagingSenderId: "1045035508556",
-    appId: "1:1045035508556:web:a48803d2a89433996c65e9"
+	apiKey: process.env.REACT_APP_API_KEY,
+	authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+	projectId: process.env.REACT_APP_PROJECT_ID,
+	storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+	messagingSenderId: process.env.REACT_APP_MSG_SENDER_ID,
+	appId: process.env.REACT_APP_APP_ID,
 };
 const app = initializeApp(firebaseConfig);
 export const _storageRef = getStorage(app);

@@ -11,6 +11,7 @@ services:
       - react-net
     volumes:
       - ./src:/usr/app/src
+      - .env:/usr/app/.env
 networks:
   react-net:
     driver: bridge
