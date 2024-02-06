@@ -16,18 +16,21 @@ During COVID, I fancied learning a new frontend framework with my underlying kno
 With Firebase as the backend, I faced limitations that I had to work around—like how Firestore databases are queried differently from typical SQL. Being the first cloud service I used in my projects, the billing showed me how crucial it is to optimize bandwidth usage and general app performance. I consequently learned about the concept of data caching and applied it here by locally storing profile data fetched from Firebase in the browser for a set amount of time. This was especially handy considering I would later allow clients to browse the app through "guest mode" without having to log in. For the most part this performance measure has kept my billable metrics within the free tier, atleast during my testing phases.
 
 #### Spotify Web API token function
-![search_token](https://github.com/Tearrex/Chattea/assets/26557969/c3139e4b-61a4-48ef-bd63-86aaba53a7a2)
 ![spot_func](https://github.com/Tearrex/Chattea/assets/26557969/f7f9af41-8b6a-4c21-81a4-7fa9c03ebc0b)
 
-In order for users to search for Spotify songs through Chattea, they must first get a temporary access token for the API. This is done by sending an HTTP GET request to a cloud function that holds secret client credentials to my Spotify app and retrieves a new token through an intermittent API request that the client does not see. The client browser simply waits for the cloud function to respond with the token that it will save to local storage for subsequent search queries.
+In order for users to search for Spotify songs through Chattea, they must first get a temporary access token for the API. This is done by sending an HTTP GET request to a cloud function that holds secret client credentials to my Spotify app and retrieves a new token through an intermediate API request that the client does not see. The client will wait for the cloud function to respond with the token and save it to local storage for search queries.
 #### Spotify Web API search function
+![songsearch2](https://github.com/Tearrex/Chattea/assets/26557969/c6537703-6018-4e34-b1a7-411067206e01)
+
+After retrieving and storing a temporary access token, the client can query the Spotify Web API directly for search results. The access token is attached to the request headers with each API request.
+
 ![search_func](https://github.com/Tearrex/Chattea/assets/26557969/df0432b1-afd8-4f8d-90e2-18344768ef83)
 
-After retrieving and storing a temporary access token, the client can query the Spotify Web API directly for search results. The access token is added to the request headers with each API request.
-
-![search_action](https://github.com/Tearrex/Chattea/assets/26557969/cd5284b9-2ae4-4ec5-809e-954aaf0e75c7)
-
 #### Image cropping function
+![imgcroptest](https://github.com/Tearrex/Chattea/assets/26557969/c1be3999-dab0-404a-93e5-f829a42c45c9)
+
+The crop tool works by having the user select the desired crop region for the image. After confirming the action, the image will first be compressed on the frontend as necessary before sending the binary data to a cloud function. The crop region is fixed to a 1:1 aspect ratio relative to the shortest dimension of the image. The cloud function reads and writes the image to RAM so the result is never truly "saved" to disk storage until the user decides to submit their post.
+
 ![image_func](https://github.com/Tearrex/Chattea/assets/26557969/fcc28a48-3f43-4b8f-add6-ddf4a627378a)
 
 ### Firestore Database Schema
