@@ -9,31 +9,31 @@ My own social media website, offering:
 Visit the live version https://chattea.app/
 [![Netlify Status](https://api.netlify.com/api/v1/badges/ff431b82-f1fd-4551-b55d-e9db14f3a3a4/deploy-status)](https://app.netlify.com/sites/chattea/deploys)
 
-### Frontend
-During COVID, I fancied learning a new frontend framework with my underlying knowledge of vanilla JavaScript from previous programming endeavors. Growing up, I was irresponsibly given a Facebook account— So I figured React would be a great candidate for exploring the rabbit hole! I was drawn to the idea of showing off the finished product to friends and it has kept me engaged throughout this learning curve—the satisfaction of solving headaches beats the sorrow of being stuck!
+## Frontend
+During COVID, I fancied learning a new frontend framework with my underlying knowledge of vanilla JavaScript from previous programming endeavors. Growing up, I was irresponsibly given a Facebook account—So I figured React would be a great candidate for exploring the rabbit hole! I was drawn to the idea of showing off the finished product to friends and it has kept me engaged throughout this learning curve—the satisfaction of solving headaches beats the sorrow of being stuck!
 
-### Backend
-With Firebase as the backend, I faced limitations that I had to work around—like how Firestore databases are queried differently from typical SQL. Being the first cloud service I used in my projects, the billing showed me how crucial it is to optimize bandwidth usage and general app performance. I consequently learned about the concept of data caching and applied it here by locally storing profile data fetched from Firebase in the browser for a set amount of time. This was especially handy considering I would later allow clients to browse the app through "guest mode" without having to log in. For the most part this performance measure has kept my billable metrics within the free tier, atleast during my testing phases.
+## Backend
+With Firebase as the backend, I faced limitations that I had to work around—like how Firestore databases are queried differently from typical SQL. Being the first cloud service I used in my projects, the billing showed me how crucial it is to optimize bandwidth usage and general app performance. I consequently learned about the concept of data caching and applied it here by locally storing profile data fetched from Firebase in the browser for a set amount of time.
 
 #### Spotify Web API token function
 ![spot_func](https://github.com/Tearrex/Chattea/assets/26557969/f7f9af41-8b6a-4c21-81a4-7fa9c03ebc0b)
 
-In order for users to search for Spotify songs through Chattea, they must first get a temporary access token for the API. This is done by sending an HTTP GET request to a cloud function that holds secret client credentials to my Spotify app and retrieves a new token through an intermediate API request that the client does not see. The client will wait for the cloud function to respond with the token and save it to local storage for search queries.
+In order for users to lookup Spotify songs through Chattea, they must first fetch a temporary access token for the API. This is done by sending an HTTP request to a cloud function that holds secret client credentials for my Spotify app and retrieves a new token through an intermediate API request. The client will wait for the cloud function to respond with a token and save it to local storage for search queries.
 #### Spotify Web API search function
 ![songsearch2](https://github.com/Tearrex/Chattea/assets/26557969/c6537703-6018-4e34-b1a7-411067206e01)
 
-After retrieving and storing a temporary access token, the client can query the Spotify Web API directly for search results. The access token is attached to the request headers with each API request.
+After retrieving a temporary access token, the client can query the Spotify Web API directly for search results. The access token is attached to the request headers with each API request.
 
 ![search_func](https://github.com/Tearrex/Chattea/assets/26557969/df0432b1-afd8-4f8d-90e2-18344768ef83)
 
 #### Image cropping function
 ![imgcroptest](https://github.com/Tearrex/Chattea/assets/26557969/c1be3999-dab0-404a-93e5-f829a42c45c9)
 
-The crop tool works by having the user select the desired crop region for the image. After confirming the action, the image will first be compressed on the frontend as necessary before sending the binary data to a cloud function. The crop region is fixed to a 1:1 aspect ratio relative to the shortest dimension of the image. The cloud function reads and writes the image to RAM so the result is never truly "saved" to disk storage until the user decides to submit their post.
+The crop tool allows users to select the desired crop region for their image, fixed to a 1:1 aspect ratio relative to the shortest dimension of the image. After confirming the action, the image is compressed on the frontend as necessary before sending the binary data to a cloud function. The cloud function reads and writes the image to RAM so the result is never truly "saved" to disk storage until the user decides to submit their post.
 
 ![image_func](https://github.com/Tearrex/Chattea/assets/26557969/fcc28a48-3f43-4b8f-add6-ddf4a627378a)
 
-### Firestore Database Schema
+## Firestore Database Schema
 Below is a comprehensive list of all the collections and subcollections that save user data for the app
 
 #### 👥 /users
