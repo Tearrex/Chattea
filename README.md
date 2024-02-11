@@ -32,15 +32,20 @@ After retrieving a temporary access token from the backend, the client can query
 ## Backend
 With Firebase as the backend, I faced limitations that I had to work around—like how Firestore databases are queried differently from typical SQL. Being the first cloud service I used in my projects, the billing showed me how crucial it is to optimize bandwidth usage and general app performance for scalability. I consequently learned about the concept of data caching and applied it here by locally storing profile data fetched from Firebase in the browser for a set amount of time.
 
+### User Data Caching
+![usercache](https://github.com/Tearrex/Chattea/assets/26557969/51fa680f-225e-41a0-a9d2-5dd4e7610016)
+
+Note: User IDs are substituted with generic names for readability.
+
 ### Spotify Web API token function
 ![spot_func](https://github.com/Tearrex/Chattea/assets/26557969/f7f9af41-8b6a-4c21-81a4-7fa9c03ebc0b)
 
-In order for users to lookup Spotify songs through Chattea, they must first fetch a temporary access token for the API. This is done by sending an HTTP request to a cloud function that holds secret client credentials for my Spotify app and retrieves a new token through an intermediate API request. The client will wait for the cloud function to respond with a token and save it to local storage for search queries.
+In order for users to lookup Spotify songs through Chattea, they must first fetch a temporary access token for the API. An HTTP request is made to a cloud function holding secret client credentials used to generate a new token through an intermediate API request. The client will take the token and save it to local storage until it expires.
 
 ### Image cropping function
 ![imgcroptest](https://github.com/Tearrex/Chattea/assets/26557969/c1be3999-dab0-404a-93e5-f829a42c45c9)
 
-The crop tool allows users to select the desired crop region for their image, fixed to a 1:1 aspect ratio relative to the shortest dimension of the image. After confirming the action, the image is compressed on the frontend as necessary before sending the binary data to a cloud function. The cloud function reads and writes the image to RAM so the result is never truly "saved" to disk storage until the user decides to submit their post.
+The crop tool allows users to select the desired crop region for their image, fixed to a 1:1 aspect ratio relative to the shortest dimension of the image. After confirming the action, the image is compressed on the frontend as necessary before sending the binary data to a cloud function. The cloud function reads and writes the image to RAM so the result is never truly "saved" to disk storage until the user decides to submit their Chattea post.
 
 ![image_func](https://github.com/Tearrex/Chattea/assets/26557969/fcc28a48-3f43-4b8f-add6-ddf4a627378a)
 
@@ -53,7 +58,7 @@ Collection for saving profile customizations of each registered account. The doc
 | --- | --- | --- |
 | about | `string` | Brief user bio |
 | banner | `string` | Object URL for background image |
-| buddies | `string[]` | List of UIDs that the user "follows" |
+| buddies | `string[]` | List of UIDs that can read the user's private page and public key |
 | joined | `string` | Formatted date at time of user registration. Done clientside. |
 | pfp | `string` | Object URL for profile picture |
 | role | `string` | Defines user's access level. Either "user" or "admin". Only used for conditionally rendering moderator UI elements. |
