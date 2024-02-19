@@ -27,13 +27,13 @@ function FAQPage(props) {
 	useEffect(() => {
 		// document.getElementById("welcomer").style.display = "none";
 		if (window.location.href.includes("#faq")) {
-			document.querySelector("#faq").scrollIntoView({ behavior: "smooth" });
 			let jumpQuestion = localStorage.getItem("faq_jump");
 			if (jumpQuestion) {
 				console.log("jumping", jumpQuestion);
 				open_module(null, jumpQuestion);
 				localStorage.removeItem("faq_jump");
-			}
+			} else
+				document.querySelector("#faq").scrollIntoView({ behavior: "smooth" });
 		}
 		document.body.style.overflow = null;
 	}, []);
@@ -65,17 +65,10 @@ function FAQPage(props) {
 						<br />
 						<br />
 						<i className="fas fa-eye"></i> Private posts are exclusive to your
-						buddies and are backed by database rules requiring user
-						authentication.
+						buddies and require user authentication.
 						<br />
 						<br />
-						You can change the visibility at any time.
-						<br />
-						<br />
-						However, we still moderate content reported by users.{" "}
-						<Link to="#" onClick={(e) => open_module(e, "#modDiscretion")}>
-							Read more on moderation discretions.
-						</Link>
+						You can change the visibility option at any time.
 					</p>
 				</FAQuestion>
 				<FAQuestion
@@ -136,7 +129,7 @@ function FAQPage(props) {
 						<li>Profile Picture</li>
 						<li>Current date</li>
 					</ul>
-					<p>
+					<p> 
 						This info is saved on our cloud database to keep track of every user
 						that exists on the website. <br />
 						<u>Your email is kept private from others</u>; Used solely for
@@ -186,22 +179,6 @@ function FAQPage(props) {
 						by remembering the profiles of each user it retrieves; Edits to your
 						profile (username and bio) may not propagate for others right away.
 					</p>
-					<h2>
-						How we <u>DO NOT</u> use your data
-					</h2>
-					The only data we collect that can personally identify you is..... your
-					email. That's it—and maybe a smiley profile picture of your face. Keep
-					in mind what other social medias are (probably) collecting from you
-					already that we strictly do not.
-					<ul className="dataSection" style={{ listStyleType: "circle" }}>
-						<li>Public IP addresses</li>
-						<li>Browser info (User-Agent, Cookies)</li>
-						<li>Device info (MAC address, etc..)</li>
-						<li>Contact lists</li>
-						<li>Phone Numbers</li>
-						<li>GPS location</li>
-						<li>Other sensor data (like Bluetooth)</li>
-					</ul>
 				</FAQuestion>
 				<FAQuestion question="But why tea?" emote="🤔">
 					<p>It's just catchy...</p>
@@ -262,14 +239,19 @@ function FAQPage(props) {
 						browser before engaging in secure chats. Your public key will be
 						uploaded to our cloud database so your buddies can send you
 						encrypted messages. Public keys are intended to be shared for mutual
-						transactions. <br />
+						transactions.{" "}
+					</p>
+					<img src="/keygen.jpg" />
+					<p>
 						<u>We do not save your private key</u>. Your private key remains in
 						your browser's local storage for decryption of incoming message
 						ciphertext. This, however, may pose an inconvenience when using
 						multiple devices for the same account since each will need to
 						generate an independent key-pair which will overwrite your existing
 						public key and deem previous messages indecipherable.
-						<br /> <br />
+					</p>
+					<img src="/e2ee.jpg" />
+					<p>
 						You can cease to receive further messages from buddies by removing
 						them. You also have the option of purging your message channels.
 						<br />
@@ -356,7 +338,7 @@ function FAQPage(props) {
 						results.
 						<br />
 						<br />
-						<img src="https://private-user-images.githubusercontent.com/26557969/302143082-df0432b1-afd8-4f8d-90e2-18344768ef83.jpg?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MDcwOTY0ODEsIm5iZiI6MTcwNzA5NjE4MSwicGF0aCI6Ii8yNjU1Nzk2OS8zMDIxNDMwODItZGYwNDMyYjEtYWZkOC00ZjhkLTkwZTItMTgzNDQ3NjhlZjgzLmpwZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDAyMDUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwMjA1VDAxMjMwMVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWUyYjRlMmI2YWJlMjFkYTZiZDJlMGM1NmQ4ODQ4NmEyNzM0Mjk3ZmVjZTg1NzA5MjMxYzFkOWM4MDMyYjQ5ODYmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0._FHntvEfnu_nUkH6joz2gV6DdS_P9t7GSBswKDlUieg" />
+						<img src="/spotify_search.jpg" />
 						<br />
 						<br />
 						This tool will make a secure HTTP request to our intermediate cloud
@@ -364,7 +346,7 @@ function FAQPage(props) {
 						you by not prompting for Spotify credentials.
 						<br />
 						<br />
-						<img src="https://private-user-images.githubusercontent.com/26557969/302141015-f7f9af41-8b6a-4c21-81a4-7fa9c03ebc0b.jpg?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MDcwOTYyNTMsIm5iZiI6MTcwNzA5NTk1MywicGF0aCI6Ii8yNjU1Nzk2OS8zMDIxNDEwMTUtZjdmOWFmNDEtOGI2YS00YzIxLTgxYTQtN2ZhOWMwM2ViYzBiLmpwZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDAyMDUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwMjA1VDAxMTkxM1omWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTdjYmM2YTJkMmFmYTcxZWI0NjZjZjQ2ODc2YmUyNmZhZjAwMGI4MWE3NTdjNzg4NTg5MDk3ZjlkMDYyNDY2YzAmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.5B6BZ_w7CJ5aeojnBKQR7ENlO6Q-W4PwF7raFmsV0x4" />
+						<img src="/spotify_token.jpg" />
 					</p>
 				</FAQuestion>
 				<FAQuestion
