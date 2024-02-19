@@ -1,35 +1,51 @@
 # Chattea
 My own social media website, offering:
 - 👁️‍🗨️ Private pages
-- 🔐 Encrypted messaging
-- 🎵 Spotify integration
-- 👤 Guest view (for public pages)
-- ☁️ Serverless functions
+- 🔐 [Encrypted messaging](#secure-chats-key-generation)
+- 🎵 [Spotify integration](#spotify-web-api-search-function)
+- 👤 Guest mode
+- ☁️ [Serverless functions](#image-cropping-function)
 
 Visit the live version https://chattea.app/
 [![Netlify Status](https://api.netlify.com/api/v1/badges/ff431b82-f1fd-4551-b55d-e9db14f3a3a4/deploy-status)](https://app.netlify.com/sites/chattea/deploys)
 
 ## Frontend
-During COVID, I fancied learning a new frontend framework with my underlying knowledge of vanilla JavaScript from previous programming endeavors. Growing up, I was irresponsibly given a Facebook account—So I figured React would be a great candidate for exploring the rabbit hole! I was drawn to the idea of showing off the finished product to friends and it has kept me engaged throughout this learning curve—the satisfaction of solving headaches beats the sorrow of being stuck!
+During COVID, I fancied learning a new frontend framework with my underlying knowledge of vanilla JavaScript. Growing up, I was irresponsibly given a Facebook account—So I figured React would be a great candidate for exploring the rabbit hole! I was drawn to the idea of showing off the finished product to friends and it has kept me engaged throughout this learning curve—the satisfaction of solving headaches beats the sorrow of feeling stuck!
 
-## Backend
-With Firebase as the backend, I faced limitations that I had to work around—like how Firestore databases are queried differently from typical SQL. Being the first cloud service I used in my projects, the billing showed me how crucial it is to optimize bandwidth usage and general app performance. I consequently learned about the concept of data caching and applied it here by locally storing profile data fetched from Firebase in the browser for a set amount of time.
+### Secure Chats key generation
+![keygen](https://github.com/Tearrex/Chattea/assets/26557969/11bc4bad-22a2-4443-a3f1-895be8ee5d34)
 
-#### Spotify Web API token function
-![spot_func](https://github.com/Tearrex/Chattea/assets/26557969/f7f9af41-8b6a-4c21-81a4-7fa9c03ebc0b)
+In order for users to engage in encrypted messaging—named "Secure Chats"—they must generate an asymmetric cryptographic keypair from their browser for handling plaintext/ciphertext conversion. The resulting public key is uploaded to the Firestore database, while the private key remains local to their browser for deciphering incoming messages. This keypair is unique to the user's current browser and must be regenerated when switching across devices, losing access to old messages by design.
 
-In order for users to lookup Spotify songs through Chattea, they must first fetch a temporary access token for the API. This is done by sending an HTTP request to a cloud function that holds secret client credentials for my Spotify app and retrieves a new token through an intermediate API request. The client will wait for the cloud function to respond with a token and save it to local storage for search queries.
-#### Spotify Web API search function
+### Secure Chats feature
+![chatencryption](https://github.com/Tearrex/Chattea/assets/26557969/125da312-6600-4f9f-b76c-73b61c18f466)
+
+Prior to sending a chat message, the sender's browser will encrypt their plaintext input using the receiver's public key—becoming a secure chat message. After that, the HTTP request is made including the ciphertext in the body to be saved into Firestore for the receiver to fetch at a later date or in realtime. The receiver will use their own private key stored in their browser's local storage to decipher the sender's secure chat message.
+
+### Spotify Web API search function
 ![songsearch2](https://github.com/Tearrex/Chattea/assets/26557969/c6537703-6018-4e34-b1a7-411067206e01)
 
-After retrieving a temporary access token, the client can query the Spotify Web API directly for search results. The access token is attached to the request headers with each API request.
+After retrieving a temporary access token from the backend, the client can query the Spotify Web API directly for search results. The access token is attached to the request headers with each API request.
 
 ![search_func](https://github.com/Tearrex/Chattea/assets/26557969/df0432b1-afd8-4f8d-90e2-18344768ef83)
 
-#### Image cropping function
+## Backend
+With Firebase as the backend, I faced limitations that I had to work around—like how Firestore databases are queried differently from typical SQL. Being the first cloud service I used in my projects, the billing showed me how crucial it is to optimize bandwidth usage and general app performance for scalability. I consequently learned about the concept of data caching and applied it here by locally storing profile data fetched from Firebase in the browser for a set amount of time.
+
+### User Data Caching
+![usercache](https://github.com/Tearrex/Chattea/assets/26557969/51fa680f-225e-41a0-a9d2-5dd4e7610016)
+
+Note: User IDs are substituted with generic names for readability.
+
+### Spotify Web API token function
+![spot_func](https://github.com/Tearrex/Chattea/assets/26557969/f7f9af41-8b6a-4c21-81a4-7fa9c03ebc0b)
+
+In order for users to lookup Spotify songs through Chattea, they must first fetch a temporary access token for the API. An HTTP request is made to a cloud function holding secret client credentials used to generate a new token through an intermediate API request. The client will take the token and save it to local storage until it expires.
+
+### Image cropping function
 ![imgcroptest](https://github.com/Tearrex/Chattea/assets/26557969/c1be3999-dab0-404a-93e5-f829a42c45c9)
 
-The crop tool allows users to select the desired crop region for their image, fixed to a 1:1 aspect ratio relative to the shortest dimension of the image. After confirming the action, the image is compressed on the frontend as necessary before sending the binary data to a cloud function. The cloud function reads and writes the image to RAM so the result is never truly "saved" to disk storage until the user decides to submit their post.
+The crop tool allows users to select the desired crop region for their image, fixed to a 1:1 aspect ratio relative to the shortest dimension of the image. After confirming the action, the image is compressed on the frontend as necessary before sending the binary data to a cloud function. The cloud function reads and writes the image to RAM so the result is never truly "saved" to disk storage until the user decides to submit their Chattea post.
 
 ![image_func](https://github.com/Tearrex/Chattea/assets/26557969/fcc28a48-3f43-4b8f-add6-ddf4a627378a)
 
@@ -42,7 +58,7 @@ Collection for saving profile customizations of each registered account. The doc
 | --- | --- | --- |
 | about | `string` | Brief user bio |
 | banner | `string` | Object URL for background image |
-| buddies | `string[]` | List of UIDs that the user "follows" |
+| buddies | `string[]` | List of UIDs that can read the user's private page and public key |
 | joined | `string` | Formatted date at time of user registration. Done clientside. |
 | pfp | `string` | Object URL for profile picture |
 | role | `string` | Defines user's access level. Either "user" or "admin". Only used for conditionally rendering moderator UI elements. |
