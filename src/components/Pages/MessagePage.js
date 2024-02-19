@@ -58,6 +58,7 @@ export default function MessagePage() {
 	const { _users, _setUsers } = useContext(MembersContext);
 
 	const [nudging, setNudging] = useState(false); // toggle buddy selection modal for creating channel
+	const [insecureMode, setInsecureMode] = useState(false); // toggle skipping message encryption
 	const [buddyList, setBuddyList] = useState({});
 
 	const [publicPEM, setPublicPEM] = useState(null); // base64 encryption key
@@ -149,7 +150,9 @@ export default function MessagePage() {
 		let _chats = [...messages];
 		for (let i = 0; i < _oldChats.docs.length; i++) {
 			const _chat = _oldChats.docs[i].data();
-			_chats.push(await decrypt_message(_chat));
+			_chats.push(
+				await decrypt_message({ ..._chat, _id: _oldChats.docs[i].id })
+			);
 			if (i == _oldChats.docs.length - 1)
 				setOldestMsgTimestamp(_oldChats.docs.length >= 5 ? _chat.date : null);
 		}
@@ -174,7 +177,9 @@ export default function MessagePage() {
 		let _chats = [...messages];
 		for (let i = 0; i < _newChats.docs.length; i++) {
 			const _chat = _newChats.docs[i].data();
-			_chats.unshift(await decrypt_message(_chat));
+			_chats.unshift(
+				await decrypt_message({ ..._chat, _id: _newChats.docs[i].id })
+			);
 			if (i == 0 && messages.length == 0) setOldestMsgTimestamp(_chat.date);
 			else if (i == _newChats.docs.length - 1)
 				setLatestMsgTimestamp(_chat.date);
@@ -224,14 +229,16 @@ export default function MessagePage() {
 		}
 	}, [_user]);
 	useEffect(async () => {
-		if (!user_id || !chatChannels[user_id]) setMessages([]);
+		if (!user_id || !chatChannels[user_id]) {
+			setMessages([]);
+			setLatestMsgTimestamp(null);
+		}
 		// only fetch channel messages when user's private key and channel id is ready
 		if (
 			_user &&
 			user_id &&
 			privateKey &&
 			chatChannels[user_id] &&
-			messages.length == 0 &&
 			!latestMsgTimestamp
 		) {
 			// fetch message history (if any) of selected channel (if any)
@@ -257,22 +264,24 @@ export default function MessagePage() {
 				});
 			}
 			for (let i = 0; i < chats.docs.length; i++) {
-				const message = chats.docs[i].data();
-				decrypt_message(message).then((msg) => {
-					chats_data.push(msg);
-					if (i == chats.docs.length - 1) {
-						setMessages(chats_data);
-						setOldestMsgTimestamp(msg.date);
-						setLatestMsgTimestamp(chatChannels[user_id].activity_date);
-						setChannelReads({
-							...channelReads,
-							[chatChannels[user_id].channel_id]: new Date(
-								chatChannels[user_id].activity_date.seconds * 1000
-							),
-						});
-						console.log("messages", chats_data);
-					}
+				const _data = chats.docs[i].data();
+				const message = await decrypt_message({
+					..._data,
+					_id: chats.docs[i].id,
 				});
+				chats_data.push(message);
+				if (i == chats.docs.length - 1) {
+					setMessages(chats_data);
+					if (chats.docs.length >= 5) setOldestMsgTimestamp(message.date);
+					setLatestMsgTimestamp(chatChannels[user_id].activity_date);
+					setChannelReads({
+						...channelReads,
+						[chatChannels[user_id].channel_id]: new Date(
+							chatChannels[user_id].activity_date.seconds * 1000
+						),
+					});
+					console.log("messages", chats_data);
+				}
 			}
 		}
 	}, [_user, user_id, privateKey, chatChannels]);
@@ -331,6 +340,10 @@ export default function MessagePage() {
 	// use private key crypto object to decrypt ciphertext
 	// then return document data in plaintext
 	async function decrypt_message(message) {
+		if (message.encrypted == false) {
+			message.plain = true;
+			return message;
+		}
 		if (
 			!privateKey ||
 			(message.author === _user.user_id && !message.content_back)
@@ -353,6 +366,7 @@ export default function MessagePage() {
 			);
 			content = decoder.decode(content);
 			message.content = content;
+			message.encrypted = false;
 			return message;
 		} catch (e) {
 			console.log("error", e);
@@ -372,41 +386,43 @@ export default function MessagePage() {
 		let msg_date = new Date();
 		setLatestMsgTimestamp(Timestamp.fromDate(msg_date));
 
+		let final_content; // request body
 		// convert the recipient's public key string to the necessary crypto object format
-		const r_keyContent = buddyList[user_id].public_key; // base64 string
-		const r_binaryString = [window.atob(r_keyContent)]; // to binary string
-		const r_binaryAB = str2ab(r_binaryString[0]); // to array buffer
-		let _publicKey = null;
-		try {
-			_publicKey = await window.crypto.subtle.importKey(
-				"spki",
-				r_binaryAB,
-				{
-					name: "RSA-OAEP",
-					hash: "SHA-256",
-				},
-				true,
-				["encrypt"]
+		if (!insecureMode) {
+			const r_keyContent = buddyList[user_id].public_key; // base64 string
+			const r_binaryString = [window.atob(r_keyContent)]; // to binary string
+			const r_binaryAB = str2ab(r_binaryString[0]); // to array buffer
+			let _publicKey = null;
+			try {
+				_publicKey = await window.crypto.subtle.importKey(
+					"spki",
+					r_binaryAB,
+					{
+						name: "RSA-OAEP",
+						hash: "SHA-256",
+					},
+					true,
+					["encrypt"]
+				);
+			} catch (e) {
+				console.log("error occured", e);
+				return;
+			}
+			let encoded_content = new TextEncoder().encode(content);
+			// ciphertext for recipient (encrypt plaintext with buddy's public key)
+			let r_secure_content = await window.crypto.subtle.encrypt(
+				{ name: "RSA-OAEP" },
+				_publicKey, // recipient's public key
+				encoded_content
 			);
-		} catch (e) {
-			console.log("error occured", e);
-			return;
-		}
-		let encoded_content = new TextEncoder().encode(content);
-		// ciphertext for recipient (encrypt plaintext with buddy's public key)
-		let r_secure_content = await window.crypto.subtle.encrypt(
-			{ name: "RSA-OAEP" },
-			_publicKey, // recipient's public key
-			encoded_content
-		);
-		// ciphertext for author readback (encrypt same plaintext with user's public key...)
-		let a_secure_content = await window.crypto.subtle.encrypt(
-			{ name: "RSA-OAEP" },
-			publicKey, // author's public key
-			encoded_content
-		);
-
-		let final_content = [ab2str(r_secure_content), ab2str(a_secure_content)];
+			// ciphertext for author readback (encrypt same plaintext with user's public key...)
+			let a_secure_content = await window.crypto.subtle.encrypt(
+				{ name: "RSA-OAEP" },
+				publicKey, // author's public key
+				encoded_content
+			);
+			final_content = [ab2str(r_secure_content), ab2str(a_secure_content)];
+		} else final_content = content;
 
 		// before sending message, check for existing message channel
 		let channel_id = null; // hold reference id for placement of subcollection
@@ -438,20 +454,33 @@ export default function MessagePage() {
 		const _chatsRef = collection(_dbRef, "messages", channel_id, "safechats"); // nest of messages
 		const _newChat = doc(_chatsRef);
 
-		await setDoc(_newChat, {
-			// now convert array buffer to base64 encoding
-			content: window.btoa(final_content[0]),
-			content_back: window.btoa(final_content[1]),
-			author: _user.user_id,
-			recipient: user_id,
-			date: msg_date,
-		});
+		if (!insecureMode) {
+			await setDoc(_newChat, {
+				// now convert array buffer to base64 encoding
+				content: window.btoa(final_content[0]),
+				content_back: window.btoa(final_content[1]),
+				encrypted: true,
+				author: _user.user_id,
+				recipient: user_id,
+				date: msg_date,
+			});
+		} else {
+			await setDoc(_newChat, {
+				// now convert array buffer to base64 encoding
+				content: final_content,
+				encrypted: false,
+				author: _user.user_id,
+				recipient: user_id,
+				date: msg_date,
+			});
+		}
 
 		let msgs = [...messages];
 		msgs.unshift({
 			content: content,
 			author: _user.user_id,
 			date: msg_date,
+			plain: insecureMode,
 		});
 		setMessages(msgs);
 		setText("");
@@ -479,6 +508,7 @@ export default function MessagePage() {
 			await deleteDoc(chat.ref);
 		}
 		setMessages([]);
+		setOldestMsgTimestamp(null);
 	}
 	async function genkeys() {
 		let keys = await generateKeys();
@@ -530,26 +560,14 @@ export default function MessagePage() {
 						}}
 					/>
 				)}
-				<h2 style={{ color: "#fff", margin: 0 }}>
-					Secure chats <small>BETA</small>
-				</h2>
-				<p style={{ color: "#fff", opacity: 0.7, margin: 0 }}>
-					Send encrypted messages to your buddies.{" "}
-					<Link
-						to="/#faq"
-						onClick={() => localStorage.setItem("faq_jump", "#chats")}
-					>
-						Learn more.
-					</Link>
-				</p>
-				<p style={{ color: "#fff", opacity: 0.7, margin: 0 }}>
+				{/* <p style={{ color: "#fff", opacity: 0.7, margin: 0 }}>
 					old{" "}
 					{oldestMsgTimestamp &&
 						new Date(oldestMsgTimestamp.seconds * 1000).toLocaleString()}
 					new{" "}
 					{latestMsgTimestamp &&
 						new Date(latestMsgTimestamp.seconds * 1000).toLocaleString()}
-				</p>
+				</p> */}
 				{_user && (
 					<div id="chatscontainer">
 						<div className="buddies">
@@ -560,6 +578,7 @@ export default function MessagePage() {
 											className="buddy"
 											key={index}
 											onClick={() => navigate("/chats/" + channel[0])}
+											active={user_id === channel[0] ? "true" : "false"}
 										>
 											{user_id !== channel[0] &&
 												(!channelReads[channel[1].channel_id] ||
@@ -577,10 +596,10 @@ export default function MessagePage() {
 														? _users[channel[0]].pfp
 														: "/default_user.png"
 												}
-												style={{
-													borderRadius: user_id === channel[0] ? 0 : null,
-												}}
 											/>
+											<span className="username">
+												@{_users[channel[0]] && _users[channel[0]].username}
+											</span>
 										</div>
 									);
 								})}
@@ -588,6 +607,7 @@ export default function MessagePage() {
 								<div
 									className="buddy"
 									onClick={() => navigate("/chats/" + user_id)}
+									active="true"
 								>
 									<img
 										src={_users[user_id].pfp}
@@ -599,110 +619,153 @@ export default function MessagePage() {
 													: null,
 										}}
 									/>
+									<span className="username">
+										@{_users[user_id] && _users[user_id].username}
+									</span>
 								</div>
 							)}
 							<button className="add" onClick={() => setNudging(true)}>
 								{_user &&
 									Array.from(_user.buddies).length > 0 &&
-									(Object.entries(chatChannels).length === 0 ||
+									((Object.entries(chatChannels).length === 0 && !user_id) ||
 										(user_id && !buddyList[user_id])) && (
-										<span className="hint">Buddy list</span>
+										<span className="hint">My Buddies</span>
 									)}
 								<i className="fas fa-plus" />
 							</button>
 						</div>
-						<div className="chatbox">
-							<div className="chats">
-								{!user_id && privateKey && (
-									<div className="tip">Choose a buddy to chat with</div>
-								)}
-								{user_id && !buddyList[user_id] && (
-									<div className="tip">
-										<Link to={"/u/" + user_id}>
-											@{_users[user_id].username}
-										</Link>{" "}
-										must add you as a buddy.
-									</div>
-								)}
-								{user_id &&
-									buddyList[user_id] &&
-									!buddyList[user_id].available &&
-									privateKey && (
+						<div className="chatNest">
+							<div className="chatbox">
+								<div className="chats">
+									{!user_id && privateKey && (
+										<div className="tip direction">
+											Choose a buddy to chat with
+										</div>
+									)}
+									{user_id && !buddyList[user_id] && (
 										<div className="tip">
 											<Link to={"/u/" + user_id}>
 												@{_users[user_id].username}
 											</Link>{" "}
-											does not have a public key.
+											must add you as a buddy.
 										</div>
 									)}
-								{!privateKey && (
-									<div className="tip">
-										<p>
-											You must generate <span>crypto keys</span> to use secure
-											chats!
-										</p>
-										<button onClick={genkeys} className="crypto">
-											<i className="fas fa-key" /> Generate Keys
-										</button>
-									</div>
-								)}
-								{messages.map((msg, i) => {
-									return (
-										<div
-											className="message"
-											key={i}
-											self={msg.author === _user.user_id ? "true" : "false"}
-										>
-											{!msg.encrypted ? (
-												msg.content
-											) : (
-												<i>[Encrypted message]</i>
-											)}
+									{user_id &&
+										buddyList[user_id] &&
+										!buddyList[user_id].available &&
+										privateKey &&
+										!insecureMode && (
+											<div className="tip">
+												<p>
+													<Link to={"/u/" + user_id}>
+														@{_users[user_id].username}
+													</Link>{" "}
+													does not have an encryption key.
+												</p>
+												<button
+													className="crypto"
+													onClick={() => setInsecureMode(true)}
+												>
+													<i className="fas fa-lock-open" /> Send a plain chat?
+												</button>
+											</div>
+										)}
+									{!privateKey && (
+										<div className="tip">
+											<p>
+												You must generate <span>crypto keys</span> to use secure
+												chats!
+											</p>
+											<button onClick={genkeys} className="crypto">
+												<i className="fas fa-key" /> Generate Keys
+											</button>
 										</div>
-									);
-								})}
-								{oldestMsgTimestamp && (
-									<button className="timetravel" onClick={fetch_old_messages}>
-										<i className="fas fa-cloud-download-alt"></i> Load older
-										messages
+									)}
+									{messages
+										.sort((a, b) => (a.date.seconds > b.date.seconds ? -1 : 1))
+										.map((msg, i) => {
+											return (
+												<div
+													className="message"
+													key={msg._id}
+													self={msg.author === _user.user_id ? "true" : "false"}
+													plain={msg.plain ? "true" : "false"}
+												>
+													{!msg.encrypted ? (
+														msg.content
+													) : (
+														<i>[Encrypted message]</i>
+													)}
+												</div>
+											);
+										})}
+									{oldestMsgTimestamp && (
+										<button className="timetravel" onClick={fetch_old_messages}>
+											<i className="fas fa-cloud-download-alt"></i> Load older
+											messages
+										</button>
+									)}
+								</div>
+								{user_id &&
+									privateKey &&
+									((!insecureMode &&
+										buddyList[user_id] &&
+										buddyList[user_id].available) ||
+										insecureMode) && (
+										<>
+											{!insecureMode ? (
+												<p className="status">
+													<i className="fas fa-lock" /> Secure chats are
+													encrypted between you and {_users[user_id].username}.
+												</p>
+											) : (
+												<p className="status">
+													<i className="fas fa-lock-open" /> Plain chats are
+													sent unencrypted.{" "}
+													{buddyList[user_id] &&
+														buddyList[user_id].available && (
+															<a
+																href="#"
+																onClick={() => setInsecureMode(false)}
+															>
+																Try Secure Chat
+															</a>
+														)}
+												</p>
+											)}
+											<form className="textfield" onSubmit={send_msg}>
+												<input
+													type="text"
+													placeholder={`Type your ${
+														insecureMode ? "plain" : "secure"
+													} chat message...`}
+													value={text}
+													onChange={(e) => setText(e.target.value)}
+												/>
+												<button>
+													<i className="fas fa-paper-plane"></i>
+												</button>
+											</form>
+										</>
+									)}
+							</div>
+							<div className="chatOptions">
+								{privatePEM && (
+									<button className="crypto alt" onClick={regen_keys}>
+										<i className="fas fa-key" /> Regenerate My Keys
 									</button>
 								)}
-							</div>
-							{user_id &&
-								privateKey &&
-								(chatChannels[user_id] ||
-									(buddyList[user_id] && buddyList[user_id].available)) && (
-									<form className="textfield" onSubmit={send_msg}>
-										<input
-											type="text"
-											placeholder={`💬 Chat with @${
-												_users[user_id] ? _users[user_id].username : "null"
-											}`}
-											value={text}
-											onChange={(e) => setText(e.target.value)}
-										/>
-										<button>
-											<i className="fas fa-paper-plane"></i>
-										</button>
-									</form>
+								{user_id && chatChannels[user_id] && messages.length > 0 ? (
+									<button className="crypto alt" onClick={purge_channel}>
+										<i className="fas fa-fire" /> Purge Channel
+									</button>
+								) : (
+									<span></span>
 								)}
+							</div>
 						</div>
 					</div>
 				)}
-				<div className="chatOptions">
-					{privatePEM && (
-						<button className="crypto alt" onClick={regen_keys}>
-							<i className="fas fa-key" /> Regenerate Keys
-						</button>
-					)}
-					{messages.length > 0 ? (
-						<button className="crypto alt" onClick={purge_channel}>
-							<i className="fas fa-fire" /> Purge Channel
-						</button>
-					) : (
-						<span></span>
-					)}
-				</div>
 			</div>
 		</div>
 	);

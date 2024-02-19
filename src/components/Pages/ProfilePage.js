@@ -635,13 +635,11 @@ function ProfilePage(props) {
 									_user.user_id !== profile.user_id &&
 									_users[profile.user_id] && (
 										<div className="interact">
-											{Array.from(_user.buddies).includes(user_id) && (
-												<Link to={"/chats/" + user_id}>
-													<button className="chatBtn stealthBtn">
-														<i className="fas fa-comment" /> Chat
-													</button>
-												</Link>
-											)}
+											<Link to={"/chats/" + user_id}>
+												<button className="chatBtn stealthBtn">
+													<i className="fas fa-comment" /> Chat
+												</button>
+											</Link>
 											<BuddyButton buddy={(profile && profile.user_id) || ""} />
 										</div>
 									)}

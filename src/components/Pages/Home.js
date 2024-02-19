@@ -116,27 +116,22 @@ function Home(props) {
 	return (
 		<div className="homeWrapper">
 			<div id="home" className="clamper">
-				<div id="audionest"></div>
 				{_user ? (
 					<>
-						<p className="privateAlert border">
-							✨ New secure chats for Chattea users.{" "}
-							<Link to="/chats">Go to Chats</Link>
-							<div className="privacyModes" style={{ marginTop: "1rem" }}>
-								<button
-									active={!privateView && "true"}
-									onClick={() => navigate("/main")}
-								>
-									<i className="fas fa-globe-americas"></i> Public
-								</button>
-								<button
-									active={privateView && "true"}
-									onClick={() => navigate("/private")}
-								>
-									<i className="fas fa-eye"></i> Private <small>BETA</small>
-								</button>
-							</div>
-						</p>
+						<div className="privacyModes">
+							<button
+								active={!privateView && "true"}
+								onClick={() => navigate("/main")}
+							>
+								<i className="fas fa-globe-americas"></i> Public
+							</button>
+							<button
+								active={privateView && "true"}
+								onClick={() => navigate("/private")}
+							>
+								<i className="fas fa-eye"></i> Private
+							</button>
+						</div>
 						{privateView === undefined ? (
 							<Submitter onMessageSend={postMessage} />
 						) : (
@@ -212,6 +207,7 @@ function Home(props) {
 							</div>
 						</div>
 					))}
+				<div id="audionest"></div>
 			</div>
 		</div>
 	);
