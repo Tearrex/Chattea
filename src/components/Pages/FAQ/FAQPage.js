@@ -61,11 +61,11 @@ function FAQPage(props) {
 						social media posts. <br />
 						<br />
 						<i className="fas fa-globe-americas"></i> Public posts can be seen
-						by anyone and are shown on the home page by default.
+						by anyone on the home page and can be forwarded in chat messaging.
 						<br />
 						<br />
-						<i className="fas fa-eye"></i> Private posts are exclusive to your
-						buddies and require user authentication.
+						<i className="fas fa-eye"></i> Private posts can only be viewed by
+						users in your buddies list and cannot be forwarded.
 						<br />
 						<br />
 						You can change the visibility option at any time.
@@ -77,8 +77,8 @@ function FAQPage(props) {
 					emote={<i className="fas fa-user-friends" />}
 				>
 					<p>
-						Buddies are your online friends. By adding someone on Chattea, you
-						allow them to
+						Buddies are your Chattea friends. By adding someone, you allow them
+						to
 						<ul>
 							<li>
 								View your{" "}
@@ -129,7 +129,7 @@ function FAQPage(props) {
 						<li>Profile Picture</li>
 						<li>Current date</li>
 					</ul>
-					<p> 
+					<p>
 						This info is saved on our cloud database to keep track of every user
 						that exists on the website. <br />
 						<u>Your email is kept private from others</u>; Used solely for
@@ -221,9 +221,9 @@ function FAQPage(props) {
 					</p>
 				</FAQuestion>
 				<FAQuestion
-					question="Secure chats"
+					question="Chat Messaging"
 					buttonId="chats"
-					emote={<i className="fas fa-comment"></i>}
+					emote={<i className="fas fa-envelope"></i>}
 				>
 					<p>
 						You can now send direct messages to your{" "}
@@ -238,8 +238,7 @@ function FAQPage(props) {
 						Existing users must generate a cryptographic key pair from their
 						browser before engaging in secure chats. Your public key will be
 						uploaded to our cloud database so your buddies can send you
-						encrypted messages. Public keys are intended to be shared for mutual
-						transactions.{" "}
+						encrypted messages.
 					</p>
 					<img src="/keygen.jpg" />
 					<p>
@@ -269,7 +268,7 @@ function FAQPage(props) {
 						security constraints.
 					</p>
 				</FAQuestion>
-				<FAQuestion question="Profanity filter" emote="###">
+				{/* <FAQuestion question="Profanity filter" emote="###">
 					<p>
 						Upon opening Chattea's feed for the first time, your browser will
 						fetch a blacklist of words from{" "}
@@ -281,14 +280,11 @@ function FAQPage(props) {
 						The blacklist is used to process user-generated text before
 						displaying it to you. This can be toggled later.
 					</p>
-				</FAQuestion>
+				</FAQuestion> */}
 				<FAQuestion question="Mentioning users" emote="@" buttonId="mentions">
 					<p>
-						You can only mention your{" "}
-						<Link to="#" onClick={() => open_module(null, "#buddies")}>
-							buddies
-						</Link>
-						. They will be notified only if they have you added as well.
+						You can only mention your buddies. They will be notified only if
+						they add you back.
 					</p>
 				</FAQuestion>
 				<FAQuestion
@@ -323,8 +319,8 @@ function FAQPage(props) {
 						server for a cost-effective computing approach. <br />
 						<br />
 						We protect your privacy by stripping all metadata from the image
-						before posting. The binary data is also processed in memory instead
-						of disk storage, for optimal security.
+						before posting. The binary data is also processed in-memory instead
+						of disk storage for optimal security.
 					</p>
 				</FAQuestion>
 				<FAQuestion

@@ -122,10 +122,11 @@ function App() {
 				if (s.exists()) {
 					localStorage.removeItem("tc");
 					localStorage.removeItem("guest");
-					var _user = s.data();
+					let data = s.data();
+					console.log("firebase user", data);
 					_setUser({
 						user_id: currentUser.uid,
-						..._user,
+						...data,
 					});
 				}
 			});

@@ -20,6 +20,7 @@ import {
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Link, useNavigate } from "react-router-dom";
 import MediaActions from "./MediaActions";
+import UserList from "../Buddies/UserList";
 function MediaFeed(props) {
 	const { _user, _setUser } = useContext(UserContext);
 	const { _users, _setUsers } = useContext(MembersContext);
@@ -118,6 +119,7 @@ function MediaFeed(props) {
 		}
 	}, [newDoc, oldDoc, switching]);
 
+	const [forwardPost, setForwardPost] = useState(null);
 	const [focusPost, setFocusPost] = useState(null);
 	const [changeVisibility, setChangeVisibility] = useState(false);
 	useEffect(() => {
@@ -180,7 +182,13 @@ function MediaFeed(props) {
 		if (startFresh) {
 			console.log("feed from zero");
 			if (!props.focus)
-				_query = query(postsRef, orderBy("date", "desc"), limit(_limit));
+				_query = query(
+					postsRef,
+					where("private", "!=", true),
+					orderBy("private", "desc"),
+					orderBy("date", "desc"),
+					limit(_limit)
+				);
 			// we can't order by date with the user_id filter
 			// firebase limitations....
 			else
@@ -259,6 +267,7 @@ function MediaFeed(props) {
 				if (setPostCount) setPostCount(Object.entries(_posts).length);
 			})
 			.catch((e) => {
+				console.log(e);
 				setFetchError(true);
 			});
 	}
@@ -336,6 +345,7 @@ function MediaFeed(props) {
 				key={post[0]}
 				msg={post[1]}
 				postID={post[0]}
+				onForward={(postID, data) => setForwardPost({ postID, data })}
 				setFocusPost={(vis = false) => {
 					setFocusPost(post);
 					setChangeVisibility(vis);
@@ -346,6 +356,21 @@ function MediaFeed(props) {
 	}
 	return (
 		<>
+			{forwardPost && (
+				<UserList
+					users={Object.values(_user.buddies)}
+					open
+					chat
+					onClose={() => setForwardPost(null)}
+					onSelect={(buddy_id) => {
+						localStorage.setItem(
+							"forward_post",
+							JSON.stringify({ _id: forwardPost.postID, ...forwardPost.data })
+						);
+						navigate("/chats/" + buddy_id);
+					}}
+				/>
+			)}
 			{focusPost && (
 				<MediaActions
 					focusPost={focusPost}

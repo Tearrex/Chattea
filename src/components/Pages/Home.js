@@ -14,7 +14,6 @@ import { useContext, useEffect, useState } from "react";
 import { MembersContext, showLogin, UserContext } from "../Main/Contexts";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import MediaActions from "../Media/MediaActions";
 function Home(props) {
 	const navigate = useNavigate();
 	const { privateView } = props;

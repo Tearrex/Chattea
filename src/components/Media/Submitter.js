@@ -222,6 +222,7 @@ function Submitter(props) {
 								doc(_dbRef, "users/" + _user.user_id + "/smiles/" + newPost.id),
 								{ smiles: [] }
 							).then(() => {
+								setPickedTrack(null);
 								getDoc(newPost).then((snap) => {
 									if (snap.exists()) {
 										if (props.onPostSubmit)
@@ -240,7 +241,7 @@ function Submitter(props) {
 				let collectionRef = !props.privateMode
 					? collection(_dbRef, "posts")
 					: collection(_dbRef, "users", _user.user_id, "posts");
-				const docRef = await addDoc(collectionRef, {
+				const docData = {
 					content: _content,
 					date: Timestamp.now(),
 					image_url: "",
@@ -248,17 +249,15 @@ function Submitter(props) {
 					caption: "",
 					user_id: _user.user_id,
 					private: props.privateMode || false,
-				});
-				const snap = await getDoc(docRef);
-				if (snap.exists()) {
-					await setDoc(
-						doc(_dbRef, "users/" + _user.user_id + "/smiles/" + docRef.id),
-						{ smiles: [] }
-					);
-					if (props.onPostSubmit)
-						props.onPostSubmit({ [docRef.id]: snap.data() });
-					console.log("Created post " + docRef.id);
-				}
+				};
+				const docRef = await addDoc(collectionRef, docData);
+				setPickedTrack(null);
+				await setDoc(
+					doc(_dbRef, "users/" + _user.user_id + "/smiles/" + docRef.id),
+					{ smiles: [] }
+				);
+				if (props.onPostSubmit) props.onPostSubmit({ [docRef.id]: docData });
+				console.log("Created post " + docRef.id);
 			} catch (e) {
 				console.log(e);
 			}

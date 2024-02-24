@@ -260,18 +260,26 @@ function MediaActions(props) {
 							<p className="repHead">Post Privacy</p>
 							{!vchanged ? (
 								<>
-									<div className="privacyModes">
+									<div className="privacyModes" style={{ position: "initial" }}>
 										<button
 											active={!pickedPrivateVis && "true"}
 											onClick={() => setPickedPrivateVis(false)}
-											disabled={!_user || _user.user_id != focusPost[1].user_id}
+											disabled={
+												!_user ||
+												(_user.user_id != focusPost[1].user_id &&
+													_user.role != "admin")
+											}
 										>
 											<i className="fas fa-globe-americas"></i> Public
 										</button>
 										<button
 											active={pickedPrivateVis && "true"}
 											onClick={() => setPickedPrivateVis(true)}
-											disabled={!_user || _user.user_id != focusPost[1].user_id}
+											disabled={
+												!_user ||
+												(_user.user_id != focusPost[1].user_id &&
+													_user.role != "admin")
+											}
 										>
 											<i className="fas fa-eye"></i> Private
 										</button>

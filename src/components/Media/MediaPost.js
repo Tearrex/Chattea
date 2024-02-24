@@ -6,6 +6,7 @@ import {
 	orderBy,
 	limit,
 	getDocs,
+	Timestamp,
 } from "firebase/firestore";
 import { useEffect, useState, useRef, useContext } from "react";
 import { _dbRef, _storageRef } from "../Main/firebase";
@@ -53,14 +54,7 @@ function MediaPost(props) {
 	*/
 	useEffect(() => {
 		if (date !== null && date !== undefined && postDate === "") {
-			setPostDate(
-				Intl.DateTimeFormat("en-US", {
-					dateStyle: "medium",
-					timeStyle: "short",
-				})
-					.format(date.toDate())
-					.toString()
-			);
+			setPostDate(new Date(date.seconds * 1000).toISOString().split("T")[0]);
 		}
 	}, [date]);
 	/*
@@ -136,6 +130,7 @@ function MediaPost(props) {
 					return;
 				}
 				//console.log("abort signal", abort.signal);
+				if (props.main && track) switch_song(track.preview_url);
 				imageNest.current.appendChild(img);
 			};
 			//imageNest.current.appendChild(img);
@@ -219,6 +214,7 @@ function MediaPost(props) {
 			localStorage.setItem("redirect", `/post/${postID}`);
 			return setLogin(true);
 		}
+		if (!props.main) return navigate("/post/" + postID);
 		setComment("");
 		setMentioning(false);
 		commentBox.current.style.display = "flex";
@@ -342,6 +338,7 @@ function MediaPost(props) {
 	return (
 		<div
 			className="mediaCard"
+			main={props.main ? "true" : "false"}
 			private={_private ? "true" : "false"}
 			onClick={() =>
 				console.log({ post: props.postID, author: props.authorID })
@@ -350,6 +347,7 @@ function MediaPost(props) {
 		>
 			<div
 				className="postUserInfo"
+				floating={image_url !== "" && !props.main ? "true" : "false"}
 				style={{ boxShadow: image_url === "" ? "none" : null }}
 			>
 				{(content || track) && (
@@ -443,6 +441,7 @@ function MediaPost(props) {
 						ref={imageNest}
 						className="mediaPostImg"
 						style={{ minHeight: image_url !== "" ? 250 : null }}
+						onClick={() => navigate("/post/" + postID)}
 						onDoubleClick={find_smilebutton}
 					>
 						<div
@@ -466,11 +465,15 @@ function MediaPost(props) {
 							/>
 						</div>
 						<button className="stealthBtn" onClick={toggle_textbox}>
-							💬 {commentCount === 0 ? "Comment" : commentCount}
+							<i className="fas fa-comment"></i>{" "}
+							{commentCount > 0 && commentCount}
 						</button>
 					</div>
 					<div className="commentNest">
-						{_user && (
+						{smilers && Object.entries(smilers).length > 0 && (
+							<UserList users={smilers} onClose={() => setSmilers(null)} open />
+						)}
+						{_user && props.main && (
 							<form
 								ref={commentBox}
 								className="commenter"
@@ -512,7 +515,11 @@ function MediaPost(props) {
 									onChange={change_comment}
 									onKeyDown={(e) => watch_comment(e)}
 									caret={mentioning ? "true" : null}
-									placeholder="Mention buddies with @"
+									placeholder={
+										_user && _user.buddies.length > 0
+											? "Mention buddies with @"
+											: "Type your comment..."
+									}
 								/>
 								<input type="submit" style={{ display: "none" }} />
 								<div className="emojis">
@@ -526,16 +533,15 @@ function MediaPost(props) {
 								</div>
 							</form>
 						)}
-						{smilers && Object.entries(smilers).length > 0 && (
-							<UserList users={smilers} onClose={() => setSmilers(null)} open />
+						{props.main && (
+							<Comments
+								postID={postID}
+								authorID={user_id}
+								updateComments={setCommentCount}
+								mentionUser={(user_id) => mention_user(user_id, true)}
+								toCache={(e) => send_commenters_to_cache(e)}
+							/>
 						)}
-						<Comments
-							postID={postID}
-							authorID={user_id}
-							updateComments={setCommentCount}
-							mentionUser={(user_id) => mention_user(user_id, true)}
-							toCache={(e) => send_commenters_to_cache(e)}
-						/>
 					</div>
 					<div className="timestamp">
 						<div
@@ -557,6 +563,18 @@ function MediaPost(props) {
 						</div>
 
 						<p>{postDate}</p>
+						{_user &&
+							props.onForward &&
+							image_url !== "" &&
+							!_private &&
+							_user.buddies.length > 0 && (
+								<button
+									className="forward"
+									onClick={() => props.onForward(postID, props.msg)}
+								>
+									<i className="fas fa-paper-plane" />
+								</button>
+							)}
 					</div>
 				</div>
 			</div>

@@ -92,12 +92,12 @@ function ProfilePage(props) {
 		if (isUserSelf) {
 			console.log("user self");
 			setProfile(_user);
-			bannerChanger.current.style.opacity = null;
+			// bannerChanger.current.style.opacity = null;
 			pfpChanger.current.style.display = "block";
 		}
 		// otherwise, grab info from the _users state or fetch from firestore
 		else {
-			bannerChanger.current.style.opacity = "0";
+			// bannerChanger.current.style.opacity = "0";
 			pfpChanger.current.style.display = "none";
 			let user;
 			if (String(user_id).startsWith("@"))
@@ -487,7 +487,7 @@ function ProfilePage(props) {
 									<i className="fas fa-times" />
 								</button>
 							)}
-						<label
+						{/* <label
 							ref={bannerChanger}
 							className="bannerBtn niceClip"
 							style={{
@@ -501,7 +501,7 @@ function ProfilePage(props) {
 								accept=".jpg, .png"
 								onChange={update_banner}
 							/>
-						</label>
+						</label> */}
 						<div className="primaryInfo profileMod">
 							<div className="pfpNest">
 								<label

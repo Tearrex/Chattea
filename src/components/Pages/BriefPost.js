@@ -5,6 +5,7 @@ import { _dbRef } from "../Main/firebase";
 import MediaPost from "../Media/MediaPost";
 import { MembersContext, UserContext } from "../Main/Contexts";
 import MediaActions from "../Media/MediaActions";
+import UserList from "../Buddies/UserList";
 
 function BriefPost() {
 	const navigate = useNavigate();
@@ -39,16 +40,37 @@ function BriefPost() {
 	}, [cache]);
 	const { _user, _setUser } = useContext(UserContext);
 	const { _users, _setUsers } = useContext(MembersContext);
+	const [changeVisibility, setChangeVisibility] = useState(false);
+	const [forwarding, setForwarding] = useState(false);
+	const [focusing, setFocusing] = useState(false);
 	const [post, setPost] = useState(null);
 	const { post_id } = useParams();
 	useEffect(() => {
 		if (post_id !== undefined) {
 			console.log("focused post: " + post_id);
+			// check local cache before firestore
+			let posts = localStorage.getItem("post_cache");
+			if (posts) {
+				posts = JSON.parse(posts);
+				const hit = posts[post_id];
+				if (hit) {
+					console.log("loaded post from cache");
+					return setPost(hit);
+				}
+			}
 			const _doc = doc(_dbRef, "posts/" + post_id);
 			const _query = getDoc(_doc).then((s) => {
 				if (s.exists()) {
 					var _data = s.data();
 					setPost(_data);
+					if (posts) {
+						posts = { ...posts, [post_id]: { ..._data } };
+						localStorage.setItem("post_cache", JSON.stringify(posts));
+					} else
+						localStorage.setItem(
+							"post_cache",
+							JSON.stringify({ [post_id]: _data })
+						);
 				}
 			});
 		}
@@ -84,6 +106,29 @@ function BriefPost() {
 		//clamp(400px, 100%, 600px)
 		<div className="postPage" style={{ marginTop: 80, paddingTop: "1rem" }}>
 			<div id="audionest"></div>
+			{focusing && (
+				<MediaActions
+					focusPost={[post_id, post]}
+					onDelete={() => navigate("/u/" + post.user_id)}
+					setFocusPost={() => setFocusing(false)}
+					visibilityContext={{ changeVisibility, setChangeVisibility }}
+				/>
+			)}
+			{forwarding && (
+				<UserList
+					users={Object.values(_user.buddies)}
+					open
+					chat
+					onClose={() => setForwarding(false)}
+					onSelect={(buddy_id) => {
+						localStorage.setItem(
+							"forward_post",
+							JSON.stringify({ _id: post_id, ...post })
+						);
+						navigate("/chats/" + buddy_id);
+					}}
+				/>
+			)}
 			{post === null ? (
 				<div className="postNotFound">
 					<h1 style={{ color: "#fff", fontWeight: "normal" }}>
@@ -97,6 +142,12 @@ function BriefPost() {
 					replaceImg={true}
 					postID={post_id}
 					msg={post}
+					main
+					onForward={(id, data) => setForwarding(true)}
+					setFocusPost={(vis) => {
+						setChangeVisibility(vis || false);
+						setFocusing(true);
+					}}
 					authorID={post.user_id}
 					toCache={(e) => send_commenters_to_cache(e)}
 				/>

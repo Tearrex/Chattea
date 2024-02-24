@@ -283,9 +283,11 @@ function UserPanel(props) {
 							<i className="fas fa-bell"></i>
 						</button>
 					)}
-					<button onClick={() => navigate("/chats")}>
-						<i className="fas fa-comment"></i>
-					</button>
+					{_user && Array.from(_user.buddies).length > 0 && (
+						<button onClick={() => navigate("/chats")}>
+							<i className="fas fa-envelope"></i>
+						</button>
+					)}
 				</div>
 			</div>
 		</>

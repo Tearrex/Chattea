@@ -78,8 +78,9 @@ function SmileButton(props) {
 				post={_postID}
 			>
 				<input ref={check} type="checkbox" onClick={smile} />
-				<span className="smile stealthBtn">{smiled ? "" : " Smile"}</span>
-				{/*<span>{smiled ? "😊" : "🙂"}</span>*/}
+				<span className="smile stealthBtn">
+					{smiled ? "😊 +1" : "🙂 Smile"}
+				</span>
 			</label>
 		);
 	} else {

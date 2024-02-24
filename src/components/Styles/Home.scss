@@ -1465,6 +1465,7 @@ p {
 .mediaCard,
 .brochure {
 	display: flex;
+	position: relative;
 	justify-self: center;
 	flex-flow: column;
 	width: 100%;
@@ -1474,6 +1475,10 @@ p {
 	grid-column: auto / span 2;
 	&:hover #richImage {
 		transform: scale(1.1);
+	}
+	.pActions {
+		outline: none;
+		border: none;
 	}
 }
 .postActions:hover .deletePost {
@@ -1513,19 +1518,18 @@ p {
 
 .timestamp {
 	color: rgb(98, 98, 98);
-	background-color: #e5e5e5;
+	background-color: $foreMain;
 	text-align: right;
 	margin: 0;
 	z-index: 1;
 	display: flex;
-	align-items: stretch;
+	align-items: center;
 	flex-flow: row;
 	border-radius: 0 0 $boxRad $boxRad;
 	position: relative;
 	p {
 		margin: 0;
 		flex: 100%;
-		padding: 1rem;
 	}
 	img {
 		margin: 0 auto;
@@ -1539,10 +1543,18 @@ p {
 		flex-shrink: 0;
 	}
 	.lock,
-	.public {
+	.public,
+	button {
+		height: 100%;
 		aspect-ratio: 1/1;
 		padding: 1rem;
 		font-size: 1.2rem;
+	}
+	button.forward {
+		background: none;
+		outline: none;
+		border: none;
+		color: $secondFore;
 	}
 	.tooltip.lock[isauthor] {
 		color: $niceOrange;
@@ -1700,6 +1712,11 @@ p {
 	flex: 0;
 }
 .postActions button,
+.postActions .smile {
+	background: #000;
+	color: $mainFore;
+}
+.postActions button,
 .postActions label {
 	flex: 50%;
 	border: none;
@@ -1710,16 +1727,44 @@ p {
 		box-shadow 0.2s ease-in;
 }
 .postActions .smile {
-	background-color: $richSmile;
-	color: #fff;
+	color: $mainFore;
 	width: 100%;
 }
-.postActions .smile:hover {
-	background-color: $richSmile;
-}
 .postActions .smileButton input:checked + span {
-	background-color: $paleSmile;
+	color: $niceOrange;
 	cursor: default;
+}
+.mediaCard[main="false"] {
+	#mainTrack p,
+	#mainTrack a {
+		display: none;
+	}
+	.mediaContent {
+		width: max-content;
+	}
+}
+.postUserInfo[floating="true"] {
+	position: absolute;
+	top: 0;
+	width: 100%;
+	padding: 0;
+	z-index: 2;
+	border-radius: 0;
+	background: linear-gradient(
+		to bottom,
+		rgba($color: #000, $alpha: 1),
+		rgba($color: #000, $alpha: 0)
+	);
+	.top {
+		padding: 10px;
+	}
+	p {
+		display: none;
+	}
+	.track {
+		// width: 50%;
+		align-self: flex-start;
+	}
 }
 .postUserInfo {
 	text-align: center;
@@ -1786,8 +1831,13 @@ p {
 	}
 	.featureStar a,
 	.private a,
+	button.main,
 	span {
 		color: $niceOrange;
+	}
+	img {
+		width: 100%;
+		border-radius: 0.5rem;
 	}
 	button {
 		padding: 15px 0;
@@ -1831,6 +1881,9 @@ p {
 		}
 		p {
 			margin: 0;
+			text-align: left;
+			line-height: 2rem;
+			width: 100%;
 		}
 	}
 	.repBody .setting {
@@ -1930,6 +1983,8 @@ p {
 		overflow: hidden;
 		button {
 			font-size: 1.5rem;
+			border: none;
+			outline: none;
 			background: none;
 		}
 		button:hover {
