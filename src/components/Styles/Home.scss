@@ -5,10 +5,8 @@
 // this file getting out of hand...
 #home {
 	margin-bottom: 30px;
-	margin-top: 80px; // top margin for navbar
 	display: flex;
 	flex-flow: column;
-	gap: 10px;
 	button {
 		outline: none;
 		border: none;
@@ -256,16 +254,20 @@ body {
 		font-size: 1.5rem;
 		background: none;
 		color: #fff;
+		background-color: $foreMain;
+		border-radius: 100%;
 		border: none;
 		outline: none;
 		aspect-ratio: 1/1;
 		height: 100%;
+
 	}
 	button[attention="true"] > i {
 		animation: hot 1s linear infinite;
 	}
 	.profile {
 		display: flex;
+		gap: 10px;
 		flex-flow: row-reverse;
 		align-items: stretch;
 		position: relative;
@@ -334,18 +336,15 @@ body {
 		border-color: transparent transparent $attentionBack transparent;
 	}
 }
-.persistor {
-	position: fixed;
-	width: 100%;
-	top: 0;
-	z-index: 2;
-}
 .teaBar {
+	width: 100%;
 	z-index: 5;
 	top: 0;
 	display: flex;
 	flex-flow: column;
 	align-items: center;
+	position: sticky;
+	top: 0;
 }
 .chattea {
 	white-space: nowrap;
@@ -405,6 +404,7 @@ body {
 	text-align: center;
 	justify-content: center;
 	justify-items: center;
+	min-height: 100vh;
 }
 .center {
 	position: fixed;
@@ -775,6 +775,28 @@ p {
 		flex-flow: row;
 		width: 100%;
 		gap: 10px;
+		label[active="true"] button {
+			background-color: $niceOrange;
+			color: $lightText;
+		}
+		button.spotify {
+			color: #1db954;
+			&[active="true"] {
+				background-color: #1db954;
+				color: $lightText;
+			}
+		}
+		button.main {
+			color: $niceOrange;
+		}
+		button {
+			height: 100%;
+			aspect-ratio: 1/1;
+			font-size: 1.5rem;
+			border-radius: 100%;
+			color: $mainFore;
+			background-color: $foreMain;
+		}
 	}
 	.trackList {
 		display: grid;
@@ -1012,27 +1034,14 @@ p {
 			left: 15%;
 		}
 	}
-	&::before {
-		content: "\f002";
-		position: absolute;
-		color: #fff;
-		top: 50%;
-		transform: translateY(-50%);
-		left: 1rem;
-		font-size: 1.5rem;
-	}
-	&[searching="false"]::before {
-		content: "\f27a" !important;
-	}
-	input {
-		padding-left: 3rem !important;
-	}
 }
 
 .subPop {
 	display: flex;
 	flex-flow: column;
-	z-index: 1;
+	z-index: 3;
+	position: sticky;
+	top: 80px;
 }
 .subPop .verify {
 	color: $textMain;
@@ -1321,6 +1330,9 @@ p {
 		display: flex;
 		flex-flow: column;
 		gap: 0.5rem;
+		button.music {
+			color: #1db954;
+		}
 		button {
 			box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 			font-size: 1.3rem;
@@ -1840,7 +1852,7 @@ p {
 		border-radius: 0.5rem;
 	}
 	button {
-		padding: 15px 0;
+		padding: 15px;
 		border: none;
 		background: #2b3137;
 		color: rgba(255, 255, 255, 0.5);
@@ -1884,6 +1896,10 @@ p {
 			text-align: left;
 			line-height: 2rem;
 			width: 100%;
+		}
+		button.main {
+			background-color: $foreMain;
+			border-radius: 100vw;
 		}
 	}
 	.repBody .setting {

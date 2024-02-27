@@ -8,12 +8,18 @@ import {
 	doc,
 	setDoc,
 	getDoc,
+	query,
+	orderBy,
+	limit,
+	getDocs,
 } from "firebase/firestore";
 import { useAuth, _dbRef } from "../Main/firebase";
 import { useContext, useEffect, useState } from "react";
 import { MembersContext, showLogin, UserContext } from "../Main/Contexts";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import MediaPost from "../Media/MediaPost";
+import MediaActions from "../Media/MediaActions";
 function Home(props) {
 	const navigate = useNavigate();
 	const { privateView } = props;
@@ -23,13 +29,33 @@ function Home(props) {
 	const [suggestions, setSuggestions] = useState([]);
 	const [mutuals, setMutuals] = useState([]);
 
+	const [posts, setPosts] = useState({});
+	const [focusPost, setFocusPost] = useState(null);
+	const [changeVisibility, setChangeVisibility] = useState(false);
+	async function populate_buddies_page(buddies) {
+		console.log("populating...");
+		let _posts = {};
+		let hops = 0;
+		for (let u = 0; u < buddies.length; u++) {
+			if (_posts.length >= 4 || hops >= 2) break;
+			const buddy_id = buddies[u];
+			const pageRef = collection(_dbRef, "users", buddy_id, "posts");
+			const pageQuery = query(pageRef, orderBy("date", "desc"), limit(1));
+			const _snap = await getDocs(pageQuery);
+			if (!_snap.empty) {
+				console.log("got post", _snap.docs[0].id);
+				_posts[_snap.docs[0].id] = _snap.docs[0].data();
+				hops = 0;
+			} else hops++;
+		}
+		if (Object.entries(_posts).length > 0) setPosts({ ...posts, ..._posts });
+	}
 	async function check_cache(cache_list) {
 		let _toCache = {};
 		for (let i = 0; i < cache_list.length; i++) {
 			const user_id = cache_list[i];
 			if (_user.user_id === user_id || _users[user_id]) continue;
 			const userRef = doc(_dbRef, "users", user_id);
-			console.log("GOOGLED QUERY");
 			const _doc = await getDoc(userRef);
 			if (_doc.exists()) {
 				var _json = { user_id: _doc.id, ..._doc.data() };
@@ -83,30 +109,20 @@ function Home(props) {
 		check_cache(toCache);
 		setSuggestions(suggs);
 		setMutuals(_mutuals);
+		if (
+			privateView &&
+			Object.entries(posts).length === 0 &&
+			_mutuals.length > 0
+		)
+			populate_buddies_page(_mutuals);
 	}, [_users, _user]);
-	async function postMessage(_content, imgFunc = null) {
-		try {
-			// now post!
-			const docRef = await addDoc(collection(_dbRef, "posts"), {
-				content: _content,
-				date: Timestamp.now(),
-				image_url: "",
-				//smiles: [],
-				user_id: _user.user_id,
-			});
-			//'users/' + props.author + '/smiles/' + _postID
-			await setDoc(
-				doc(_dbRef, "users/" + _user.user_id + "/smiles/" + docRef.id),
-				{ smiles: [] }
-			);
-			console.log("Created post " + docRef.id);
-			if (imgFunc !== null) {
-				//start uploading user file, after we obtain the created post ID
-				imgFunc(docRef.id);
-			}
-		} catch (e) {
-			console.log(e);
-		}
+	async function postMessage(post) {
+		if (!privateView) return;
+		console.log("append post", Object.keys(post).at(0));
+		setPosts({
+			[Object.keys(post).at(0)]: Object.values(post).at(0),
+			...posts,
+		});
 	}
 	useEffect(() => {
 		document.getElementById("welcomer").style.display = null;
@@ -117,30 +133,24 @@ function Home(props) {
 			<div id="home" className="clamper">
 				{_user ? (
 					<>
+						<Submitter
+							onPostSubmit={postMessage}
+							privateMode={privateView || false}
+						/>
 						<div className="privacyModes">
 							<button
 								active={!privateView && "true"}
 								onClick={() => navigate("/main")}
 							>
-								<i className="fas fa-globe-americas"></i> Public
+								<i className="fas fa-globe-americas"></i> Explore Page
 							</button>
 							<button
 								active={privateView && "true"}
 								onClick={() => navigate("/private")}
 							>
-								<i className="fas fa-eye"></i> Private
+								<i className="fas fa-user-friends"></i> Buddies Page
 							</button>
 						</div>
-						{privateView === undefined ? (
-							<Submitter onMessageSend={postMessage} />
-						) : (
-							<h2 style={{ color: "#fff" }} className="privatePrompt">
-								<Link to={"/u/" + _user.user_id + "/p"}>
-									Visit your profile
-								</Link>{" "}
-								to post something private
-							</h2>
-						)}
 					</>
 				) : (
 					<h1 style={{ opacity: 0.5, color: "#fff" }}>
@@ -153,6 +163,14 @@ function Home(props) {
 						<MediaFeed private={false} />
 					) : (
 						<div className="infinite-scroll-component">
+							{focusPost && (
+								<MediaActions
+									focusPost={focusPost}
+									// onDelete={delete_post}
+									setFocusPost={setFocusPost}
+									visibilityContext={{ changeVisibility, setChangeVisibility }}
+								/>
+							)}
 							<div className="privateAlert" style={{ gridColumn: "1/-1" }}>
 								<div
 									className="bRelation"
@@ -170,7 +188,13 @@ function Home(props) {
 											>
 												<img src={_users[m].pfp} alt="user pic" />
 												<p>
-													@{_users[m].username} <i className="fas fa-eye"></i>
+													@{_users[m].username}
+													{_users[m] && _users[m].about && (
+														<>
+															<br />
+															<small>"{_users[m].about}"</small>
+														</>
+													)}
 												</p>
 												{/* <small>
 													<i class="fas fa-user-friends"></i> <b>+{x.count}</b>{" "}
@@ -180,30 +204,64 @@ function Home(props) {
 										);
 									})}
 								</div>
-								{mutuals.length > 0 && (
-									<h2>
-										<i className="fas fa-globe-americas"></i> Your buddies know
-										these users
-									</h2>
-								)}
+							</div>
+							{Object.entries(posts)
+								.sort((a, b) =>
+									a[1].date.seconds > b[1].date.seconds ? -1 : 1
+								)
+								.map((post, index) => {
+									return (
+										<MediaPost
+											key={post[0]}
+											postID={post[0]}
+											main
+											msg={post[1]}
+											setFocusPost={(vis = false) => {
+												setFocusPost(post);
+												setChangeVisibility(vis);
+											}}
+											authorID={post[1].user_id}
+										/>
+									);
+								})}
+							{Object.entries(posts).length > 0 && (
 								<div
-									className="exploreBuddies"
-									style={{
-										display:
-											Object.entries(suggestions).length > 0 ? null : "none",
-									}}
-								>
-									<div className="bRelation">
-										{suggestions &&
-											Object.values(suggestions).map((x, i) => (
-												<Link to={"/u/" + x.id} className="bCard" key={i}>
-													<img src={_users[x.id].pfp} alt="user pic" />
-													<p>@{_users[x.id].username}</p>
-												</Link>
-											))}
+									className="mediaCard empty"
+									style={{ gridColumn: "auto / span 2" }}
+								/>
+							)}
+							{Object.entries(suggestions).length > 0 && (
+								<div className="privateAlert" style={{ gridColumn: "1/-1" }}>
+									<h2>
+										<i className="fas fa-globe-americas"></i> You might know...
+									</h2>
+									<div
+										className="exploreBuddies"
+										style={{
+											display:
+												Object.entries(suggestions).length > 0 ? null : "none",
+										}}
+									>
+										<div className="bRelation">
+											{suggestions &&
+												Object.values(suggestions).map((x, i) => (
+													<Link to={"/u/" + x.id} className="bCard" key={i}>
+														<img src={_users[x.id].pfp} alt="user pic" />
+														<p>
+															@{_users[x.id].username}
+															{_users[x.id] && _users[x.id].about && (
+																<>
+																	<br />
+																	<small>{_users[x.id].about}</small>
+																</>
+															)}
+														</p>
+													</Link>
+												))}
+										</div>
 									</div>
 								</div>
-							</div>
+							)}
 						</div>
 					))}
 				<div id="audionest"></div>

@@ -25,7 +25,7 @@ function Submitter(props) {
 	const [spotifyToken, setSpotifyToken] = useState("");
 	const [pickingTrack, setPickingTrack] = useState(false);
 	const [pickedTrack, setPickedTrack] = useState(null);
-	const [trackResults, setTrackResults] = useState([]);
+	const [trackResults, setTrackResults] = useState(null);
 
 	/*
 	used to prevent the user from spamming, it starts to get expensive!
@@ -65,15 +65,15 @@ function Submitter(props) {
 			setCropSet(false);
 			return setCropMode(false);
 		}
+		setPickingTrack(false);
 		setCropped(false);
 		setCaption("");
-		imageField.current.value = null;
+		document.getElementById("postFile").value = null;
 		setLocalFile(null);
 		fileNest.current.style.maxHeight = "0";
 	}
 	const fileNest = useRef();
 	const image = useRef();
-	const imageField = useRef();
 
 	const _progress = useRef();
 	const [uploading, setUploading] = useState(false);
@@ -89,7 +89,6 @@ function Submitter(props) {
 		if (e.target.value.length > 45) return;
 		setCaption(e.target.value);
 	}
-	const [canSave, setSave] = useState(false);
 
 	const [compressing, setCompressing] = useState(false);
 	const compProgress = useRef();
@@ -147,9 +146,12 @@ function Submitter(props) {
 	}
 	async function postMessage(e) {
 		e.preventDefault();
-		if (!currentUser || canSave === false) return;
 		if (uploading || compressing) return;
-		if (_text.trim() === "" && localFile === null) return;
+		if (
+			!currentUser ||
+			(_text.trim() === "" && localFile === null && !pickedTrack)
+		)
+			return;
 		if (lastAction > 0 && cooldown >= Date.now() - lastAction) {
 			alert(
 				"Spam Protection: Please wait " +
@@ -266,19 +268,6 @@ function Submitter(props) {
 		setLastAction(Date.now());
 		setCooldown(cooldown + cooldownIncrement);
 	}
-	useEffect(() => {
-		if (_text.trim() === "" && localFile === null) setSave(false);
-		else setSave(true);
-	}, [_text, localFile]);
-	useEffect(() => {
-		if (!canSave) {
-			subButton.current.style.opacity = "0.5";
-			subButton.current.style.cursor = "default";
-		} else {
-			subButton.current.style.opacity = "1";
-			subButton.current.style.cursor = "pointer";
-		}
-	}, [canSave]);
 	useEffect(() => {
 		if (pickingTrack && !spotifyToken) {
 			let token = localStorage.getItem("spotify_token");
@@ -514,6 +503,37 @@ function Submitter(props) {
 		<div className="subPop" id="subPop">
 			<form className="submission" onSubmit={postMessage}>
 				<div className="top">
+					<label
+						className="subWidget photo"
+						style={{
+							borderRadius: "50%",
+						}}
+						active={localFile !== null ? "true" : "false"}
+					>
+						<button
+							onClick={(e) => {
+								e.preventDefault();
+								document.getElementById("postFile").click();
+							}}
+						>
+							<i class="fas fa-image"></i>
+						</button>
+						<input
+							type="file"
+							id="postFile"
+							accept=".png, .jpg, .jpeg"
+							style={{ display: "none" }}
+							onChange={(e) => onFileChange(e)}
+							disabled={!currentUser || !currentUser.emailVerified}
+						/>
+					</label>
+					<button
+						active={pickedTrack || pickingTrack ? "true" : "false"}
+						onClick={toggle_music_view}
+						className="spotify"
+					>
+						<i class="fab fa-spotify"></i>
+					</button>
 					<div
 						className="subVerbose"
 						searching={pickingTrack ? "true" : "false"}
@@ -541,14 +561,17 @@ function Submitter(props) {
 							}
 							autoComplete="off"
 						></input>
-						<input
+						{/* <input
 							ref={subButton}
 							type="submit"
 							id="subBtn"
 							className="subWidget"
 							value=""
-						/>
+						/> */}
 					</div>
+					<button onClick={postMessage} className="main">
+						<i className="fas fa-paper-plane" />
+					</button>
 				</div>
 				{pickingTrack && !spotifyToken && (
 					<p className="musicLoad">
@@ -646,42 +669,7 @@ function Submitter(props) {
 						</div>
 					</>
 				)}
-				<div className="bottom">
-					<label
-						className="subWidget photo"
-						style={{
-							borderRadius: "50%",
-						}}
-						active={localFile !== null ? "true" : "false"}
-					>
-						<i class="fas fa-image"></i>{" "}
-						<span
-							style={{
-								textDecoration:
-									!currentUser || !currentUser.emailVerified
-										? "line-through"
-										: null,
-							}}
-						>
-							{!localFile ? "Attach" : "Change"} Image
-						</span>
-						<input
-							ref={imageField}
-							type="file"
-							accept=".png, .jpg, .jpeg"
-							style={{ display: "none" }}
-							onChange={(e) => onFileChange(e)}
-							disabled={!currentUser || !currentUser.emailVerified}
-						/>
-					</label>
-					<button
-						active={pickedTrack || pickingTrack ? "true" : "false"}
-						onClick={toggle_music_view}
-						className="spotify"
-					>
-						<i class="fab fa-spotify"></i> Share Song
-					</button>
-				</div>
+				{/* <div className="bottom"></div> */}
 			</form>
 			<div ref={subWarning} className="subWarning">
 				<div ref={compProgress} className="compProgress"></div>
@@ -748,7 +736,7 @@ function Submitter(props) {
 								)}
 								{!pickedTrack && (
 									<button className="music" onClick={toggle_music_view}>
-										<i class="fas fa-music"></i>
+										<i class="fab fa-spotify"></i>
 									</button>
 								)}
 							</>
