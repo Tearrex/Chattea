@@ -107,9 +107,6 @@ function FAQPage(props) {
 						<br />
 					</p>
 				</FAQuestion>
-				<FAQuestion question="Can I edit my posts?" emote="✏️">
-					<p>You can only delete your posts along with associated comments.</p>
-				</FAQuestion>
 				<FAQuestion
 					question="What about my data?"
 					buttonId="privacy"
@@ -180,9 +177,6 @@ function FAQPage(props) {
 						profile (username and bio) may not propagate for others right away.
 					</p>
 				</FAQuestion>
-				<FAQuestion question="But why tea?" emote="🤔">
-					<p>It's just catchy...</p>
-				</FAQuestion>
 				<div className="faqactions">
 					{_user === undefined ? (
 						<>
@@ -200,72 +194,35 @@ function FAQPage(props) {
 						</button>
 					)}
 				</div>
-
-				<hr style={{ width: "100%" }} />
-				<h2 id="discretions">
-					<i class="fas fa-info-circle"></i> App Discretions
-				</h2>
-				<FAQuestion
-					question="Notifications"
-					emote={<i className="fas fa-bell" />}
-				>
-					<p>
-						We have the following icons flash on the navigation bar to display
-						realtime notifications:
-						<br />
-						<br />
-						<i className="fas fa-bell hoticon" /> New comments, mentions, or
-						buddies
-						<br />
-						<i className="fas fa-comment hoticon" /> New chat message
-					</p>
-				</FAQuestion>
 				<FAQuestion
 					question="Chat Messaging"
 					buttonId="chats"
 					emote={<i className="fas fa-envelope"></i>}
 				>
 					<p>
-						You can now send direct messages to your{" "}
-						<Link to="#" onClick={() => open_module(null, "#buddies")}>
-							buddies
-						</Link>
-						. These messages are end-to-end encrypted, meaning only you and your
-						message recipient will be able to decipher the conversation going on
-						between you two.
-						<br />
-						<br />
-						Existing users must generate a cryptographic key pair from their
-						browser before engaging in secure chats. Your public key will be
+						You can now send chat messages to your buddies. These messages are
+						secured with end-to-end encryption when possible, for covert
+						conversations. Existing users must generate a cryptographic key pair
+						from their browser before engaging in secure chats.
+					</p>
+					<p>
+						Your <span style={{ color: "#0f0" }}>public key</span> will be
 						uploaded to our cloud database so your buddies can send you
 						encrypted messages.
 					</p>
-					<img src="/keygen.jpg" />
+					<img src="/keygen.svg" />
 					<p>
-						<u>We do not save your private key</u>. Your private key remains in
-						your browser's local storage for decryption of incoming message
-						ciphertext. This, however, may pose an inconvenience when using
-						multiple devices for the same account since each will need to
-						generate an independent key-pair which will overwrite your existing
-						public key and deem previous messages indecipherable.
+						Your <span style={{ color: "#f00" }}>private key</span> remains in
+						your browser's local storage for decrypting incoming secure chats.
+						It's recommended to use a single device since each browser session
+						would have to overwrite your existing keys to read secure chats.
 					</p>
-					<img src="/e2ee.jpg" />
+					<img src="/e2ee.svg" />
 					<p>
-						You can cease to receive further messages from buddies by removing
-						them. You also have the option of purging your message channels.
-						<br />
-						<br />
-						Secure chats is a <span className="beta">BETA</span> feature with
-						the following limitations:
-						<ul>
-							<li>Text-only realtime conversations</li>
-							<li>No read receipts</li>
-							<li>No typing indicators</li>
-							<li>No private key syncing</li>
-						</ul>
-						Note: Logging out will delete your private key from your browser,
-						losing access to old messages. This is expected behavior of the
-						security constraints.
+						You can message a buddy without their public key by opting for plain
+						chat messaging, which is unencrypted. You have the option of
+						deleting message channels and blocking further messages from users
+						by removing them as your buddy.
 					</p>
 				</FAQuestion>
 				{/* <FAQuestion question="Profanity filter" emote="###">

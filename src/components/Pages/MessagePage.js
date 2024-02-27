@@ -3,7 +3,7 @@ import { MembersContext, UserContext } from "../Main/Contexts";
 import "../Styles/Messaging.scss";
 import { useParams } from "react-router";
 import { Link, useNavigate } from "react-router-dom";
-import { _dbRef } from "../Main/firebase";
+import { _dbRef, useAuth } from "../Main/firebase";
 import {
 	Timestamp,
 	collection,
@@ -21,6 +21,7 @@ import {
 } from "firebase/firestore";
 import UserList from "../Buddies/UserList";
 import { useCollection } from "react-firebase-hooks/firestore";
+import { getAuth } from "firebase/auth";
 
 // keys from plaintext password....
 function str2ab(str) {
@@ -53,6 +54,7 @@ const generateKeys = async () => {
 };
 export default function MessagePage() {
 	const navigate = useNavigate();
+	const currentUser = useAuth();
 	const { user_id } = useParams();
 	const { _user, _setUser } = useContext(UserContext);
 	const { _users, _setUsers } = useContext(MembersContext);
@@ -619,43 +621,44 @@ export default function MessagePage() {
 		else return `${Math.round(seconds / 60)}m ago`;
 	}
 	return (
-		<div className="homeWrapper" style={{ height: "100vh" }}>
+		<div className="homeWrapper" style={{ height: "calc(100vh - 80px)" }}>
 			{securing && (
 				<>
 					<div id="postActionModal">
 						<p className="repHead">Secure Chat feature</p>
 						<div className="repBody">
 							<p>
-								You &{" "}
+								<span>You</span> and{" "}
 								<span>@{_users[user_id] && _users[user_id].username}</span> both
-								have public keys for E2EE.
+								have <span style={{ color: "#0f0" }}>public keys</span> for
+								E2EE.
 							</p>
+							<img src="/e2ee.svg" style={{ marginBottom: "10px" }} />
 							<Link
 								to="/#faq"
-								style={{ margin: "15px 0" }}
+								style={{ marginBottom: "15px" }}
 								onClick={() => localStorage.setItem("faq_jump", "#chats")}
 							>
 								Learn more.
 							</Link>
-							{!insecureMode && securing && (
-								<img src="/e2ee.jpg" style={{ marginBottom: "10px" }} />
+							{!insecureMode && (
+								<button
+									onClick={() => {
+										setSecuring(false);
+										setInsecureMode(true);
+									}}
+								>
+									<i className="fas fa-times" /> Disable Encryption
+								</button>
 							)}
-							<button
-								onClick={() => {
-									setSecuring(false);
-									setInsecureMode(true);
-								}}
-							>
-								<i className="fas fa-times" />{" "}
-								{insecureMode ? "Oh, nevermind" : "Disable Encryption"}
-							</button>
 							{insecureMode && (
 								<button
 									className="main"
 									onClick={() => {
+										setSecuring(false);
 										setInsecureMode(false);
-										// setSecuring(false);
 									}}
+									style={{ color: "#0f0" }}
 								>
 									<i className="fas fa-lock" /> Encrypt My Chats
 								</button>
@@ -681,7 +684,7 @@ export default function MessagePage() {
 							<button onClick={() => setDeletingChannel(false)}>
 								<i className="fas fa-times" /> Cancel
 							</button>
-							<button className="main" onClick={purge_channel}>
+							<button className="main deleteAcc" onClick={purge_channel}>
 								Delete now
 							</button>
 						</div>
@@ -702,12 +705,12 @@ export default function MessagePage() {
 								<br />
 								<u>Previous messages will fail to decrypt for you.</u>
 							</p>
-							<img src="/keygen.jpg" />
+							<img src="/keygen.svg" />
 							<button onClick={() => setRegenerating(false)}>
 								<i className="fas fa-times" /> Cancel
 							</button>
 							<button className="main" onClick={regen_keys}>
-								<i className="fas fa-sync-alt" /> Renew now
+								<i className="fas fa-cog" /> Renew now
 							</button>
 						</div>
 					</div>
@@ -749,6 +752,37 @@ export default function MessagePage() {
 					<div id="chatscontainer">
 						<div className="buddies">
 							{_user &&
+								Object.values(_user.buddies)
+									.filter((b) => _users[b] && !chatChannels[b])
+									.map((buddy_id) => {
+										return (
+											<div
+												className="buddy"
+												key={buddy_id}
+												onClick={() => navigate("/chats/" + buddy_id)}
+												active={user_id === buddy_id ? "true" : "false"}
+											>
+												<img
+													src={_users[buddy_id].pfp}
+													style={{
+														filter:
+															!buddyList[buddy_id] ||
+															!buddyList[buddy_id].available
+																? "grayscale(1)"
+																: null,
+													}}
+												/>
+												<p className="username">
+													{_users[buddy_id].username}
+													<br />
+													<small style={{ opacity: 0.5 }}>
+														<i>Open chat</i>
+													</small>
+												</p>
+											</div>
+										);
+									})}
+							{_user &&
 								Object.entries(chatChannels).map((channel, index) => {
 									return (
 										<div
@@ -785,27 +819,30 @@ export default function MessagePage() {
 										</div>
 									);
 								})}
-							{user_id && !chatChannels[user_id] && (
-								<div
-									className="buddy"
-									onClick={() => navigate("/chats/" + user_id)}
-									active="true"
-								>
-									<img
-										src={_users[user_id].pfp}
-										style={{
-											borderRadius: 0,
-											filter:
-												!buddyList[user_id] || !buddyList[user_id].available
-													? "grayscale(1)"
-													: null,
-										}}
-									/>
-									<span className="username">
-										@{_users[user_id] && _users[user_id].username}
-									</span>
-								</div>
-							)}
+							{user_id &&
+								!chatChannels[user_id] &&
+								_users[user_id] &&
+								!Array.from(_user.buddies).includes(user_id) && (
+									<div
+										className="buddy"
+										onClick={() => navigate("/chats/" + user_id)}
+										active="true"
+									>
+										<img
+											src={_users[user_id].pfp}
+											style={{
+												borderRadius: 0,
+												filter:
+													!buddyList[user_id] || !buddyList[user_id].available
+														? "grayscale(1)"
+														: null,
+											}}
+										/>
+										<span className="username">
+											@{_users[user_id].username}
+										</span>
+									</div>
+								)}
 							<button className="add" onClick={() => setNudging(true)}>
 								{_user &&
 									Array.from(_user.buddies).length > 0 &&
@@ -813,9 +850,9 @@ export default function MessagePage() {
 										(user_id &&
 											!buddyList[user_id] &&
 											!chatChannels[user_id])) && (
-										<span className="hint">My Buddies</span>
+										<span className="hint">Buddies</span>
 									)}
-								<i className="fas fa-plus" />
+								<i className="fas fa-user-friends" />
 							</button>
 						</div>
 						<div className="chatNest">
@@ -832,7 +869,7 @@ export default function MessagePage() {
 										!chatChannels[user_id] && (
 											<div className="tip">
 												<Link to={"/u/" + user_id}>
-													@{_users[user_id].username}
+													@{_users[user_id] && _users[user_id].username}
 												</Link>{" "}
 												must message you first or add you back.
 											</div>
@@ -847,16 +884,19 @@ export default function MessagePage() {
 											<div className="tip">
 												<p>
 													<Link to={"/u/" + user_id}>
-														@{_users[user_id].username}
+														@{_users[user_id] && _users[user_id].username}
 													</Link>{" "}
 													has not shared an encryption key.
 												</p>
-												<button
-													className="crypto"
-													onClick={() => setInsecureMode(true)}
-												>
-													<i className="fas fa-lock-open" /> Send a plain chat?
-												</button>
+												{_users[user_id] && (
+													<button
+														className="crypto"
+														onClick={() => setInsecureMode(true)}
+													>
+														<i className="fas fa-lock-open" /> Send a plain
+														chat?
+													</button>
+												)}
 											</div>
 										)}
 									{((buddyList[user_id] &&
@@ -969,11 +1009,18 @@ export default function MessagePage() {
 										<>
 											{!insecureMode ? (
 												<p className="status">
-													<i className="fas fa-lock" /> Secure{" "}
-													<a href="#" onClick={() => setSecuring(true)}>
+													<i
+														className="fas fa-lock"
+														style={{ color: "#0f0" }}
+													/>{" "}
+													<a
+														href="#"
+														onClick={() => setSecuring(true)}
+														style={{ color: "#0f0" }}
+													>
 														E2EE
 													</a>{" "}
-													chats between you and @{_users[user_id].username}
+													between you and @{_users[user_id].username}
 												</p>
 											) : (
 												<p className="status">
@@ -1000,7 +1047,11 @@ export default function MessagePage() {
 														!forwardedPost && (
 															<>
 																{" "}
-																<a href="#" onClick={() => setSecuring(true)}>
+																<a
+																	href="#"
+																	onClick={() => setSecuring(true)}
+																	style={{ color: "#0f0" }}
+																>
 																	Try Secure Chat
 																</a>
 															</>
@@ -1030,7 +1081,7 @@ export default function MessagePage() {
 									</button>
 								)}
 								{user_id && chatChannels[user_id] ? (
-									<button className="crypto alt" onClick={purge_channel}>
+									<button className="crypto alt delete" onClick={purge_channel}>
 										Delete Channel
 									</button>
 								) : (
