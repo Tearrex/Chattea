@@ -270,7 +270,7 @@ function MediaActions(props) {
 													_user.role != "admin")
 											}
 										>
-											<i className="fas fa-globe-americas"></i> Public
+											<i className="fas fa-globe-americas"></i> Explore
 										</button>
 										<button
 											active={pickedPrivateVis && "true"}
@@ -281,7 +281,7 @@ function MediaActions(props) {
 													_user.role != "admin")
 											}
 										>
-											<i className="fas fa-eye"></i> Private
+											<i className="fas fa-user-friends"></i> Buddies
 										</button>
 									</div>
 								</>

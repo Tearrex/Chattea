@@ -23,7 +23,7 @@ import {
 
 import MediaFeed from "../Media/MediaFeed";
 import { MembersContext, UserContext } from "../Main/Contexts";
-import { _storageRef, _dbRef } from "../Main/firebase";
+import { _storageRef, _dbRef, useAuth } from "../Main/firebase";
 import BuddyButton from "../Buddies/BuddyButton";
 import UserList from "../Buddies/UserList";
 import { Link } from "react-router-dom";
@@ -31,6 +31,7 @@ import MediaActions from "../Media/MediaActions";
 import * as filter from "profanity-filter";
 import Submitter from "../Media/Submitter";
 function ProfilePage(props) {
+	const currentUser = useAuth();
 	const { _user, _setUser } = useContext(UserContext);
 	const { _users, _setUsers } = useContext(MembersContext);
 	const { user_id, visibility } = useParams();
@@ -412,46 +413,28 @@ function ProfilePage(props) {
 			)
 		)
 			return;
-		const postsRef = collection(_dbRef, "posts");
-		const postsQuery = query(postsRef, where("user_id", "==", profile.user_id));
-		const snap = await getDocs(postsQuery);
-		if (snap.docs.length > 0) {
-			for (let i = 0; i < snap.docs.length; i++) {
-				const userPost = snap.docs[i];
-				const commentsRef = collection(
-					_dbRef,
-					"posts/" + userPost.id + "/comments"
-				);
-				const commentsQuery = query(commentsRef);
-				const _snaps = await getDocs(commentsQuery);
-				for (let c = 0; c < _snaps.docs.length; c++) {
-					const comment = _snaps.docs[c];
-					try {
-						await deleteDoc(comment.ref);
-					} catch (e) {
-						alert("failed deleting comment " + comment.id + " recursively", e);
-					}
-				}
-				try {
-					await deleteDoc(userPost.ref);
-				} catch (e) {
-					return alert("failed to delete user post " + userPost.id, e);
-				}
-			}
-		}
-		const _doc = doc(_dbRef, "users/" + profile.user_id);
-		try {
-			deleteDoc(_doc)
-				.then(() => {
-					let users = { ..._users };
-					delete users[profile.user_id];
-					localStorage.setItem("users", JSON.stringify(users));
-					window.location.reload();
-				})
-				.catch((e) => console.log("failed to ban user"));
-		} catch (error) {
-			window.alert("failed to delete user");
-		}
+		const token = await currentUser.getIdToken(true);
+		fetch("https://deleteuser-oj5fff4opa-uc.a.run.app", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json;charset=UTF-8",
+			},
+			body: JSON.stringify({
+				token,
+				user_id: profile.user_id,
+			}),
+		})
+			.catch((e) => {
+				return alert(e.response.data);
+			})
+			.finally(() => {
+				// update local cache
+				let users = { ..._users };
+				delete users[profile.user_id];
+				localStorage.setItem("users", JSON.stringify(users));
+				_setUsers(users);
+				setProfile(null);
+			});
 	}
 	useEffect(() => {
 		document.getElementById("welcomer").style.display = null;
@@ -609,7 +592,7 @@ function ProfilePage(props) {
 										<div className="list">
 											{relatedUsers.map((x, i) => (
 												<Link
-													to={(x !== _user.user_id && "/u/" + x) || "#"}
+													to={"/u/" + x}
 													className="bTooltip"
 													key={i}
 												>
@@ -637,7 +620,7 @@ function ProfilePage(props) {
 										<div className="interact">
 											<Link to={"/chats/" + user_id}>
 												<button className="chatBtn stealthBtn">
-													<i className="fas fa-comment" /> Chat
+													<i className="fas fa-envelope" /> Chat
 												</button>
 											</Link>
 											<BuddyButton buddy={(profile && profile.user_id) || ""} />
@@ -681,20 +664,6 @@ function ProfilePage(props) {
 				</div>
 				{profile && _user && _user.user_id === profile.user_id && (
 					<>
-						<p className="privateAlert profile border">
-							{privateView ? (
-								<>Only your buddies can see your private page.</>
-							) : (
-								<>Anyone can see your public page.</>
-							)}{" "}
-							<Link
-								to="/#faq"
-								onClick={() => localStorage.setItem("faq_jump", "#visibility")}
-							>
-								Learn more.
-							</Link>
-						</p>
-
 						<Submitter
 							onPostSubmit={setLatestPost}
 							privateMode={privateView}
@@ -720,7 +689,9 @@ function ProfilePage(props) {
 						!_users[profile.user_id].buddies.includes(_user.user_id)) ? (
 					<div className="privateAlert">
 						<h2>
-							<i class="fas fa-eye-slash"></i> No Access
+							🤥
+							<br />
+							No Access
 						</h2>
 						<p>{inputName} must add you as their buddy</p>
 						<br />

@@ -551,7 +551,7 @@ function MediaPost(props) {
 						>
 							{_private === true ? (
 								<>
-									<i class="fas fa-lock"></i>
+									<i class="fas fa-user-friends"></i>
 									<span className="tooltext">Private</span>
 								</>
 							) : (
@@ -572,7 +572,7 @@ function MediaPost(props) {
 									className="forward"
 									onClick={() => props.onForward(postID, props.msg)}
 								>
-									<i className="fas fa-paper-plane" />
+									<i className="fas fa-envelope" />
 								</button>
 							)}
 					</div>

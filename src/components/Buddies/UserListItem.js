@@ -7,7 +7,7 @@ function UserListItem(props) {
 	const navigate = useNavigate();
 	const { _user, _setUser } = useContext(UserContext);
 	const { _users, _setUsers } = useContext(MembersContext);
-	const [name, setName] = useState("User");
+	const [name, setName] = useState("");
 	const [pfp, setPfp] = useState("/default_user.png");
 	/*
     The user data is fetched in the BuddyList component,
@@ -26,23 +26,30 @@ function UserListItem(props) {
 		if (props.chat) {
 			return props.onSelect(props.buddy);
 		}
+		if (!_users[props.buddy] && _user.user_id != props.buddy) return;
 		navigate("/u/" + props.buddy);
 		props.toggle();
 	}
 	return (
 		<div className="buddyItem">
 			<div className="buddy" onClick={go_to_profile}>
-				<div
-					className="pfp niceClip"
-					style={{ backgroundImage: "url(" + pfp + ")" }}
-					onClick={(e) => e.preventDefault()}
-				/>
-				@{name}
+				{(_users[props.buddy] || (_user && _user.user_id === props.buddy)) && (
+					<div
+						className="pfp niceClip"
+						style={{ backgroundImage: "url(" + pfp + ")" }}
+						onClick={(e) => e.preventDefault()}
+					/>
+				)}
+				{name && "@"}
+				{name || "null user"}
 				{props.smile && " 🙂"}
 			</div>
-			{_user && props.buddy !== _user.user_id && !props.chat && (
-				<BuddyButton buddy={props.buddy} />
-			)}
+			{_user &&
+				props.buddy !== _user.user_id &&
+				!props.chat &&
+				(_users[props.buddy] || _user.buddies.includes(props.buddy)) && (
+					<BuddyButton buddy={props.buddy} />
+				)}
 		</div>
 	);
 }

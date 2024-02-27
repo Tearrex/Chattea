@@ -84,7 +84,7 @@ function UserList(props) {
 					<i class="fas fa-user-friends"></i> {users.length} buddies
 				</a>
 			)}
-			<div ref={popupRef}>
+			<div ref={popupRef} style={{ position: "absolute" }}>
 				<div
 					className="overlay"
 					style={{ display: "block" }}
@@ -97,18 +97,22 @@ function UserList(props) {
 				<div className="buddiesFrame center">
 					{users &&
 						users.length > 0 &&
-						users.map((buddy) => {
-							return (
-								<UserListItem
-									buddy={buddy}
-									key={buddy}
-									toggle={setOpen}
-									onSelect={props.onSelect}
-									smile={!props.buddies && !props.chat}
-									chat={props.chat ? true : false}
-								/>
-							);
-						})}
+						users
+							.sort((a, b) =>
+								(!_users[a] && _users[b]) || !_users[a] ? -1 : 1
+							)
+							.map((buddy) => {
+								return (
+									<UserListItem
+										buddy={buddy}
+										key={buddy}
+										toggle={setOpen}
+										onSelect={props.onSelect}
+										smile={!props.buddies && !props.chat}
+										chat={props.chat ? true : false}
+									/>
+								);
+							})}
 				</div>
 			</div>
 		</>

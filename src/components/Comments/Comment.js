@@ -82,16 +82,18 @@ function Comment(props) {
 				className="ubadge"
 				style={{ flexShrink: 0 }}
 			>
-				<img
-					src={author ? author.pfp : "/default_user.png"}
-					alt="pfp"
-					style={{ opacity: !author ? 0.5 : null }}
-				/>
+				{author && (
+					<img
+						src={author.pfp}
+						alt="pfp"
+						style={{ opacity: !author ? 0.5 : null }}
+					/>
+				)}
 				<span
 					className="cUser"
 					style={{ fontWeight: !author ? "normal" : null }}
 				>
-					{author ? author.username : <i>Lost User</i>}
+					{author ? author.username : <i>404</i>}
 				</span>
 			</Link>
 			<span className="content">

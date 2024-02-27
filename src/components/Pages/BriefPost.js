@@ -104,7 +104,7 @@ function BriefPost() {
 	}
 	return (
 		//clamp(400px, 100%, 600px)
-		<div className="postPage" style={{ marginTop: 80, paddingTop: "1rem" }}>
+		<div className="postPage" style={{ paddingTop: "1rem" }}>
 			<div id="audionest"></div>
 			{focusing && (
 				<MediaActions

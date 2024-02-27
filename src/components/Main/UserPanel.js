@@ -53,8 +53,8 @@ function UserPanel(props) {
 		localStorage.removeItem("privateKey");
 		localStorage.removeItem("publicKey");
 		localStorage.removeItem("channel_reads");
-		_setUser(undefined);
 		navigate("/");
+		_setUser(undefined);
 	}
 	useEffect(() => {
 		if (show) {
@@ -69,126 +69,18 @@ function UserPanel(props) {
 		if (!deleting) return setDeleting(true);
 		if (!window.confirm(`Delete your @${_user.username} account?`)) return;
 
-		// start deleting public posts
-		const _publicQuery = query(
-			collection(_dbRef, "posts"),
-			where("user_id", "==", _user.user_id)
-		);
-		const _publicDocs = await getDocs(_publicQuery);
-		for (let i = 0; i < _publicDocs.docs.length; i++) {
-			const post = _publicDocs.docs[i];
-
-			// delete post image
-			const imgRef = ref(
-				_storageRef,
-				"images/" + _user.user_id + "/" + post.id
-			);
-			try {
-				await deleteObject(imgRef);
-			} catch (e) {
-				// ignore
-			}
-
-			// delete comments on post
-			const _commentsQuery = query(
-				collection(_dbRef, "posts/" + post.id + "/comments")
-			);
-			const _comments = await getDocs(_commentsQuery);
-			for (let c = 0; c < _comments.docs.length; c++) {
-				const comment = _comments.docs[c];
-				await deleteDoc(comment.ref);
-			}
-
-			// delete smile records for post
-			const smilesRef = doc(
-				_dbRef,
-				"users/" + _user.user_id + "/smiles/" + post.id
-			);
-			try {
-				await deleteDoc(smilesRef);
-			} catch (e) {
-				// ignore
-			}
-
-			// finally, delete post
-			await deleteDoc(post.ref);
-		}
-		// start deleting private posts
-		const _privateQuery = query(
-			collection(_dbRef, "users/" + _user.user_id + "/posts")
-		);
-		const _privateDocs = await getDocs(_privateQuery);
-		for (let i = 0; i < _privateDocs.docs.length; i++) {
-			const post = _privateDocs.docs[i];
-
-			// delete post image
-			const imgRef = ref(
-				_storageRef,
-				"images/" + _user.user_id + "/" + post.id
-			);
-			try {
-				await deleteObject(imgRef);
-			} catch (e) {
-				// ignore
-			}
-			// delete comments on post
-			const _commentsQuery = query(
-				collection(_dbRef, "posts/" + post.id + "/comments")
-			);
-			const _comments = await getDocs(_commentsQuery);
-			for (let c = 0; c < _comments.docs.length; c++) {
-				const comment = _comments.docs[c];
-				await deleteDoc(comment.ref);
-			}
-
-			// delete smile records for post
-			const smilesRef = doc(
-				_dbRef,
-				"users/" + _user.user_id + "/smiles/" + post.id
-			);
-			try {
-				await deleteDoc(smilesRef);
-			} catch (e) {
-				// ignore
-			}
-
-			// finally, delete post
-			await deleteDoc(post.ref);
-		}
-
-		// start deleting user's secure chats
-		const _keyDoc = doc(_dbRef, "pkeys/" + _user.user_id); // user's public key
-		try {
-			await deleteDoc(_keyDoc);
-		} catch (e) {
-			// ignore
-		}
-		const _channelsQuery = query(
-			collection(_dbRef, "messages"),
-			where("users", "array-contains", _user.user_id)
-		);
-		const _channels = await getDocs(_channelsQuery);
-		for (let i = 0; i < _channels.docs.length; i++) {
-			const channel = _channels.docs[i];
-			// delete messages within channel
-			const _chatsQuery = query(
-				collection(_dbRef, "messages/" + channel.id + "/safechats")
-			);
-			const _chats = await getDocs(_chatsQuery);
-			for (let i = 0; i < _chats.docs.length; i++) {
-				const chat = _chats.docs[i];
-				await deleteDoc(chat.ref);
-			}
-			// finally, delete the message channel
-			await deleteDoc(channel.ref);
-		}
-
-		// now delete the user's profile
-		const profileDoc = doc(_dbRef, "users/" + _user.user_id);
-		await deleteDoc(profileDoc);
-
-		// finally, delete authentication account
-		await deleteUser(currentUser);
+		const token = await currentUser.getIdToken(true);
+		await fetch("https://deleteuser-oj5fff4opa-uc.a.run.app", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json;charset=UTF-8",
+			},
+			body: JSON.stringify({
+				token,
+				user_id: _user.user_id,
+			}),
+		});
+		await logout();
 		_setUser(null);
 		localStorage.removeItem("publicKey");
 		localStorage.removeItem("privateKey");
@@ -207,12 +99,10 @@ function UserPanel(props) {
 							</div> */}
 							{deleting && (
 								<>
-									<p>
-										You're about to delete yourself from Chattea, including:
-									</p>
-									<ul>
-										<li>Your public/private posts</li>
-										<li>Your secure chats</li>
+									<p>Delete yourself from Chattea?</p>
+									<ul style={{listStyle: "lower-roman"}}>
+										<li>All your posts</li>
+										<li>All your images</li>
 										<li>Your user profile</li>
 									</ul>
 								</>
@@ -225,6 +115,20 @@ function UserPanel(props) {
 							<button className="deleteAcc" onClick={delete_account}>
 								<i className="fas fa-user-slash" /> Delete Account
 							</button>
+							{/* <button>
+								<i className="fas fa-key" /> Change Password
+							</button> */}
+							{!deleting && (
+								<>
+									<button onClick={() => navigate("/#faq")}>
+										<i className="fas fa-question-circle" />
+										FAQ
+									</button>
+									<button onClick={logout_user}>
+										<i className="fas fa-sign-out-alt"></i> log out
+									</button>
+								</>
+							)}
 						</div>
 					</div>
 					<div
@@ -259,28 +163,14 @@ function UserPanel(props) {
 						onClick={(e) => navigate("/u/" + user_id)}
 						alt="profile pic"
 					/>
-					<div className="userOptions">
-						<div className="mpContent">
-							{/**verified === false ?
-					<button className="verifyEmail"><span>📧</span>Verify</button>
-				: null */}
-							<button
-								className="stealthBtn settings"
-								onClick={() => setOpenSettings(true)}
-							>
-								<i className="fas fa-cog"></i> Settings
-							</button>
-							<button className="stealthBtn" onClick={() => navigate("/#faq")}>
-								<i className="fas fa-question"></i> FAQ
-							</button>
-							<button className="logout stealthBtn" onClick={logout_user}>
-								<i className="fas fa-sign-out-alt"></i> log out
-							</button>
-						</div>
-					</div>
 					{props.notifCount > 0 && (
 						<button attention="true" onClick={props.notifEvent}>
 							<i className="fas fa-bell"></i>
+						</button>
+					)}
+					{_user && (
+						<button onClick={() => setOpenSettings(true)}>
+							<i className="fas fa-cog" />
 						</button>
 					)}
 					{_user && Array.from(_user.buddies).length > 0 && (

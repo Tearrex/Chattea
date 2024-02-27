@@ -1,38 +1,39 @@
 # Chattea
+[![Netlify Status](https://api.netlify.com/api/v1/badges/ff431b82-f1fd-4551-b55d-e9db14f3a3a4/deploy-status)](https://app.netlify.com/sites/chattea/deploys) https://chattea.app/
+
 My own social media website, offering:
 - 👁️‍🗨️ Private pages
-- 🔐 [Encrypted messaging](#secure-chats-key-generation)
+- 🔐 [Encrypted messaging](#secure-chats-keys)
 - 🎵 [Spotify integration](#spotify-web-api-search-function)
 - 👤 Guest mode
 - ☁️ [Serverless functions](#image-cropping-function)
 
-Visit the live version https://chattea.app/
-[![Netlify Status](https://api.netlify.com/api/v1/badges/ff431b82-f1fd-4551-b55d-e9db14f3a3a4/deploy-status)](https://app.netlify.com/sites/chattea/deploys)
-
 ## Frontend
-During COVID, I fancied learning a new frontend framework with my underlying knowledge of vanilla JavaScript. Growing up, I was irresponsibly given a Facebook account—So I figured React would be a great candidate for exploring the rabbit hole! I was drawn to the idea of showing off the finished product to friends and it has kept me engaged throughout this learning curve—the satisfaction of solving headaches beats the sorrow of feeling stuck!
+I fancied learning a new frontend framework with my underlying knowledge of vanilla JavaScript. Growing up, I was irresponsibly given a Facebook account—So I figured React would be a great candidate for exploring the rabbit hole! I was drawn to the idea of showing off the finished product to friends and it has kept me engaged throughout this learning curve—the satisfaction of solving headaches beats the sorrow of feeling stuck!
 
-### Secure Chats key generation
+### Secure Chats keys
 ![keygen](https://github.com/Tearrex/Chattea/assets/26557969/11bc4bad-22a2-4443-a3f1-895be8ee5d34)
 
-In order for users to engage in encrypted messaging—named "Secure Chats"—they must generate an asymmetric cryptographic keypair from their browser for handling plaintext/ciphertext conversion. The resulting public key is uploaded to the Firestore database, while the private key remains local to their browser for deciphering incoming messages. This keypair is unique to the user's current browser and must be regenerated when switching across devices, losing access to old messages by design.
+In order for users to engage in end-to-end encrypted messaging—named "Secure Chats"—they must generate an asymmetric keypair within the app for handling ciphertext conversion. The resulting public key gets uploaded to the Firestore database, while the private key remains local to the user's browser for deciphering incoming messages. This keypair is unique to the user's current session and must be regenerated when switching across devices, losing access to old messages by design.
 
 ### Secure Chats feature
 ![chatencryption](https://github.com/Tearrex/Chattea/assets/26557969/125da312-6600-4f9f-b76c-73b61c18f466)
 
-Prior to sending a chat message, the sender's browser will encrypt their plaintext input using the receiver's public key—becoming a secure chat message. After that, the HTTP request is made including the ciphertext in the body to be saved into Firestore for the receiver to fetch at a later date or in realtime. The receiver will use their own private key stored in their browser's local storage to decipher the sender's secure chat message.
+Prior to sending a chat message, the browser will encrypt the input value with the receiver's public key—becoming a secure chat message. The ciphertext gets encapsulated in a secure HTTP request posting to Firestore for the receiver. Both users of a chat channel listen for live updates on the channel's timestamp to poll new messages from the opposite user. The receiver will use their own private key from local storage to decipher incoming secure chat messages.
 
 ### Spotify Web API search function
 ![songsearch2](https://github.com/Tearrex/Chattea/assets/26557969/c6537703-6018-4e34-b1a7-411067206e01)
 
-After retrieving a temporary access token from the backend, the client can query the Spotify Web API directly for search results. The access token is attached to the request headers with each API request.
+After retrieving an access token [from the backend](#spotify-web-api-token-function), the client can query the Spotify Web API directly for search results. The token is attached to the request headers.
 
 ![search_func](https://github.com/Tearrex/Chattea/assets/26557969/df0432b1-afd8-4f8d-90e2-18344768ef83)
 
 ## Backend
-With Firebase as the backend, I faced limitations that I had to work around—like how Firestore databases are queried differently from typical SQL. Being the first cloud service I used in my projects, the billing showed me how crucial it is to optimize bandwidth usage and general app performance for scalability. I consequently learned about the concept of data caching and applied it here by locally storing profile data fetched from Firebase in the browser for a set amount of time.
-
+With Firebase being my most recent  cloud service integration, the free quota brought forward to me just how crucial it is to optimize bandwidth usage and general app performance for scalability—this is my million dollar startup after all...
+- [Jump to DB Schema](#database-schema)
 ### User Data Caching
+I subdued the concept of data caching as a consequence and applied it to Chattea by locally storing profile data fetched from Firestore, in place of a server-side cache. This relies on the client executing the correct frontend logic which is why the SDK credentials for production only work when accessed from Chattea's secure domain name.
+
 ![usercache](https://github.com/Tearrex/Chattea/assets/26557969/51fa680f-225e-41a0-a9d2-5dd4e7610016)
 
 Note: User IDs are substituted with generic names for readability.
@@ -40,7 +41,7 @@ Note: User IDs are substituted with generic names for readability.
 ### Spotify Web API token function
 ![spot_func](https://github.com/Tearrex/Chattea/assets/26557969/f7f9af41-8b6a-4c21-81a4-7fa9c03ebc0b)
 
-In order for users to lookup Spotify songs through Chattea, they must first fetch a temporary access token for the API. An HTTP request is made to a cloud function holding secret client credentials used to generate a new token through an intermediate API request. The client will take the token and save it to local storage until it expires.
+To lookup songs [on the frontend](#spotify-web-api-search-function), users must first fetch a temporary access token for the Spotify Web API. The client calls a cloud function holding secret client credentials for an intermediate token transaction. The client will take the response token and keep it in local storage until it expires.
 
 ### Image cropping function
 ![imgcroptest](https://github.com/Tearrex/Chattea/assets/26557969/c1be3999-dab0-404a-93e5-f829a42c45c9)
@@ -49,8 +50,11 @@ The crop tool allows users to select the desired crop region for their image, fi
 
 ![image_func](https://github.com/Tearrex/Chattea/assets/26557969/fcc28a48-3f43-4b8f-add6-ddf4a627378a)
 
-## Firestore Database Schema
-Below is a comprehensive list of all the collections and subcollections that save user data for the app
+#### Try out these features
+♥️ Create your profile at https://chattea.app
+
+## Database Schema
+Below is a comprehensive list of all the collections and subcollections of Firestore
 
 #### 👥 /users
 Collection for saving profile customizations of each registered account. The document ID should be a valid user ID (UID) for future lookups.
