@@ -22,7 +22,12 @@ function FAQuestion(props) {
 				<span>{props.question}</span>
 				<p>{props.emote || null}</p>
 			</button>
-			<div className="expandable" ref={expander} style={{ maxHeight: "0" }}>
+			<div
+				className="expandable"
+				ref={expander}
+				style={{ maxHeight: !props.open ? "0" : "100%" }}
+				open={!props.open ? "false" : "true"}
+			>
 				<div className="expansion">{props.children}</div>
 			</div>
 		</div>

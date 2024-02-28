@@ -61,11 +61,12 @@ function FAQPage(props) {
 						social media posts. <br />
 						<br />
 						<i className="fas fa-globe-americas"></i> Public posts can be seen
-						by anyone on the home page and can be forwarded in chat messaging.
+						by anyone on the explore page and can be forwarded in chat
+						messaging.
 						<br />
 						<br />
-						<i className="fas fa-eye"></i> Private posts can only be viewed by
-						users in your buddies list and cannot be forwarded.
+						<i className="fas fa-user-friends"></i> Private posts can only be
+						viewed by users in your buddies list and cannot be forwarded.
 						<br />
 						<br />
 						You can change the visibility option at any time.
@@ -80,31 +81,16 @@ function FAQPage(props) {
 						Buddies are your Chattea friends. By adding someone, you allow them
 						to
 						<ul>
+							<li>View your private posts</li>
+							<li>Mention you in comments</li>
 							<li>
-								View your{" "}
-								<Link to="#" onClick={() => open_module(null, "#visibility")}>
-									private posts
-								</Link>
-							</li>
-							<li>
-								<Link to="#" onClick={() => open_module(null, "#mentions")}>
-									Mention
-								</Link>{" "}
-								you in comments
-							</li>
-							<li>
-								Message you in{" "}
+								Send you{" "}
 								<Link to="#" onClick={() => open_module(null, "#chats")}>
-									secure chats
+									chat messages
 								</Link>
 							</li>
 						</ul>
-						Note: Buddies must add you back before messaging each other.
-						<br />
-						<br />
-						Removing a buddy will instantly revoke their access to these
-						elements.
-						<br />
+						Removing a buddy will revoke their access to these elements.
 					</p>
 				</FAQuestion>
 				<FAQuestion
@@ -129,9 +115,7 @@ function FAQPage(props) {
 					<p>
 						This info is saved on our cloud database to keep track of every user
 						that exists on the website. <br />
-						<u>Your email is kept private from others</u>; Used solely for
-						authentication and account recovery. You're only emailed upon
-						request.
+						Your email is used solely for authentication and account recovery.
 						<br />
 						<br />
 						<u>We never share or sell this information with third parties.</u>
@@ -140,6 +124,7 @@ function FAQPage(props) {
 					<ul className="dataSection">
 						<li>Attached images</li>
 						<li>Timestamp</li>
+						<li>Secure chat Public key</li>
 					</ul>
 					<p>
 						Any visual media you share will be uploaded to our cloud storage
@@ -197,13 +182,14 @@ function FAQPage(props) {
 				<FAQuestion
 					question="Chat Messaging"
 					buttonId="chats"
+					open
 					emote={<i className="fas fa-envelope"></i>}
 				>
 					<p>
 						You can now send chat messages to your buddies. These messages are
-						secured with end-to-end encryption when possible, for covert
-						conversations. Existing users must generate a cryptographic key pair
-						from their browser before engaging in secure chats.
+						secured with end-to-end encryption when possible. Existing users
+						must generate an asymmetric key pair from their browser before
+						engaging in secure chats.
 					</p>
 					<p>
 						Your <span style={{ color: "#0f0" }}>public key</span> will be
@@ -238,88 +224,46 @@ function FAQPage(props) {
 						displaying it to you. This can be toggled later.
 					</p>
 				</FAQuestion> */}
-				<FAQuestion question="Mentioning users" emote="@" buttonId="mentions">
-					<p>
-						You can only mention your buddies. They will be notified only if
-						they add you back.
-					</p>
-				</FAQuestion>
 				<FAQuestion
 					question="Posting images"
 					buttonId="images"
+					open
 					emote={<i className="fas fa-image"></i>}
 				>
 					<p>
-						You must verify your email before posting images. <br />
-						<br />
-						Images over 1megabyte will be compressed prior to uploading. This
-						process is done locally by your browser.
+						You must verify your email before posting images. Images over 1MB
+						are compressed by your browser before uploading.
 						<br />
 						<br />
-						We also offer an embedded browser tool for cropping images into
-						squares to provide the best viewing experience for all users.
+						Using our cropping tool involves ephemeral cloud processing.
 						<br />
 						<br />
-						<p style={{ textAlign: "center", width: "100%" }}>
-							<i class="fas fa-compress-alt"></i> Large images are still
-							compressed before cropping.
-							<br />
-							<i class="fas fa-cloud-upload-alt"></i> Cropping involves
-							intermediate upload of image for cloud processing.
-						</p>
+						<img src="/image_func.svg" />
 						<br />
 						<br />
-						<img src="https://github.com/Tearrex/Chattea/assets/26557969/fcc28a48-3f43-4b8f-add6-ddf4a627378a" />
-						<br />
-						<br />
-						Unlike compression, your image is cropped by an automated HTTP
-						server for a cost-effective computing approach. <br />
-						<br />
-						We protect your privacy by stripping all metadata from the image
-						before posting. The binary data is also processed in-memory instead
-						of disk storage for optimal security.
+						Your image is cropped by an automated HTTP server that gets
+						destroyed after returning the result. The binary data is also
+						processed in-memory instead of disk storage for optimal security.
 					</p>
 				</FAQuestion>
 				<FAQuestion
 					question="Sharing Spotify songs"
+					open
 					emote={<i className="fab fa-spotify"></i>}
 				>
 					<p>
-						Our website integrates with Spotify's Web API to show off previews
-						of your favorite songs on a post. Tracks that do not have a valid
-						preview URL cannot be played and will not be shown in search
-						results.
+						Chattea integrates with Spotify's Web API to add music to your
+						posts.
 						<br />
 						<br />
 						<img src="/spotify_search.jpg" />
 						<br />
 						<br />
-						This tool will make a secure HTTP request to our intermediate cloud
-						API for a temporary access token, creating a seamless experience for
-						you by not prompting for Spotify credentials.
+						For a seamless experience, this tool requests a temporary access
+						token from our intermediate cloud API.
 						<br />
 						<br />
 						<img src="/spotify_token.jpg" />
-					</p>
-				</FAQuestion>
-				<FAQuestion
-					question="User moderation"
-					buttonId="modDiscretion"
-					emote={<i className="fas fa-user-shield"></i>}
-				>
-					<p>
-						All user-generated content (except{" "}
-						<Link to="#" onClick={(e) => open_module(e, "#chats")}>
-							secure chats
-						</Link>
-						) is subject to inspection or deletion at moderator discretion. We
-						ask that you help us keep our community civil by not abusing this
-						platform. <br />
-						<br />
-						Moderators can send chat messages to users without having to add
-						them. These messages are sent in plaintext for auditing purposes and
-						are used to warn troublesome members before resorting to
-						adminstrative actions, including bans or loss of privileges.
 					</p>
 				</FAQuestion>
 			</div>
