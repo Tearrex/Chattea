@@ -196,6 +196,14 @@ function Home(props) {
 														</>
 													)}
 												</p>
+												<button
+													onClick={(e) => {
+														e.preventDefault();
+														navigate("/chats/" + m);
+													}}
+												>
+													<i className="fas fa-envelope" />
+												</button>
 												{/* <small>
 													<i class="fas fa-user-friends"></i> <b>+{x.count}</b>{" "}
 													relatives

@@ -630,8 +630,7 @@ export default function MessagePage() {
 							<p>
 								<span>You</span> and{" "}
 								<span>@{_users[user_id] && _users[user_id].username}</span> both
-								have <span style={{ color: "#0f0" }}>public keys</span> for
-								E2EE.
+								have public keys for E2EE.
 							</p>
 							<img src="/e2ee.svg" style={{ marginBottom: "10px" }} />
 							<Link
@@ -678,14 +677,14 @@ export default function MessagePage() {
 						<div className="repBody">
 							<p style={{ marginBottom: "10px" }}>
 								Erase all messages between you and{" "}
-								<span>@{_users[user_id] && _users[user_id].username}</span>?{" "}
+								<b>@{_users[user_id] && _users[user_id].username}</b>?{" "}
 								<u>They can message you again as your buddy.</u>
 							</p>
 							<button onClick={() => setDeletingChannel(false)}>
 								<i className="fas fa-times" /> Cancel
 							</button>
 							<button className="main deleteAcc" onClick={purge_channel}>
-								Delete now
+								Delete
 							</button>
 						</div>
 					</div>
@@ -710,7 +709,7 @@ export default function MessagePage() {
 								<i className="fas fa-times" /> Cancel
 							</button>
 							<button className="main" onClick={regen_keys}>
-								<i className="fas fa-cog" /> Renew now
+								<i className="fas fa-cog" /> Renew
 							</button>
 						</div>
 					</div>
@@ -765,10 +764,10 @@ export default function MessagePage() {
 												<img
 													src={_users[buddy_id].pfp}
 													style={{
-														filter:
+														opacity:
 															!buddyList[buddy_id] ||
 															!buddyList[buddy_id].available
-																? "grayscale(1)"
+																? "0.5"
 																: null,
 													}}
 												/>
@@ -776,7 +775,13 @@ export default function MessagePage() {
 													{_users[buddy_id].username}
 													<br />
 													<small style={{ opacity: 0.5 }}>
-														<i>Open chat</i>
+														<i>
+															{Array.from(_users[buddy_id].buddies).includes(
+																_user.user_id
+															)
+																? "Open"
+																: "Pending"}
+														</i>
 													</small>
 												</p>
 											</div>
@@ -868,10 +873,12 @@ export default function MessagePage() {
 										privateKey &&
 										!chatChannels[user_id] && (
 											<div className="tip">
-												<Link to={"/u/" + user_id}>
-													@{_users[user_id] && _users[user_id].username}
-												</Link>{" "}
-												must message you first or add you back.
+												<p>
+													<Link to={"/u/" + user_id}>
+														@{_users[user_id] && _users[user_id].username}
+													</Link>{" "}
+													must message you first or add you back.
+												</p>
 											</div>
 										)}
 									{user_id &&
@@ -1018,7 +1025,7 @@ export default function MessagePage() {
 														onClick={() => setSecuring(true)}
 														style={{ color: "#0f0" }}
 													>
-														E2EE
+														Secure chats
 													</a>{" "}
 													between you and @{_users[user_id].username}
 												</p>
