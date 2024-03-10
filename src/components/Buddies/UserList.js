@@ -94,7 +94,7 @@ function UserList(props) {
 						if (props.onClose) props.onClose();
 					}}
 				/>
-				<div className="buddiesFrame center">
+				<div className="buddiesFrame center" chat={props.chat ? "true" : null}>
 					{users &&
 						users.length > 0 &&
 						users

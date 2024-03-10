@@ -343,7 +343,7 @@ function MediaPost(props) {
 			onClick={() =>
 				console.log({ post: props.postID, author: props.authorID })
 			}
-			style={{ gridColumn: !image_url ? "1/-1" : null }}
+			// style={{ gridColumn: !image_url ? "1/-1" : null }}
 		>
 			<div
 				className="postUserInfo"
@@ -561,20 +561,7 @@ function MediaPost(props) {
 								</>
 							)}
 						</div>
-
 						<p>{postDate}</p>
-						{_user &&
-							props.onForward &&
-							image_url !== "" &&
-							!_private &&
-							_user.buddies.length > 0 && (
-								<button
-									className="forward"
-									onClick={() => props.onForward(postID, props.msg)}
-								>
-									<i className="fas fa-envelope" />
-								</button>
-							)}
 					</div>
 				</div>
 			</div>

@@ -73,7 +73,7 @@ function MediaFeed(props) {
 		setOldDoc(null);
 		_setPosts({});
 	}, [props.private]);
-	const _limit = 5; // batch size, amount of documents to fetch at once
+	const _limit = 4; // batch size, amount of documents to fetch at once
 
 	const postsRef =
 		(props.private || false) === false
@@ -365,7 +365,7 @@ function MediaFeed(props) {
 					onSelect={(buddy_id) => {
 						localStorage.setItem(
 							"forward_post",
-							JSON.stringify({ _id: forwardPost.postID, ...forwardPost.data })
+							JSON.stringify({ _id: forwardPost[0], ...forwardPost[1] })
 						);
 						navigate("/chats/" + buddy_id);
 					}}
@@ -376,6 +376,10 @@ function MediaFeed(props) {
 					focusPost={focusPost}
 					onDelete={delete_post}
 					setFocusPost={setFocusPost}
+					onForwardPost={() => {
+						setFocusPost(null);
+						setForwardPost(focusPost);
+					}}
 					visibilityContext={{ changeVisibility, setChangeVisibility }}
 				/>
 			)}

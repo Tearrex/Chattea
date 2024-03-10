@@ -2,17 +2,6 @@ import { useContext, useRef, useState, useEffect } from "react";
 import { _dbRef, _storageRef, logout, useAuth } from "./firebase";
 import { useNavigate } from "react-router";
 import { MembersContext, UserContext } from "./Contexts";
-import {
-	collection,
-	deleteDoc,
-	doc,
-	getDoc,
-	getDocs,
-	query,
-	where,
-} from "firebase/firestore";
-import { deleteObject, ref } from "firebase/storage";
-import { deleteUser } from "firebase/auth";
 function UserPanel(props) {
 	const navigate = useNavigate();
 	const currentUser = useAuth();
@@ -67,7 +56,8 @@ function UserPanel(props) {
 	}
 	async function delete_account() {
 		if (!deleting) return setDeleting(true);
-		if (!window.confirm(`Delete your @${_user.username} account?`)) return;
+		if (!window.confirm(`Account deletion occurs immediately, are you sure?`))
+			return;
 
 		const token = await currentUser.getIdToken(true);
 		await fetch("https://deleteuser-oj5fff4opa-uc.a.run.app", {
@@ -100,7 +90,7 @@ function UserPanel(props) {
 							{deleting && (
 								<>
 									<p>Delete yourself from Chattea?</p>
-									<ul style={{listStyle: "lower-roman"}}>
+									<ul style={{ listStyle: "lower-roman" }}>
 										<li>All your posts</li>
 										<li>All your images</li>
 										<li>Your user profile</li>
@@ -171,11 +161,6 @@ function UserPanel(props) {
 					{_user && (
 						<button onClick={() => setOpenSettings(true)}>
 							<i className="fas fa-cog" />
-						</button>
-					)}
-					{_user && Array.from(_user.buddies).length > 0 && (
-						<button onClick={() => navigate("/chats")}>
-							<i className="fas fa-envelope"></i>
 						</button>
 					)}
 				</div>

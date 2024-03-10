@@ -161,9 +161,6 @@
 .privateAlert {
 	color: $secondFore !important;
 	width: 100%;
-	h2 {
-		margin-top: 5rem;
-	}
 	a {
 		color: $niceOrange;
 	}
@@ -400,6 +397,17 @@
 		color: $textMain;
 	}
 }
+.buddiesFrame[chat="true"] .buddyItem {
+	&::after {
+		content: "\f0e0";
+		font-size: 1.4rem;
+		color: $niceOrange;
+		position: absolute;
+		right: 10px;
+		bottom: 50%;
+		transform: translateY(50%);
+	}
+}
 .buddiesFrame {
 	z-index: 6;
 	padding: 10px;
@@ -532,12 +540,14 @@
 	}
 	a {
 		color: $niceOrange;
+		text-decoration: none;
 	}
 	p {
 		white-space: nowrap;
 		font-size: 1.2rem;
 		color: #fff;
 		text-align: left;
+		line-height: 2rem;
 	}
 	span {
 		color: #5d5d5d;
@@ -559,7 +569,7 @@
 	grid-template-columns: repeat(2, 1fr);
 	gap: 10px;
 	align-items: center;
-	padding: 0 1rem;
+	padding: 0 10px;
 	.bTooltip {
 		height: 30px;
 	}
@@ -607,10 +617,14 @@
 		aspect-ratio: 1/1;
 		width: 60px;
 		flex-shrink: 0;
-		background-color: $niceOrange;
+		color: $mainFore;
+		background: none;
 		border: none;
 		outline: none;
 		font-size: 1.4rem;
+		&:hover {
+			color: $niceOrange;
+		}
 	}
 }
 .bTooltip {
@@ -655,11 +669,12 @@
 	gap: 10px;
 	justify-content: stretch;
 	.chatBtn {
-		background-color: #b76d13;
+		background: none;
 		height: 100%;
 		padding: 0 10px;
 		font-size: 1.2rem;
-		color: #fff;
+		color: $niceOrange;
+		cursor: pointer;
 	}
 }
 .actions {

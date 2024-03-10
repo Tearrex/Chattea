@@ -29,7 +29,8 @@ function Home(props) {
 	const [suggestions, setSuggestions] = useState([]);
 	const [mutuals, setMutuals] = useState([]);
 
-	const [posts, setPosts] = useState({});
+	const [viewPublic, setViewPublic] = useState(false); // load public mediafeed by default for loners
+	const [posts, setPosts] = useState(null);
 	const [focusPost, setFocusPost] = useState(null);
 	const [changeVisibility, setChangeVisibility] = useState(false);
 	async function populate_buddies_page(buddies) {
@@ -67,6 +68,7 @@ function Home(props) {
 			_setUsers({ ..._users, ..._toCache });
 	}
 	useEffect(() => {
+		if (localStorage.getItem("guest")) setViewPublic(true);
 		if (!_user) return;
 		const buddies = _user.buddies;
 
@@ -109,11 +111,7 @@ function Home(props) {
 		check_cache(toCache);
 		setSuggestions(suggs);
 		setMutuals(_mutuals);
-		if (
-			privateView &&
-			Object.entries(posts).length === 0 &&
-			_mutuals.length > 0
-		)
+		if ((!posts || Object.entries(posts).length === 0) && _mutuals.length > 0)
 			populate_buddies_page(_mutuals);
 	}, [_users, _user]);
 	async function postMessage(post) {
@@ -132,50 +130,28 @@ function Home(props) {
 		<div className="homeWrapper">
 			<div id="home" className="clamper">
 				{_user ? (
-					<>
-						<Submitter
-							onPostSubmit={postMessage}
-							privateMode={privateView || false}
-						/>
-						<div className="privacyModes">
-							<button
-								active={!privateView && "true"}
-								onClick={() => navigate("/main")}
-							>
-								<i className="fas fa-globe-americas"></i> Explore Page
-							</button>
-							<button
-								active={privateView && "true"}
-								onClick={() => navigate("/private")}
-							>
-								<i className="fas fa-user-friends"></i> Buddies Page
-							</button>
-						</div>
-					</>
+					<Submitter
+						onPostSubmit={postMessage}
+						privateMode={privateView || false}
+					/>
 				) : (
 					<h1 style={{ opacity: 0.5, color: "#fff" }}>
-						Hello stranger, get comfy <i className="fas fa-mug-hot"></i>
+						Hey stranger, get comfy <i className="fas fa-mug-hot"></i>
 					</h1>
 				)}
 				{/* .infinite-scroll-component */}
-				{(_user || localStorage.getItem("guest")) &&
-					(!privateView ? (
-						<MediaFeed private={false} />
-					) : (
-						<div className="infinite-scroll-component">
-							{focusPost && (
-								<MediaActions
-									focusPost={focusPost}
-									// onDelete={delete_post}
-									setFocusPost={setFocusPost}
-									visibilityContext={{ changeVisibility, setChangeVisibility }}
-								/>
-							)}
-							<div className="privateAlert" style={{ gridColumn: "1/-1" }}>
+				{(_user || localStorage.getItem("guest")) && (
+					<>
+						{mutuals && Object.entries(mutuals).length > 0 && (
+							<div
+								className="privateAlert"
+								style={{ gridColumn: "1/-1", marginTop: 10 }}
+							>
 								<div
 									className="bRelation"
 									style={{
 										gridAutoFlow: "row",
+										marginBottom: 10,
 									}}
 								>
 									{mutuals.map((m, i) => {
@@ -196,14 +172,17 @@ function Home(props) {
 														</>
 													)}
 												</p>
-												<button
-													onClick={(e) => {
-														e.preventDefault();
-														navigate("/chats/" + m);
-													}}
-												>
-													<i className="fas fa-envelope" />
-												</button>
+												{_users[m] &&
+													_users[m].buddies.includes(_user.user_id) && (
+														<button
+															onClick={(e) => {
+																e.preventDefault();
+																navigate("/chats/" + m);
+															}}
+														>
+															<i className="fas fa-envelope" />
+														</button>
+													)}
 												{/* <small>
 													<i class="fas fa-user-friends"></i> <b>+{x.count}</b>{" "}
 													relatives
@@ -213,65 +192,90 @@ function Home(props) {
 									})}
 								</div>
 							</div>
-							{Object.entries(posts)
-								.sort((a, b) =>
-									a[1].date.seconds > b[1].date.seconds ? -1 : 1
-								)
-								.map((post, index) => {
-									return (
-										<MediaPost
-											key={post[0]}
-											postID={post[0]}
-											main
-											msg={post[1]}
-											setFocusPost={(vis = false) => {
-												setFocusPost(post);
-												setChangeVisibility(vis);
-											}}
-											authorID={post[1].user_id}
-										/>
-									);
-								})}
-							{Object.entries(posts).length > 0 && (
+						)}
+						<div
+							className="infinite-scroll-component"
+							style={{ margin: "0 10px" }}
+						>
+							{focusPost && (
+								<MediaActions
+									focusPost={focusPost}
+									// onDelete={delete_post}
+									setFocusPost={setFocusPost}
+									visibilityContext={{ changeVisibility, setChangeVisibility }}
+								/>
+							)}
+							{posts &&
+								Object.entries(posts)
+									.sort((a, b) =>
+										a[1].date.seconds > b[1].date.seconds ? -1 : 1
+									)
+									.map((post, index) => {
+										return (
+											<MediaPost
+												key={post[0]}
+												postID={post[0]}
+												main
+												msg={post[1]}
+												setFocusPost={(vis = false) => {
+													setFocusPost(post);
+													setChangeVisibility(vis);
+												}}
+												authorID={post[1].user_id}
+											/>
+										);
+									})}
+							{posts && Object.entries(posts).length > 0 && (
 								<div
 									className="mediaCard empty"
 									style={{ gridColumn: "auto / span 2" }}
 								/>
 							)}
-							{Object.entries(suggestions).length > 0 && (
-								<div className="privateAlert" style={{ gridColumn: "1/-1" }}>
-									<h2>
-										<i className="fas fa-globe-americas"></i> You might know...
-									</h2>
-									<div
-										className="exploreBuddies"
-										style={{
-											display:
-												Object.entries(suggestions).length > 0 ? null : "none",
-										}}
-									>
-										<div className="bRelation">
-											{suggestions &&
-												Object.values(suggestions).map((x, i) => (
-													<Link to={"/u/" + x.id} className="bCard" key={i}>
-														<img src={_users[x.id].pfp} alt="user pic" />
-														<p>
-															@{_users[x.id].username}
-															{_users[x.id] && _users[x.id].about && (
-																<>
-																	<br />
-																	<small>{_users[x.id].about}</small>
-																</>
-															)}
-														</p>
-													</Link>
-												))}
-										</div>
+						</div>
+						{Object.entries(suggestions).length > 0 && (
+							<div
+								className="privateAlert"
+								style={{ gridColumn: "1/-1", marginBottom: "3rem" }}
+							>
+								<h2>You might know...</h2>
+								<div
+									className="exploreBuddies"
+									style={{
+										display:
+											Object.entries(suggestions).length > 0 ? null : "none",
+									}}
+								>
+									<div className="bRelation">
+										{suggestions &&
+											Object.values(suggestions).map((x, i) => (
+												<Link to={"/u/" + x.id} className="bCard" key={i}>
+													<img src={_users[x.id].pfp} alt="user pic" />
+													<p>
+														@{_users[x.id].username}
+														{_users[x.id] && _users[x.id].about && (
+															<>
+																<br />
+																<small>{_users[x.id].about}</small>
+															</>
+														)}
+													</p>
+												</Link>
+											))}
 									</div>
 								</div>
-							)}
-						</div>
-					))}
+							</div>
+						)}
+						{posts && Object.entries(posts).length > 0 && !viewPublic && (
+							<button onClick={() => setViewPublic(true)} className="explore">
+								<i className="fas fa-globe-americas"></i> Load explore page
+							</button>
+						)}
+						{(viewPublic ||
+							(posts !== null && Object.entries(posts).length == 0)) && (
+							<MediaFeed private={false} />
+						)}
+					</>
+				)}
 				<div id="audionest"></div>
 			</div>
 		</div>

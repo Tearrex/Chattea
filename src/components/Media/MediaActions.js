@@ -218,6 +218,9 @@ function MediaActions(props) {
 									Report Post
 								</button>
 							)}
+							{_user && !focusPost[1].private && _user.buddies.length > 0 && (
+								<button onClick={props.onForwardPost}>Forward Post</button>
+							)}
 							{_user && _user.user_id === focusPost[1].user_id && (
 								<button>
 									<i class="fas fa-thumbtack"></i> Pin post

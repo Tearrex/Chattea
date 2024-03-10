@@ -627,19 +627,18 @@ export default function MessagePage() {
 					<div id="postActionModal">
 						<p className="repHead">Secure Chat feature</p>
 						<div className="repBody">
+							<img src="/e2ee.svg" />
 							<p>
-								<span>You</span> and{" "}
-								<span>@{_users[user_id] && _users[user_id].username}</span> both
-								have public keys for E2EE.
+								This channel is eligible for E2E encryption.
+								<br />
+								<Link
+									to="/#faq"
+									style={{ marginBottom: "15px" }}
+									onClick={() => localStorage.setItem("faq_jump", "#chats")}
+								>
+									Learn more.
+								</Link>
 							</p>
-							<img src="/e2ee.svg" style={{ marginBottom: "10px" }} />
-							<Link
-								to="/#faq"
-								style={{ marginBottom: "15px" }}
-								onClick={() => localStorage.setItem("faq_jump", "#chats")}
-							>
-								Learn more.
-							</Link>
 							{!insecureMode && (
 								<button
 									onClick={() => {
@@ -774,15 +773,13 @@ export default function MessagePage() {
 												<p className="username">
 													{_users[buddy_id].username}
 													<br />
-													<small style={{ opacity: 0.5 }}>
-														<i>
-															{Array.from(_users[buddy_id].buddies).includes(
-																_user.user_id
-															)
-																? "Open"
-																: "Pending"}
-														</i>
-													</small>
+													{!Array.from(_users[buddy_id].buddies).includes(
+														_user.user_id
+													) && (
+														<small style={{ opacity: 0.5 }}>
+															<i>Pending</i>
+														</small>
+													)}
 												</p>
 											</div>
 										);
@@ -865,7 +862,7 @@ export default function MessagePage() {
 								<div className="chats">
 									{!user_id && privateKey && (
 										<div className="tip direction">
-											Choose a buddy to chat with
+											<p>Choose a buddy to chat with</p>
 										</div>
 									)}
 									{user_id &&
@@ -913,7 +910,8 @@ export default function MessagePage() {
 											user_id &&
 											_users[user_id] &&
 											_users[user_id].buddies.includes(_user.user_id))) &&
-										messages.length == 0 && (
+										messages.length == 0 &&
+										!forwardedPost && (
 											<div className="tip">
 												<p style={{ opacity: 0.5 }}>
 													🗣️ Start the conversation...

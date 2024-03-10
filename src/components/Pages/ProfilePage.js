@@ -241,7 +241,7 @@ function ProfilePage(props) {
 			setUploading(true);
 			const _ref = ref(
 				_storageRef,
-				"profiles/" + _user["user_id"] + "/" + _user["user_id"]
+				"profiles/" + _user["user_id"]
 			);
 			const task = uploadBytesResumable(_ref, pfpFile);
 			task.on(
@@ -313,10 +313,6 @@ function ProfilePage(props) {
 	useEffect(() => {
 		if (bannerSaved === true && pfpSaved === true) {
 			var changesRef = {};
-			if (filter.clean(inputName) != inputName) {
-				usernameField.current.style.border = "3px solid #f00";
-				return;
-			}
 			if (inputName !== _user.username && inputName !== "") {
 				changesRef["username"] = inputName;
 			}
@@ -571,7 +567,7 @@ function ProfilePage(props) {
 						<div className="userInfo">
 							<p style={{ margin: 0 }}>
 								<i className="fas fa-seedling"></i> Joined{" "}
-								<span>{profile && profile.joined}</span>
+								{profile && profile.joined}
 								<br />
 								{profile && (
 									<Link
@@ -591,11 +587,7 @@ function ProfilePage(props) {
 									{relatedUsers.length > 0 && (
 										<div className="list">
 											{relatedUsers.map((x, i) => (
-												<Link
-													to={"/u/" + x}
-													className="bTooltip"
-													key={i}
-												>
+												<Link to={"/u/" + x} className="bTooltip" key={i}>
 													<img
 														src={
 															(_users[x] && _users[x].pfp) ||
@@ -619,7 +611,7 @@ function ProfilePage(props) {
 									_users[profile.user_id] && (
 										<div className="interact">
 											<Link to={"/chats/" + user_id}>
-												<button className="chatBtn stealthBtn">
+												<button className="chatBtn">
 													<i className="fas fa-envelope" /> Chat
 												</button>
 											</Link>

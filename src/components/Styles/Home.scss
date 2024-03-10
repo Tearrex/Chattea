@@ -4,7 +4,6 @@
 }
 // this file getting out of hand...
 #home {
-	margin-bottom: 30px;
 	display: flex;
 	flex-flow: column;
 	button {
@@ -17,6 +16,11 @@
 	}
 	small.disclaimer a {
 		color: $niceOrange;
+	}
+	button.explore {
+		width: 100%;
+		background-color: $niceOrange;
+		padding: 1rem 0;
 	}
 }
 footer {
@@ -788,6 +792,7 @@ p {
 		}
 		button.main {
 			color: $niceOrange;
+			border-radius: 0;
 		}
 		button {
 			height: 100%;
@@ -1537,10 +1542,10 @@ p {
 	display: flex;
 	align-items: center;
 	flex-flow: row;
-	border-radius: 0 0 $boxRad $boxRad;
 	position: relative;
 	p {
 		margin: 0;
+		margin-right: 10px;
 		flex: 100%;
 	}
 	img {
@@ -1725,7 +1730,7 @@ p {
 }
 .postActions button,
 .postActions .smile {
-	background: #000;
+	background: $foreMain;
 	color: $mainFore;
 }
 .postActions button,
@@ -1785,7 +1790,6 @@ p {
 	display: flex;
 	align-items: stretch;
 	padding: 10px;
-	border-radius: $boxRad $boxRad 0 0;
 	flex-shrink: 0;
 	flex-flow: column-reverse;
 	gap: 1rem;
